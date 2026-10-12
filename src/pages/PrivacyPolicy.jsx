@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import HeaderNav from '../components/HeaderNav';
 import SiteFooter from '../components/SiteFooter';
 import * as Lucide from 'lucide-react';
+import { usePageSEO } from '../utils/usePageSEO';
 
 const IconWrapper = ({ name, ...props }) => {
   const Icon = Lucide[name];
@@ -10,8 +11,14 @@ const IconWrapper = ({ name, ...props }) => {
 };
 
 const PrivacyPolicy = () => {
+  usePageSEO({
+    title: "Privacy Policy | Raju Perumalla Portfolio & Technical Journal",
+    description: "Official privacy policy and data governance practices for Raju Perumalla's personal website and technical engineering blog.",
+    canonical: "https://www.rajuperumalla.in/privacy-policy",
+    ogImage: "https://www.rajuperumalla.in/images/profile.png",
+  });
+
   useEffect(() => {
-    document.title = "Privacy Policy | Raju Perumalla Portfolio & Technical Journal";
     window.scrollTo(0, 0);
   }, []);
 

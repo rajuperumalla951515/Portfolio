@@ -4,6 +4,7 @@ import HeaderNav from '../components/HeaderNav';
 import SiteFooter from '../components/SiteFooter';
 import * as Lucide from 'lucide-react';
 import { blogPosts } from '../data/blogData';
+import { usePageSEO } from '../utils/usePageSEO';
 
 const IconWrapper = ({ name, ...props }) => {
   const Icon = Lucide[name];
@@ -11,11 +12,17 @@ const IconWrapper = ({ name, ...props }) => {
 };
 
 const BlogIndex = () => {
+  usePageSEO({
+    title: "Technical Articles & Engineering Journal | Raju Perumalla",
+    description: "In-depth technical articles on IoT accident prevention, RSA cryptography, FastAPI vs Node.js scaling benchmarks, and SAP BTP enterprise development by Raju Perumalla.",
+    canonical: "https://www.rajuperumalla.in/blog",
+    ogImage: "https://www.rajuperumalla.in/images/profile.png",
+  });
+
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
 
   useEffect(() => {
-    document.title = "Technical Articles & Engineering Journal | Raju Perumalla";
     window.scrollTo(0, 0);
   }, []);
 

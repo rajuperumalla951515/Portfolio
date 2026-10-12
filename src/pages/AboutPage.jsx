@@ -8,14 +8,22 @@ import googleLogo from '../assets/google-logo.png';
 import sapLogo from '../assets/sap-logo.png';
 import capgeminiLogo from '../assets/Capgemini Logo.jpeg';
 
+import { usePageSEO } from '../utils/usePageSEO';
+
 const IconWrapper = ({ name, ...props }) => {
   const Icon = Lucide[name];
   return Icon ? <Icon {...props} /> : <Lucide.Check {...props} />;
 };
 
 const AboutPage = () => {
+  usePageSEO({
+    title: "About Raju Perumalla | Full-Stack & AI Engineer",
+    description: "Learn about Raju Perumalla's background in software engineering, Cloud architectures, SAP BTP, computer vision systems, and Google Student Ambassador role.",
+    canonical: "https://www.rajuperumalla.in/about",
+    ogImage: "https://www.rajuperumalla.in/images/profile.png",
+  });
+
   useEffect(() => {
-    document.title = "About Raju Perumalla | Full-Stack & AI Engineer";
     window.scrollTo(0, 0);
   }, []);
 

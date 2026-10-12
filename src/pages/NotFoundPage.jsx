@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import HeaderNav from '../components/HeaderNav';
 import SiteFooter from '../components/SiteFooter';
 import * as Lucide from 'lucide-react';
+import { usePageSEO } from '../utils/usePageSEO';
 
 const IconWrapper = ({ name, ...props }) => {
   const Icon = Lucide[name];
@@ -10,8 +11,15 @@ const IconWrapper = ({ name, ...props }) => {
 };
 
 const NotFoundPage = () => {
+  usePageSEO({
+    title: "404 - Page Not Found | Raju Perumalla",
+    description: "The page you are looking for does not exist on Raju Perumalla's portfolio and technical blog.",
+    canonical: undefined,
+    robots: "noindex, follow",
+  });
+
   useEffect(() => {
-    document.title = "404 - Page Not Found | Raju Perumalla";
+    window.scrollTo(0, 0);
   }, []);
 
   return (

@@ -5,6 +5,7 @@ import SiteFooter from '../components/SiteFooter';
 import * as Lucide from 'lucide-react';
 import { blogPosts } from '../data/blogData';
 import profilePhoto from '../assets/profile.png';
+import { usePageSEO } from '../utils/usePageSEO';
 
 const IconWrapper = ({ name, ...props }) => {
   const Icon = Lucide[name];
@@ -15,12 +16,16 @@ const BlogPost = () => {
   const { slug } = useParams();
   const post = blogPosts.find((p) => p.slug === slug);
 
+  usePageSEO({
+    title: post ? `${post.title} | Raju Perumalla` : 'Article Not Found | Raju Perumalla',
+    description: post ? post.summary : 'The requested engineering article could not be found.',
+    canonical: post ? `https://www.rajuperumalla.in/blog/${post.slug}` : undefined,
+    ogType: post ? 'article' : 'website',
+    ogImage: 'https://www.rajuperumalla.in/images/profile.png',
+    robots: post ? 'index, follow' : 'noindex, follow',
+  });
+
   useEffect(() => {
-    if (post) {
-      document.title = `${post.title} | Raju Perumalla`;
-    } else {
-      document.title = "Article Not Found | Raju Perumalla";
-    }
     window.scrollTo(0, 0);
   }, [post]);
 

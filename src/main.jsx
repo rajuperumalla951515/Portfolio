@@ -10,24 +10,7 @@ import TermsPage from './pages/TermsPage.jsx';
 import BlogIndex from './pages/BlogIndex.jsx';
 import BlogPost from './pages/BlogPost.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
-
-import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-
-// Automatically track page views in Google Analytics on route navigation
-const AnalyticsTracker = () => {
-  const location = useLocation();
-
-  useEffect(() => {
-    if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
-      window.gtag('config', 'G-S7VZQBBTXZ', {
-        page_path: location.pathname + location.search,
-      });
-    }
-  }, [location]);
-
-  return null;
-};
+import AnalyticsTracker from './components/AnalyticsTracker.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

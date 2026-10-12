@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import HeaderNav from '../components/HeaderNav';
 import SiteFooter from '../components/SiteFooter';
 import * as Lucide from 'lucide-react';
+import { usePageSEO } from '../utils/usePageSEO';
 
 const IconWrapper = ({ name, ...props }) => {
   const Icon = Lucide[name];
@@ -10,8 +11,14 @@ const IconWrapper = ({ name, ...props }) => {
 };
 
 const TermsPage = () => {
+  usePageSEO({
+    title: "Terms of Use | Raju Perumalla Portfolio & Technical Journal",
+    description: "Terms of service, intellectual property guidelines, and usage conditions for Raju Perumalla's official website and engineering articles.",
+    canonical: "https://www.rajuperumalla.in/terms",
+    ogImage: "https://www.rajuperumalla.in/images/profile.png",
+  });
+
   useEffect(() => {
-    document.title = "Terms of Use | Raju Perumalla Portfolio & Technical Journal";
     window.scrollTo(0, 0);
   }, []);
 

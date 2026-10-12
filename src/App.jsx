@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Tilt from 'react-parallax-tilt';
 import * as Lucide from 'lucide-react';
 import Loader from './components/Loader';
+import { usePageSEO } from './utils/usePageSEO';
 
 import myLogo from './assets/mylogo.png';
 import profilePhoto from './assets/profile.png';
@@ -299,6 +300,13 @@ const aboutTabs = [
 ];
 
 const App = () => {
+  usePageSEO({
+    title: 'Raju Perumalla | Full-Stack, AI & Cloud Developer Portfolio',
+    description: 'Official portfolio and technical engineering blog of Raju Perumalla. Full-stack developer, Python/FastAPI engineer, SAP ABAP & BTP specialist, and Google Student Ambassador 2026.',
+    canonical: 'https://www.rajuperumalla.in/',
+    ogImage: 'https://www.rajuperumalla.in/images/profile.png',
+  });
+
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeRoleIndex, setActiveRoleIndex] = useState(0);

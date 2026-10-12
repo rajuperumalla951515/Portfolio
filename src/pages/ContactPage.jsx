@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import HeaderNav from '../components/HeaderNav';
 import SiteFooter from '../components/SiteFooter';
 import * as Lucide from 'lucide-react';
+import { usePageSEO } from '../utils/usePageSEO';
 
 const IconWrapper = ({ name, ...props }) => {
   const Icon = Lucide[name];
@@ -10,13 +11,19 @@ const IconWrapper = ({ name, ...props }) => {
 };
 
 const ContactPage = () => {
+  usePageSEO({
+    title: "Contact Raju Perumalla | Developer Inquiries & Collaborations",
+    description: "Get in touch with Raju Perumalla for full-stack engineering collaborations, AI software development projects, or technical consulting.",
+    canonical: "https://www.rajuperumalla.in/contact",
+    ogImage: "https://www.rajuperumalla.in/images/profile.png",
+  });
+
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState(null);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    document.title = "Contact Raju Perumalla | Developer Inquiries & Collaborations";
     window.scrollTo(0, 0);
   }, []);
 
