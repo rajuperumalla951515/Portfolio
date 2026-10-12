@@ -31,13 +31,13 @@ import sapLogo from './assets/sap-logo.png';
 import capgeminiLogo from './assets/Capgemini Logo.jpeg';
 import gmailLogo from './assets/gmail.png';
 import instaProfile from './assets/insta profile.png';
-import smartGuardianVideo from './videos/smartguardian shoert video for portfolio.mp4';
+import smartGuardianVideo from './videos/smartguardian_preview.mp4';
 import smartGuardianLogo from './assets/SmartGuardianlogo.png';
-import tripzyVideo from './videos/tripzy shoert video for portfolio.mp4';
+import tripzyVideo from './videos/tripzy_preview.mp4';
 import tripzyLogo from './assets/Tripzylogo.png';
-import cipherdocVideo from './videos/cipherdoc shoert video for portfolio.mp4';
+import cipherdocVideo from './videos/cipherdoc_preview.mp4';
 import cipherdocLogo from './assets/logo_2.png';
-import nutrixaVideo from './videos/Nutrixa shoert video for portfolio.mp4';
+import nutrixaVideo from './videos/nutrixa_preview.mp4';
 import nutrixaLogo from './assets/Nutrixa.png';
 
 // Safe icon access helper
