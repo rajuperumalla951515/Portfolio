@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import HeaderNav from '../components/HeaderNav';
 import SiteFooter from '../components/SiteFooter';
 import * as Lucide from 'lucide-react';
-import { supabase } from '../utils/supabase';
 
 const IconWrapper = ({ name, ...props }) => {
   const Icon = Lucide[name];
@@ -33,30 +32,21 @@ const ContactPage = () => {
     setStatus(null);
 
     try {
-      // 1. Send to Express Backend (handles email notification and backup)
-      const backendPromise = fetch('https://portfolio-crql.onrender.com/api/contact', {
+      // Send to Express Backend (securely stores in Supabase & MongoDB and sends notification)
+      const response = await fetch('https://portfolio-crql.onrender.com/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)
       });
 
-      // 2. Direct Supabase fallback insert
-      const supabasePromise = supabase
-        .from('contact_messages')
-        .insert([{ name: formData.name, email: formData.email, message: formData.message }]);
-
-      const [backendRes] = await Promise.allSettled([backendPromise, supabasePromise]);
-
-      if (backendRes.status === 'fulfilled' && backendRes.value.ok) {
-        setStatus({ type: 'success', text: 'Thank you! Your message has been sent successfully. I will get back to you soon.' });
+      if (response.ok) {
+        setStatus({ type: 'success', text: 'Thank you! Your message has been sent and recorded successfully. I will get back to you soon.' });
         setFormData({ name: '', email: '', message: '' });
       } else {
-        // Even if the remote render server was sleeping, check if supabase succeeded
-        setStatus({ type: 'success', text: 'Your message has been received! I will review it shortly.' });
-        setFormData({ name: '', email: '', message: '' });
+        setStatus({ type: 'error', text: 'Could not send message. Please reach me directly at 23ra1a05b0@kpritech.ac.in' });
       }
     } catch (err) {
-      setStatus({ type: 'error', text: 'An unexpected error occurred. Please try reaching me directly at 23ra1a05b0@kpritech.ac.in' });
+      setStatus({ type: 'error', text: 'An unexpected network error occurred. Please try reaching me directly at 23ra1a05b0@kpritech.ac.in' });
     }
 
     setIsSubmitting(false);
