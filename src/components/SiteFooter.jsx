@@ -25,6 +25,8 @@ const SiteFooter = () => {
           <Link to="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
           <span className="text-white/10">•</span>
           <Link to="/terms" className="hover:text-white transition-colors">Terms of Use</Link>
+          <span className="text-white/10">•</span>
+          <a href="/sitemap.xml" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Sitemap</a>
         </nav>
 
         {/* Socials */}

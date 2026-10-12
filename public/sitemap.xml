@@ -1,53 +1,116 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <!-- 1. Homepage: Portfolio, Showcase, Achievements & Skills -->
   <url>
     <loc>https://www.rajuperumalla.in/</loc>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-10-12</lastmod>
+    <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://www.rajuperumalla.in/favicon.svg</image:loc>
+      <image:title>Raju Perumalla - Full-Stack, AI &amp; Cloud Developer Portfolio</image:title>
+      <image:caption>Official portfolio and engineering projects of Raju Perumalla</image:caption>
+    </image:image>
   </url>
+
+  <!-- 2. Developer Bio & Background -->
   <url>
     <loc>https://www.rajuperumalla.in/about</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://www.rajuperumalla.in/blog</loc>
+    <lastmod>2026-10-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://www.rajuperumalla.in/favicon.svg</image:loc>
+      <image:title>About Raju Perumalla - Engineering Background &amp; Certifications</image:title>
+      <image:caption>Full-Stack Developer, Google Student Ambassador 2026, and SAP ABAP Specialist</image:caption>
+    </image:image>
   </url>
+
+  <!-- 3. Engineering Articles & Technical Blog Hub -->
+  <url>
+    <loc>https://www.rajuperumalla.in/blog</loc>
+    <lastmod>2026-10-12</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- 4. Deep-Dive Article: SmartGuardian IoT & AI Platform -->
   <url>
     <loc>https://www.rajuperumalla.in/blog/building-smartguardian-iot-accident-detection-system</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <lastmod>2026-10-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://www.rajuperumalla.in/favicon.svg</image:loc>
+      <image:title>Architecting SmartGuardian: Real-Time Accident Prevention &amp; Detection with IoT &amp; FastAPI</image:title>
+      <image:caption>IoT telemetry and computer vision accident detection architecture</image:caption>
+    </image:image>
   </url>
+
+  <!-- 5. Deep-Dive Article: CipherDoc RSA Encryption & Security -->
   <url>
     <loc>https://www.rajuperumalla.in/blog/securing-academic-data-cipherdoc-rsa-encryption</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <lastmod>2026-10-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://www.rajuperumalla.in/favicon.svg</image:loc>
+      <image:title>Securing Academic Data: Architecting CipherDoc with End-to-End RSA Key Pair Cryptography</image:title>
+      <image:caption>Secure exam paper vault and RSA digital signature authentication</image:caption>
+    </image:image>
   </url>
+
+  <!-- 6. Deep-Dive Article: FastAPI vs Node.js Microservices Comparison -->
   <url>
     <loc>https://www.rajuperumalla.in/blog/fastapi-vs-nodejs-scaling-modern-microservices</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <lastmod>2026-10-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://www.rajuperumalla.in/favicon.svg</image:loc>
+      <image:title>FastAPI vs Node.js: Architectural Performance, Concurrency &amp; Real-World Scaling Benchmarks</image:title>
+      <image:caption>Comprehensive microservice comparison between Python FastAPI and Node.js</image:caption>
+    </image:image>
   </url>
+
+  <!-- 7. Deep-Dive Article: SAP BTP & ABAP Cloud Developer Guide -->
   <url>
     <loc>https://www.rajuperumalla.in/blog/getting-started-with-sap-btp-abap-cloud-developer-guide</loc>
+    <lastmod>2026-10-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+    <image:image>
+      <image:loc>https://www.rajuperumalla.in/favicon.svg</image:loc>
+      <image:title>Getting Started with SAP BTP and ABAP Cloud: The Modern Enterprise Developer Roadmap</image:title>
+      <image:caption>Enterprise development guide for SAP Business Technology Platform and ABAP Cloud RAP</image:caption>
+    </image:image>
+  </url>
+
+  <!-- 8. Contact & Collaboration Page -->
+  <url>
+    <loc>https://www.rajuperumalla.in/contact</loc>
+    <lastmod>2026-10-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
-  <url>
-    <loc>https://www.rajuperumalla.in/contact</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
+
+  <!-- 9. Privacy Policy & Compliance (Google AdSense requirement) -->
   <url>
     <loc>https://www.rajuperumalla.in/privacy-policy</loc>
-    <changefreq>yearly</changefreq>
+    <lastmod>2026-10-12</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
+
+  <!-- 10. Terms of Service & Legal Notice -->
   <url>
     <loc>https://www.rajuperumalla.in/terms</loc>
-    <changefreq>yearly</changefreq>
+    <lastmod>2026-10-12</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
+
 </urlset>

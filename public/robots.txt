@@ -1,9 +1,26 @@
 # robots.txt for https://www.rajuperumalla.in
+# Official Portfolio & Technical Blog of Raju Perumalla
+
 User-agent: *
 Allow: /
-
-# Disallow private/admin endpoints if any
 Disallow: /api/
+Disallow: /.env
+Disallow: /.git
 
-# Sitemap location
+# Explicit permissions for Google AdSense Crawler
+User-agent: Mediapartners-Google
+Allow: /
+
+# Explicit permissions for Major Search Engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Canonical Sitemap Location
 Sitemap: https://www.rajuperumalla.in/sitemap.xml
+Host: https://www.rajuperumalla.in
