@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Tilt from 'react-parallax-tilt';
 import * as Lucide from 'lucide-react';
@@ -520,6 +521,12 @@ const App = () => {
                 whileHover={{ scale: 1.1, color: '#ef4444' }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
+                <Link to="/blog" onClick={() => setMobileMenuOpen(false)}>ARTICLES</Link>
+              </motion.li>
+              <motion.li
+                whileHover={{ scale: 1.1, color: '#ef4444' }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
                 <a href="#contact" onClick={() => setMobileMenuOpen(false)}>CONTACT</a>
               </motion.li>
             </ul>
@@ -556,6 +563,7 @@ const App = () => {
                     <li><a href="#about">ABOUT</a></li>
                     <li><a href="#skills">SKILLS</a></li>
                     <li><a href="#projects">PROJECTS</a></li>
+                    <li><Link to="/blog">ARTICLES</Link></li>
                     <li><a href="#contact">CONTACT</a></li>
                   </ul>
                 </motion.div>
@@ -1476,6 +1484,7 @@ const App = () => {
               <div className='blur_back overflow-hidden relative'>
                 <video
                   src={smartGuardianVideo}
+                  preload="metadata"
                   autoPlay
                   muted
                   playsInline
@@ -1528,6 +1537,7 @@ const App = () => {
               <div className='blur_back overflow-hidden relative'>
                 <video
                   src={cipherdocVideo}
+                  preload="metadata"
                   autoPlay
                   muted
                   playsInline
@@ -1582,6 +1592,7 @@ const App = () => {
               <div className='blur_back overflow-hidden relative'>
                 <video
                   src={tripzyVideo}
+                  preload="metadata"
                   autoPlay
                   muted
                   playsInline
@@ -1630,6 +1641,7 @@ const App = () => {
               <div className='blur_back overflow-hidden relative'>
                 <video
                   src={nutrixaVideo}
+                  preload="metadata"
                   autoPlay
                   muted
                   playsInline
@@ -1981,16 +1993,21 @@ const App = () => {
             <p className='text-white/20 text-[10px] text-center'>Built with React · TailwindCSS · Node.js &nbsp;·&nbsp; Designed &amp; Developed by Raju Perumalla</p>
           </div>
 
-          {/* Right: Links */}
-          <div className='flex items-center gap-5'>
-            <a href='https://github.com/rajuperumalla9515' target='_blank' rel='noopener noreferrer'
-              className='text-white/30 hover:text-white text-xs tracking-wide transition-colors duration-200'>GitHub</a>
-            <span className='text-white/10'>|</span>
-            <a href='https://www.instagram.com/impressive_dev_34' target='_blank' rel='noopener noreferrer'
-              className='text-white/30 hover:text-white text-xs tracking-wide transition-colors duration-200'>Instagram</a>
-            <span className='text-white/10'>|</span>
-            <a href='#contact'
-              className='text-white/30 hover:text-white text-xs tracking-wide transition-colors duration-200'>Contact</a>
+          {/* Right: Policy & Trust Links */}
+          <div className='flex flex-wrap items-center justify-center md:justify-end gap-3 text-xs'>
+            <Link to="/about" className='text-white/40 hover:text-white transition-colors duration-200'>About</Link>
+            <span className='text-white/10'>•</span>
+            <Link to="/blog" className='text-white/40 hover:text-white transition-colors duration-200'>Articles</Link>
+            <span className='text-white/10'>•</span>
+            <Link to="/privacy-policy" className='text-white/40 hover:text-white transition-colors duration-200'>Privacy Policy</Link>
+            <span className='text-white/10'>•</span>
+            <Link to="/terms" className='text-white/40 hover:text-white transition-colors duration-200'>Terms</Link>
+            <span className='text-white/10'>•</span>
+            <a href='https://github.com/rajuperumalla951515' target='_blank' rel='noopener noreferrer'
+              className='text-white/40 hover:text-white transition-colors duration-200'>GitHub</a>
+            <span className='text-white/10'>•</span>
+            <a href='https://www.linkedin.com/in/rajuperumalla9006' target='_blank' rel='noopener noreferrer'
+              className='text-white/40 hover:text-white transition-colors duration-200'>LinkedIn</a>
           </div>
 
         </div>
