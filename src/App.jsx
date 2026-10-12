@@ -741,7 +741,7 @@ const App = () => {
                     variants={cinematicItem}
                     className='text-white/70 text-sm md:text-base lg:text-lg mb-8 leading-relaxed'
                   >
-                    Full Stack Web & Android Developer | Data-Driven Systems | FastAPI | ML Predictive Modeling | API & System Design | Android Projects | YouTube Creator (2.5K+)
+                    CSE’27 | GSA’26 | Python, Java, C/C++ | SAP ABAP & BTP | System Design & API Integration | 2nd Runner-Up @Capgemini T4PF | YouTube Creator (2.5K+)
                   </motion.p>
                   <motion.div
                     variants={cinematicItem}
