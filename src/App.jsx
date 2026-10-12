@@ -27,6 +27,7 @@ import linkedinLogo from './assets/linkedin.png';
 import youtubeLogo from './assets/youtube (1).png';
 import googleLogo from './assets/google-logo.png';
 import sapLogo from './assets/sap-logo.png';
+import capgeminiLogo from './assets/Capgemini Logo.jpeg';
 import gmailLogo from './assets/gmail.png';
 import instaProfile from './assets/insta profile.png';
 import smartGuardianVideo from './videos/smartguardian shoert video for portfolio.mp4';
@@ -292,7 +293,7 @@ const aboutTabs = [
     title: 'Milestones &',
     titleHighlight: 'Recognition',
     icon: 'Trophy',
-    content: 'Recognized for delivering innovative solutions and contributing to the technology community through impactful projects and leadership. Achievements include being a Finalist in SAP Innovation Marathon 4.0, selected as a Google Student Ambassador 2026, Hosting 4+ technical sessions on AI and software development, actively participating in national hackathons and technical events, and building multiple production-ready applications that solve real-world problems. Additionally, I have grown a 2.5K+ YouTube community, where I create technical content to educate and inspire aspiring developers while continuously expanding my expertise through certifications, workshops, and hands-on learning.'
+    content: 'Recognized for delivering innovative solutions and contributing to the technology community through impactful projects and leadership. Achievements include being 2nd Runner-Up in Capgemini Tech Challenge (T4PF) Hackathon, selected as a Google Student Ambassador 2026, Finalist in SAP Innovation Marathon 4.0, Hosting 4+ technical sessions on AI and software development, actively participating in national hackathons and technical events, and building multiple production-ready applications that solve real-world problems. Additionally, I have grown a 2.5K+ YouTube community, where I create technical content to educate and inspire aspiring developers while continuously expanding my expertise through certifications, workshops, and hands-on learning.'
   }
 ];
 
@@ -1137,9 +1138,19 @@ const App = () => {
                       </div>
                       <span className="text-[9px] font-bold tracking-widest text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-full uppercase">Leadership & Milestones</span>
                     </div>
-                    <div className="mt-auto space-y-2">
+                    <div className="mt-auto space-y-1.5 md:space-y-2">
+                      {/* Capgemini */}
+                      <div className="flex items-center gap-3 p-2 md:p-2.5 rounded-lg bg-white/[0.01] hover:bg-white/[0.04] border border-white/5 transition-all duration-300">
+                        <div className="w-8 h-8 rounded-md bg-white flex items-center justify-center flex-shrink-0 p-1 overflow-hidden">
+                          <img src={capgeminiLogo} alt="Capgemini" className="w-full h-full object-contain" />
+                        </div>
+                        <div>
+                          <p className="text-[11px] font-bold text-white tracking-wide">2nd Runner-Up in Capgemini Hackathon</p>
+                          <p className="text-[9px] text-white/40 mt-0.5">Capgemini Tech Challenge (T4PF)</p>
+                        </div>
+                      </div>
                       {/* Google */}
-                      <div className="flex items-center gap-3 p-2.5 rounded-lg bg-white/[0.01] hover:bg-white/[0.04] border border-white/5 transition-all duration-300">
+                      <div className="flex items-center gap-3 p-2 md:p-2.5 rounded-lg bg-white/[0.01] hover:bg-white/[0.04] border border-white/5 transition-all duration-300">
                         <div className="w-8 h-8 rounded-md bg-white/5 flex items-center justify-center flex-shrink-0">
                           <img src={googleLogo} alt="Google" className="w-5 h-5 object-contain" />
                         </div>
@@ -1149,7 +1160,7 @@ const App = () => {
                         </div>
                       </div>
                       {/* SAP */}
-                      <div className="flex items-center gap-3 p-2.5 rounded-lg bg-white/[0.01] hover:bg-white/[0.04] border border-white/5 transition-all duration-300">
+                      <div className="flex items-center gap-3 p-2 md:p-2.5 rounded-lg bg-white/[0.01] hover:bg-white/[0.04] border border-white/5 transition-all duration-300">
                         <div className="w-8 h-8 rounded-md bg-white/5 flex items-center justify-center flex-shrink-0">
                           <img src={sapLogo} alt="SAP" className="w-6 h-6 object-contain" />
                         </div>
@@ -1159,7 +1170,7 @@ const App = () => {
                         </div>
                       </div>
                       {/* Sessions */}
-                      <div className="flex items-center gap-3 p-2.5 rounded-lg bg-white/[0.01] hover:bg-white/[0.04] border border-white/5 transition-all duration-300">
+                      <div className="flex items-center gap-3 p-2 md:p-2.5 rounded-lg bg-white/[0.01] hover:bg-white/[0.04] border border-white/5 transition-all duration-300">
                         <div className="w-8 h-8 rounded-md bg-white/5 flex items-center justify-center flex-shrink-0">
                           <IconWrapper name="Presentation" size={14} className="text-emerald-400" />
                         </div>
@@ -1169,7 +1180,7 @@ const App = () => {
                         </div>
                       </div>
                       {/* YouTube */}
-                      <div className="flex items-center gap-3 p-2.5 rounded-lg bg-white/[0.01] hover:bg-white/[0.04] border border-white/5 transition-all duration-300">
+                      <div className="flex items-center gap-3 p-2 md:p-2.5 rounded-lg bg-white/[0.01] hover:bg-white/[0.04] border border-white/5 transition-all duration-300">
                         <div className="w-8 h-8 rounded-md bg-white/5 flex items-center justify-center flex-shrink-0">
                           <img src={youtubeLogo} alt="YouTube" className="w-5 h-5 object-contain" />
                         </div>
