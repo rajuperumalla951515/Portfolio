@@ -39,8 +39,8 @@ const ContactPage = () => {
     setStatus(null);
 
     try {
-      // Send to Express Backend (securely stores in Supabase & MongoDB and sends notification)
-      const response = await fetch('https://portfolio-crql.onrender.com/api/contact', {
+      const apiUrl = (import.meta.env.VITE_API_URL || 'https://portfolio-crql.onrender.com').replace(/\/+$/, '');
+      const response = await fetch(`${apiUrl}/api/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData)

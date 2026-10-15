@@ -9,21 +9,127 @@ const supabase = require('./supabaseClient');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+// -------------------------------------------------------------
+// 1. SECURITY & CORS CONFIGURATION
+// -------------------------------------------------------------
+const defaultAllowedOrigins = [
+  'https://www.rajuperumalla.in',
+  'https://rajuperumalla.in',
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://localhost:5000',
+];
 
-// MongoDB Connection (optional backup)
-mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/portfolio')
-  .then(() => console.log('MongoDB Connected successfully'))
-  .catch(err => console.error('MongoDB connection error (Supabase will be primary):', err.message));
+const configuredOrigins = (process.env.ALLOWED_ORIGINS || '')
+  .split(',')
+  .map(o => o.trim())
+  .filter(Boolean);
 
-// Basic Route
-app.get('/api/health', (req, res) => {
-  res.status(200).json({ status: 'OK', message: 'Backend is running with Supabase & MongoDB!' });
+const allowedOrigins = Array.from(new Set([...defaultAllowedOrigins, ...configuredOrigins]));
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow non-browser requests (tools, curl, server-to-server) or matching origins
+    if (!origin || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Cross-Origin Request Blocked by CORS Security Policy'));
+  },
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-admin-key'],
+  credentials: true,
+}));
+
+// Payload size limit to prevent Denial-of-Service via massive payloads
+app.use(express.json({ limit: '50kb' }));
+
+// -------------------------------------------------------------
+// 2. RATE LIMITING MIDDLEWARE (Lightweight in-memory)
+// -------------------------------------------------------------
+const rateLimitMap = new Map();
+const createRateLimiter = ({ windowMs = 60 * 1000, max = 60, message = 'Too many requests, please try again later.' } = {}) => {
+  return (req, res, next) => {
+    const rawIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'unknown';
+    const ip = String(rawIp).split(',')[0].trim();
+    const key = `${req.baseUrl || req.path}:${ip}`;
+    const now = Date.now();
+
+    let record = rateLimitMap.get(key);
+    if (!record || now - record.resetTime > windowMs) {
+      record = { count: 1, resetTime: now };
+      rateLimitMap.set(key, record);
+    } else {
+      record.count += 1;
+    }
+
+    // Prune stale cache if size exceeds 10,000 entries
+    if (rateLimitMap.size > 10000) {
+      for (const [k, v] of rateLimitMap.entries()) {
+        if (now - v.resetTime > windowMs) rateLimitMap.delete(k);
+      }
+    }
+
+    if (record.count > max) {
+      res.setHeader('Retry-After', Math.ceil((windowMs - (now - record.resetTime)) / 1000));
+      return res.status(429).json({ success: false, message });
+    }
+    next();
+  };
+};
+
+const contactLimiter = createRateLimiter({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: 'Too many messages submitted from this IP. Please wait 15 minutes before submitting again.'
 });
 
-// Decode Platform API Endpoints (Supabase-backed)
+const clickLimiter = createRateLimiter({
+  windowMs: 60 * 1000,
+  max: 120,
+  message: 'Rate limit exceeded for outbound tracking.'
+});
+
+const redirectLimiter = createRateLimiter({
+  windowMs: 60 * 1000,
+  max: 180,
+  message: 'Too many redirects requested. Please wait a moment.'
+});
+
+// -------------------------------------------------------------
+// 3. ADMIN AUTHORIZATION MIDDLEWARE
+// -------------------------------------------------------------
+const requireAdminAuth = (req, res, next) => {
+  const adminKey = process.env.ADMIN_API_KEY;
+  const providedKey = req.headers['x-admin-key'] || req.query.admin_key;
+
+  if (!adminKey || !providedKey || providedKey !== adminKey) {
+    return res.status(401).json({
+      success: false,
+      message: 'Unauthorized: Administrative authentication required to view internal inquiries.'
+    });
+  }
+  next();
+};
+
+// -------------------------------------------------------------
+// 4. DATABASE CONNECTIONS
+// -------------------------------------------------------------
+if (process.env.MONGO_URI) {
+  mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log('MongoDB Connected successfully'))
+    .catch(err => console.error('MongoDB connection error (Supabase is primary):', err.message));
+}
+
+// -------------------------------------------------------------
+// 5. API ROUTES
+// -------------------------------------------------------------
+
+// Basic Health Route
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'OK', message: 'Backend is running securely with Supabase.' });
+});
+
+// Decode Categories API
 app.get('/api/decode/categories', async (req, res) => {
   try {
     const { data, error } = await supabase
@@ -33,14 +139,17 @@ app.get('/api/decode/categories', async (req, res) => {
       .order('display_order', { ascending: true });
 
     if (error) {
-      return res.status(500).json({ success: false, error: error.message });
+      console.error('Supabase categories error:', error.message);
+      return res.status(500).json({ success: false, message: 'Failed to retrieve categories.' });
     }
     res.json({ success: true, data: data || [] });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    console.error('Categories API error:', err);
+    res.status(500).json({ success: false, message: 'Internal server error.' });
   }
 });
 
+// Decode Resources Query API
 app.get('/api/decode/resources', async (req, res) => {
   try {
     const { category, search, difficulty, page = 1, limit = 20 } = req.query;
@@ -50,66 +159,80 @@ app.get('/api/decode/resources', async (req, res) => {
       .eq('published', true);
 
     if (category && category !== 'all') {
-      query = query.eq('category_slug', category);
+      query = query.eq('category_slug', String(category).trim());
     }
     if (difficulty && difficulty !== 'All') {
-      query = query.eq('difficulty', difficulty);
+      query = query.eq('difficulty', String(difficulty).trim());
     }
-    if (search && search.trim()) {
-      const q = search.trim();
-      query = query.or(`title.ilike.%${q}%,summary.ilike.%${q}%`);
+    if (search && typeof search === 'string' && search.trim()) {
+      // Strip PostgREST syntax injection characters (, ( ) %)
+      const sanitizedQ = search.replace(/[,()%]/g, '').trim();
+      if (sanitizedQ) {
+        query = query.or(`title.ilike.%${sanitizedQ}%,summary.ilike.%${sanitizedQ}%`);
+      }
     }
 
     query = query.order('published_date', { ascending: false });
 
-    const from = (parseInt(page, 10) - 1) * parseInt(limit, 10);
-    const to = from + parseInt(limit, 10) - 1;
+    const safePage = Math.max(1, parseInt(page, 10) || 1);
+    const safeLimit = Math.min(100, Math.max(1, parseInt(limit, 10) || 20));
+    const from = (safePage - 1) * safeLimit;
+    const to = from + safeLimit - 1;
     query = query.range(from, to);
 
     const { data, count, error } = await query;
     if (error) {
-      return res.status(500).json({ success: false, error: error.message });
+      console.error('Supabase resources error:', error.message);
+      return res.status(500).json({ success: false, message: 'Failed to query resources.' });
     }
 
     res.json({
       success: true,
       data: data || [],
       total: count || 0,
-      page: parseInt(page, 10),
-      totalPages: Math.ceil((count || 0) / parseInt(limit, 10)),
+      page: safePage,
+      totalPages: Math.ceil((count || 0) / safeLimit),
     });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    console.error('Resources API error:', err);
+    res.status(500).json({ success: false, message: 'Internal server error.' });
   }
 });
 
+// Decode Single Resource API
 app.get('/api/decode/resources/:categorySlug/:slug', async (req, res) => {
   try {
     const { categorySlug, slug } = req.params;
-    const { data, error } = await supabase
+    let query = supabase
       .from('decode_resources')
       .select('*')
-      .eq('category_slug', categorySlug)
       .eq('slug', slug)
-      .eq('published', true)
-      .maybeSingle();
+      .eq('published', true);
+
+    if (categorySlug && categorySlug !== 'all') {
+      query = query.eq('category_slug', categorySlug);
+    }
+
+    const { data, error } = await query.maybeSingle();
 
     if (error) {
-      return res.status(500).json({ success: false, error: error.message });
+      console.error('Supabase single resource error:', error.message);
+      return res.status(500).json({ success: false, message: 'Failed to load resource.' });
     }
     if (!data) {
-      return res.status(404).json({ success: false, message: 'Resource not found' });
+      return res.status(404).json({ success: false, message: 'Resource not found.' });
     }
     res.json({ success: true, data });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    console.error('Single resource API error:', err);
+    res.status(500).json({ success: false, message: 'Internal server error.' });
   }
 });
 
 // -------------------------------------------------------------
 // SECURE FIRST-PARTY OUTBOUND REDIRECT & ATTRIBUTION SYSTEM
 // -------------------------------------------------------------
-app.get('/go/:slug', async (req, res) => {
+app.get('/go/:slug', redirectLimiter, async (req, res) => {
   try {
     const { slug } = req.params;
     if (!slug) {
@@ -124,9 +247,9 @@ app.get('/go/:slug', async (req, res) => {
       .eq('published', true)
       .maybeSingle();
 
-    let destinationUrl = resource?.opportunity_data?.officialUrl || resource?.official_url || null;
+    let destinationUrl = resource?.opportunity_data?.officialUrl || resource?.opportunity_data?.official_url || resource?.official_url || null;
 
-    // Fallback dictionary for verified destinations
+    // Verified destinations allowlist dictionary
     if (!destinationUrl) {
       const fallbackDestinations = {
         'clearview-healthcare-data-analyst-advanced-analytics': 'https://www.clearviewhcp.com/careers/',
@@ -139,6 +262,7 @@ app.get('/go/:slug', async (req, res) => {
         'fastapi-production-handbook': 'https://fastapi.tiangolo.com/',
         'full-stack-system-design-primer': 'https://github.com/donnemartin/system-design-primer',
         'docker-containerization-guide': 'https://docs.docker.com/',
+        'github-student-developer-pack-guide': 'https://education.github.com/pack',
       };
       destinationUrl = fallbackDestinations[slug];
     }
@@ -147,12 +271,15 @@ app.get('/go/:slug', async (req, res) => {
       return res.redirect(302, 'https://www.rajuperumalla.in/decode');
     }
 
-    // 2. Validate destination URL strictly (Prevent open redirect)
+    // 2. Validate destination URL strictly (Strict protocol whitelist)
     let parsedUrl;
     try {
       parsedUrl = new URL(destinationUrl);
       if (!['https:', 'http:'].includes(parsedUrl.protocol)) {
-        return res.status(400).send('Invalid destination protocol');
+        return res.status(400).send('Invalid destination protocol.');
+      }
+      if (parsedUrl.hostname === 'localhost' || parsedUrl.hostname === '127.0.0.1') {
+        return res.redirect(302, 'https://www.rajuperumalla.in/decode');
       }
     } catch {
       return res.redirect(302, 'https://www.rajuperumalla.in/decode');
@@ -172,8 +299,8 @@ app.get('/go/:slug', async (req, res) => {
     const finalUrl = parsedUrl.toString();
     const domain = parsedUrl.hostname.replace(/^www\./, '');
 
-    // 4. Record outbound click asynchronously in Supabase
-    const referrer = req.get('referrer') || req.get('referer') || null;
+    // 4. Record outbound click asynchronously in Supabase (privacy-conscious)
+    const rawReferrer = req.get('referrer') || req.get('referer') || null;
     const isMobile = /Mobi|Android/i.test(req.get('user-agent') || '');
 
     supabase.from('decode_outbound_clicks').insert([{
@@ -182,7 +309,7 @@ app.get('/go/:slug', async (req, res) => {
       resource_title: resource?.title || slug,
       destination_domain: domain,
       destination_url: destinationUrl,
-      referrer,
+      referrer: rawReferrer ? String(rawReferrer).slice(0, 500) : null,
       utm_source: 'rajuperumalla.in',
       utm_medium: 'referral',
       utm_campaign: 'decode',
@@ -193,34 +320,39 @@ app.get('/go/:slug', async (req, res) => {
     res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     return res.redirect(302, finalUrl);
   } catch (err) {
+    console.error('Redirect handler error:', err);
     return res.redirect(302, 'https://www.rajuperumalla.in/decode');
   }
 });
 
 // Outbound Click Tracking API
-app.post('/api/decode/track-click', async (req, res) => {
+app.post('/api/decode/track-click', clickLimiter, async (req, res) => {
   try {
-    const { resource_slug, category_slug, resource_title, destination_url, referrer } = req.body;
+    const { resource_slug, category_slug, resource_title, destination_url, referrer } = req.body || {};
     if (!resource_slug || !destination_url) {
       return res.status(400).json({ success: false, message: 'Missing required click parameters.' });
     }
 
     let domain = '';
     try {
-      domain = new URL(destination_url).hostname.replace(/^www\./, '');
+      const parsed = new URL(destination_url);
+      if (!['https:', 'http:'].includes(parsed.protocol)) {
+        return res.status(400).json({ success: false, message: 'Invalid destination protocol.' });
+      }
+      domain = parsed.hostname.replace(/^www\./, '');
     } catch {
-      domain = 'external';
+      return res.status(400).json({ success: false, message: 'Invalid destination URL format.' });
     }
 
     const isMobile = /Mobi|Android/i.test(req.get('user-agent') || '');
 
     const { error } = await supabase.from('decode_outbound_clicks').insert([{
-      resource_slug,
-      category_slug: category_slug || 'general',
-      resource_title: resource_title || resource_slug,
+      resource_slug: String(resource_slug).slice(0, 200),
+      category_slug: String(category_slug || 'general').slice(0, 100),
+      resource_title: String(resource_title || resource_slug).slice(0, 200),
       destination_domain: domain,
-      destination_url,
-      referrer: referrer || req.get('referrer') || null,
+      destination_url: String(destination_url).slice(0, 1000),
+      referrer: referrer ? String(referrer).slice(0, 500) : (req.get('referrer') || null),
       utm_source: 'rajuperumalla.in',
       utm_medium: 'referral',
       utm_campaign: 'decode',
@@ -228,12 +360,14 @@ app.post('/api/decode/track-click', async (req, res) => {
     }]);
 
     if (error) {
-      return res.status(500).json({ success: false, error: error.message });
+      console.error('Supabase click track error:', error.message);
+      return res.status(500).json({ success: false, message: 'Failed to record click.' });
     }
 
     res.json({ success: true, message: 'Outbound click recorded successfully.' });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    console.error('Track click API error:', err);
+    res.status(500).json({ success: false, message: 'Internal server error.' });
   }
 });
 
@@ -247,7 +381,8 @@ app.get('/api/decode/analytics/outbound', async (req, res) => {
       .limit(200);
 
     if (error) {
-      return res.status(500).json({ success: false, error: error.message });
+      console.error('Supabase analytics query error:', error.message);
+      return res.status(500).json({ success: false, message: 'Failed to load analytics data.' });
     }
 
     const byCategory = {};
@@ -271,82 +406,99 @@ app.get('/api/decode/analytics/outbound', async (req, res) => {
       recentClicks: (data || []).slice(0, 10),
     });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    console.error('Analytics aggregation error:', err);
+    res.status(500).json({ success: false, message: 'Internal server error.' });
   }
 });
 
-// Contact Route (stores to Supabase & MongoDB + sends email)
-app.post('/api/contact', async (req, res) => {
+// Contact Route (Input Sanitization + Validation + Rate Limiting)
+app.post('/api/contact', contactLimiter, async (req, res) => {
   try {
-    const { name, email, message } = req.body;
+    const { name, email, message } = req.body || {};
 
-    // Basic validation
+    // 1. Presence Validation
     if (!name || !email || !message) {
-      return res.status(400).json({ success: false, message: 'Please provide all required fields.' });
+      return res.status(400).json({ success: false, message: 'All fields (name, email, message) are required.' });
     }
 
-    // 1. Store in Supabase Database (Primary)
+    // 2. Length Bounds & Sanitization
+    const cleanName = String(name).trim().slice(0, 100);
+    const cleanEmail = String(email).trim().toLowerCase().slice(0, 150);
+    const cleanMessage = String(message).trim().slice(0, 3000);
+
+    if (cleanName.length < 2) {
+      return res.status(400).json({ success: false, message: 'Name must be at least 2 characters.' });
+    }
+
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+$/;
+    if (!emailRegex.test(cleanEmail)) {
+      return res.status(400).json({ success: false, message: 'Please provide a valid email address.' });
+    }
+
+    if (cleanMessage.length < 10) {
+      return res.status(400).json({ success: false, message: 'Message must be at least 10 characters.' });
+    }
+
+    // 3. Store in Supabase Database (Primary)
     let supabaseSaved = false;
     try {
-      const { data: sbData, error: sbError } = await supabase
+      const { error: sbError } = await supabase
         .from('contact_messages')
-        .insert([{ name, email, message }]);
+        .insert([{ name: cleanName, email: cleanEmail, message: cleanMessage }]);
 
       if (sbError) {
         console.error('Supabase contact_messages insert error:', sbError.message);
       } else {
         supabaseSaved = true;
-        console.log('Contact message stored in Supabase successfully!');
       }
     } catch (sbErr) {
       console.error('Supabase execution error:', sbErr.message);
     }
 
-    // 2. Backup Store in MongoDB (if connected)
+    // 4. Backup Store in MongoDB (if connected)
     try {
       if (mongoose.connection.readyState === 1) {
-        const newContact = new Contact({ name, email, message });
+        const newContact = new Contact({ name: cleanName, email: cleanEmail, message: cleanMessage });
         await newContact.save();
-        console.log('Contact message backed up to MongoDB successfully!');
       }
     } catch (mongoErr) {
       console.warn('MongoDB backup save skipped:', mongoErr.message);
     }
 
-    const now = new Date();
-    const timestamp = now.toLocaleString('en-IN', { dateStyle: 'long', timeStyle: 'short', timeZone: 'Asia/Kolkata' });
-    const initials = name.trim().split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+    // 5. EmailJS API Notification (if credentials configured)
+    if (process.env.EMAILJS_SERVICE_ID && process.env.EMAILJS_TEMPLATE_ID) {
+      const now = new Date();
+      const timestamp = now.toLocaleString('en-IN', { dateStyle: 'long', timeStyle: 'short', timeZone: 'Asia/Kolkata' });
+      const initials = cleanName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
 
-    // 3. EmailJS API Notification
-    const emailJsPayload = {
-      service_id: process.env.EMAILJS_SERVICE_ID,
-      template_id: process.env.EMAILJS_TEMPLATE_ID,
-      user_id: process.env.EMAILJS_PUBLIC_KEY,
-      accessToken: process.env.EMAILJS_PRIVATE_KEY,
-      template_params: {
-        from_name: name,
-        reply_to: email,
-        message: message,
-        timestamp: timestamp,
-        initials: initials
+      const emailJsPayload = {
+        service_id: process.env.EMAILJS_SERVICE_ID,
+        template_id: process.env.EMAILJS_TEMPLATE_ID,
+        user_id: process.env.EMAILJS_PUBLIC_KEY,
+        accessToken: process.env.EMAILJS_PRIVATE_KEY,
+        template_params: {
+          from_name: cleanName,
+          reply_to: cleanEmail,
+          message: cleanMessage,
+          timestamp: timestamp,
+          initials: initials
+        }
+      };
+
+      try {
+        const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(emailJsPayload)
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('EmailJS Error:', errorText);
+        }
+      } catch (emailError) {
+        console.error('Failed to contact EmailJS API:', emailError.message);
       }
-    };
-
-    try {
-      const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(emailJsPayload)
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('EmailJS Error:', errorText);
-      } else {
-        console.log('Email sent via EmailJS successfully!');
-      }
-    } catch (emailError) {
-      console.error('Failed to contact EmailJS API:', emailError.message);
     }
 
     res.status(201).json({
@@ -360,18 +512,22 @@ app.post('/api/contact', async (req, res) => {
   }
 });
 
-// GET /api/contacts - Retrieve all messages received
-app.get('/api/contacts', async (req, res) => {
+// GET /api/contacts - Protected Administrative Route
+app.get('/api/contacts', requireAdminAuth, async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('contact_messages')
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (error) throw error;
+    if (error) {
+      console.error('Supabase contact retrieval error:', error.message);
+      return res.status(500).json({ success: false, message: 'Failed to retrieve messages.' });
+    }
     res.json({ success: true, count: data?.length || 0, data });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    console.error('Admin contacts error:', error);
+    res.status(500).json({ success: false, message: 'Internal server error.' });
   }
 });
 
@@ -384,10 +540,14 @@ app.get('/api/profile', async (req, res) => {
       .limit(1)
       .maybeSingle();
 
-    if (error) throw error;
+    if (error) {
+      console.error('Profile fetch error:', error.message);
+      return res.status(500).json({ success: false, message: 'Failed to retrieve profile.' });
+    }
     res.json({ success: true, data });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    console.error('Profile API error:', error);
+    res.status(500).json({ success: false, message: 'Internal server error.' });
   }
 });
 
@@ -399,10 +559,14 @@ app.get('/api/projects', async (req, res) => {
       .select('*')
       .order('display_order', { ascending: true });
 
-    if (error) throw error;
+    if (error) {
+      console.error('Projects fetch error:', error.message);
+      return res.status(500).json({ success: false, message: 'Failed to retrieve projects.' });
+    }
     res.json({ success: true, count: data?.length || 0, data });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    console.error('Projects API error:', error);
+    res.status(500).json({ success: false, message: 'Internal server error.' });
   }
 });
 
@@ -414,10 +578,14 @@ app.get('/api/skills', async (req, res) => {
       .select('*')
       .order('category', { ascending: true });
 
-    if (error) throw error;
+    if (error) {
+      console.error('Skills fetch error:', error.message);
+      return res.status(500).json({ success: false, message: 'Failed to retrieve skills.' });
+    }
     res.json({ success: true, count: data?.length || 0, data });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    console.error('Skills API error:', error);
+    res.status(500).json({ success: false, message: 'Internal server error.' });
   }
 });
 
@@ -429,10 +597,14 @@ app.get('/api/achievements', async (req, res) => {
       .select('*')
       .order('display_order', { ascending: true });
 
-    if (error) throw error;
+    if (error) {
+      console.error('Achievements fetch error:', error.message);
+      return res.status(500).json({ success: false, message: 'Failed to retrieve achievements.' });
+    }
     res.json({ success: true, count: data?.length || 0, data });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    console.error('Achievements API error:', error);
+    res.status(500).json({ success: false, message: 'Internal server error.' });
   }
 });
 
@@ -444,14 +616,18 @@ app.get('/api/assets', async (req, res) => {
       .select('*')
       .order('category', { ascending: true });
 
-    if (error) throw error;
+    if (error) {
+      console.error('Assets fetch error:', error.message);
+      return res.status(500).json({ success: false, message: 'Failed to retrieve assets.' });
+    }
     res.json({ success: true, count: data?.length || 0, data });
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    console.error('Assets API error:', error);
+    res.status(500).json({ success: false, message: 'Internal server error.' });
   }
 });
 
 // Start Server
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server running securely on port ${PORT}`);
 });

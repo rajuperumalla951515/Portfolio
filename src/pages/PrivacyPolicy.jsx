@@ -100,22 +100,42 @@ const PrivacyPolicy = () => {
 
           <section className="space-y-3">
             <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-              4. Third-Party Service Providers
+              4. Third-Party Service Providers & Cloud Infrastructure
             </h2>
             <p>
-              We utilize trusted cloud infrastructure to maintain and deploy this platform:
+              We utilize trusted cloud infrastructure to maintain, deploy, and secure this platform:
             </p>
             <ul className="list-disc pl-6 space-y-2 text-white/70">
-              <li><strong>Hosting & Edge Delivery:</strong> Vercel Inc. (DNS, SSL, static edge asset caching).</li>
-              <li><strong>Database Services:</strong> Supabase Inc. (PostgreSQL) and MongoDB Atlas (encrypted cloud database).</li>
-              <li><strong>Notification Services:</strong> EmailJS (secure transmission of contact form notifications).</li>
-              <li><strong>Embedded Content:</strong> YouTube (technical video tutorials). Playing embedded videos may allow YouTube to place functional cookies on your browser.</li>
+              <li><strong>Hosting & Edge Delivery:</strong> Cloudflare Inc. (DNS, SSL/TLS, edge computing, and global static asset delivery).</li>
+              <li><strong>Database Services:</strong> Supabase Inc. (PostgreSQL with Row Level Security) and MongoDB Atlas (encrypted cloud database).</li>
+              <li><strong>Notification Services:</strong> EmailJS (secure relay of contact form messages).</li>
+              <li><strong>Embedded Content:</strong> YouTube (technical video demonstrations). Playing embedded videos may allow YouTube to place functional cookies on your browser.</li>
             </ul>
           </section>
 
           <section className="space-y-3">
             <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-              5. Your Rights & Data Protection (GDPR / CCPA)
+              5. Decode Resource Directory & Outbound Attribution
+            </h2>
+            <p>
+              Within the <strong>Decode</strong> directory, visitors can discover student resources, hackathons, job listings, and documentation. When you click an external link:
+            </p>
+            <ul className="list-disc pl-6 space-y-2 text-white/70">
+              <li>
+                <strong>First-Party Redirects (/go/:slug):</strong> Navigation is routed through our domain to verify destination safety and prevent malicious phishing links.
+              </li>
+              <li>
+                <strong>Anonymous Outbound Telemetry:</strong> We record aggregate statistics (resource category, destination domain, timestamp, device type). We strictly do NOT collect personal data, do NOT fingerprint browsers, and do NOT track user behavior on third-party websites.
+              </li>
+              <li>
+                <strong>Referral & Commercial Attribution:</strong> Where legitimate affiliate or educational partnership programs exist, attribution parameters may be attached. Links with commercial relationships use standard <code>rel="sponsored"</code> or <code>rel="noopener noreferrer"</code> attributes.
+              </li>
+            </ul>
+          </section>
+
+          <section className="space-y-3">
+            <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
+              6. Your Rights & Data Protection (GDPR / CCPA)
             </h2>
             <p>
               Depending on your jurisdiction, you may have rights under data privacy laws (such as the General Data Protection Regulation or California Consumer Privacy Act) to:
@@ -132,7 +152,7 @@ const PrivacyPolicy = () => {
 
           <section className="space-y-3">
             <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-              6. Security Safeguards
+              7. Security Safeguards
             </h2>
             <p>
               We enforce modern security best practices, including TLS/HTTPS encryption across our entire domain, strictly parameterized database queries, and environment variable isolation for all API keys and secrets.
@@ -141,7 +161,7 @@ const PrivacyPolicy = () => {
 
           <section className="space-y-3">
             <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-              7. Contact Information
+              8. Contact Information
             </h2>
             <p>
               If you have any questions, concerns, or requests regarding this Privacy Policy or your data, please contact the website administrator directly:

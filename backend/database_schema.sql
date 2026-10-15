@@ -130,10 +130,10 @@ ON contact_messages FOR INSERT
 TO public 
 WITH CHECK (true);
 
--- Contact Messages: Allow reading messages (portfolio owner & backend)
-CREATE POLICY "Allow select on contact_messages" 
+-- Contact Messages: Confidential - only backend service_role can read messages
+CREATE POLICY "Allow service_role select on contact_messages" 
 ON contact_messages FOR SELECT 
-TO public 
+TO service_role 
 USING (true);
 
 -- Public Read Policies for portfolio data

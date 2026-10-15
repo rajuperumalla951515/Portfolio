@@ -24,7 +24,16 @@ dist-ssr
 *.sw?
 
 .env
-.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*.local
 *.env
-backend/.env*
+backend/.env
+backend/.env.*
 backend/test-email.js
+
+# Explicitly allow safe templates
+!.env.example
+!backend/.env.example
