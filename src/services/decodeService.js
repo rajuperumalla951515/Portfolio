@@ -1,4 +1,4 @@
-import { supabase } from '../supabaseClient';
+import { supabase } from '../supabaseClient.js';
 import {
   decodeCategories as fallbackCategories,
   decodeResources as fallbackResources,
@@ -9,7 +9,7 @@ import {
   isJobExpired,
   getBatchLabel,
   filterActiveJobs,
-} from '../data/decodeData';
+} from '../data/decodeData.js';
 
 export const decodeService = {
   /**
@@ -92,7 +92,8 @@ export const decodeService = {
   },
 
   /**
-   * Fetch resources with server-side filtering, searching, and pagination
+   * Fetch resources with server-side filtering, searching, and pagination.
+   * Seamlessly combines live Supabase records with local curated resources so no job is lost.
    */
   async getResources({
     categorySlug = null,
@@ -107,126 +108,160 @@ export const decodeService = {
     includeExpired = false,
   } = {}) {
     try {
-      let req = supabase
-        .from('decode_resources')
-        .select('*', { count: 'exact' })
-        .eq('published', true);
+      let dbRows = [];
+      let dbError = null;
 
-      if (categorySlug && categorySlug !== 'all') {
-        req = req.eq('category_slug', categorySlug);
-      }
+      try {
+        let req = supabase
+          .from('decode_resources')
+          .select('*')
+          .eq('published', true);
 
-      if (difficulty && difficulty !== 'All') {
-        req = req.eq('difficulty', difficulty);
-      }
-
-      if (query && query.trim()) {
-        const cleanQ = query.trim();
-        req = req.or(`title.ilike.%${cleanQ}%,summary.ilike.%${cleanQ}%`);
-      }
-
-      req = req.order('published_date', { ascending: false });
-
-      const from = (page - 1) * limit;
-      const to = from + limit - 1;
-      req = req.range(from, to);
-
-      const { data, count, error } = await req;
-
-      if (!error && data && data.length > 0) {
-        let mapped = data.map((r) => {
-          const fallback = getFallbackResource(r.category_slug, r.slug);
-          const rawContent = r.content || fallback?.content || null;
-          const cleanContent = rawContent
-            ? String(rawContent).replace(/\\r\\n/g, '\n').replace(/\\n/g, '\n').replace(/\\t/g, '  ')
-            : null;
-          const rawSummary = r.summary || fallback?.summary || '';
-          const cleanSummary = String(rawSummary).replace(/\\r\\n/g, '\n').replace(/\\n/g, '\n');
-
-          const eligibleBatches = r.eligible_batches || fallback?.eligibleBatches || [];
-          const expired = isJobExpired({ ...r, category: r.category_slug });
-
-          return {
-            id: r.id || r.slug,
-            slug: r.slug,
-            category: r.category_slug,
-            title: r.title,
-            summary: cleanSummary,
-            content: cleanContent,
-            difficulty: r.difficulty,
-            readTime: r.read_time,
-            tags: r.tags || [],
-            author: r.author || 'Raju Perumalla',
-            publishedDate: r.published_date,
-            updatedDate: r.updated_date,
-            logoKey: r.logo_key || fallback?.logoKey || null,
-            sourceName: r.source_name || fallback?.sourceName || r.opportunity_data?.organization || null,
-            sourceLocation: r.source_location || fallback?.sourceLocation || null,
-            actionText: r.action_text || fallback?.actionText || 'View resource →',
-            deadlineText: r.deadline_text || fallback?.deadlineText || r.opportunity_data?.deadline || null,
-            status: r.status || (expired ? 'expired' : 'active'),
-            isExpired: expired,
-            applicationDeadline: r.application_deadline || fallback?.applicationDeadline,
-            eligibleBatches,
-            batchLabel: getBatchLabel(eligibleBatches),
-            opportunityType: r.opportunity_type || fallback?.opportunityType,
-            workArrangement: r.work_arrangement || fallback?.workArrangement,
-            stipendAmount: r.stipend_amount || fallback?.stipendAmount,
-            opportunity: r.opportunity_data || fallback?.opportunity,
-            projectSpec: r.project_spec,
-            referenceInfo: r.reference_data,
-            isFeatured: r.is_featured,
-          };
-        });
-
-        // Filter out expired jobs from active category feed
-        if (categorySlug === 'jobs' && !includeExpired) {
-          mapped = mapped.filter((r) => !r.isExpired);
+        if (categorySlug && categorySlug !== 'all') {
+          req = req.eq('category_slug', categorySlug);
         }
 
-        // Batch filter
-        if (categorySlug === 'jobs' && batch && batch !== 'all') {
-          const bYear = parseInt(batch, 10);
-          mapped = mapped.filter((r) => Array.isArray(r.eligibleBatches) && r.eligibleBatches.includes(bYear));
+        const { data, error } = await req;
+        if (!error && data) {
+          dbRows = data;
+        } else if (error) {
+          dbError = error.message;
         }
+      } catch (e) {
+        dbError = e.message;
+      }
+
+      // 1. Map Supabase records
+      const dbSlugs = new Set(dbRows.map((r) => r.slug));
+      const mappedDb = dbRows.map((r) => {
+        const fallback = getFallbackResource(r.category_slug, r.slug);
+        const rawContent = r.content || fallback?.content || null;
+        const cleanContent = rawContent
+          ? String(rawContent).replace(/\\r\\n/g, '\n').replace(/\\n/g, '\n').replace(/\\t/g, '  ')
+          : null;
+        const rawSummary = r.summary || fallback?.summary || '';
+        const cleanSummary = String(rawSummary).replace(/\\r\\n/g, '\n').replace(/\\n/g, '\n');
+
+        const eligibleBatches = r.eligible_batches || fallback?.eligibleBatches || [];
+        const expired = isJobExpired({ ...r, category: r.category_slug });
 
         return {
-          data: mapped,
-          total: count || mapped.length,
-          page,
-          totalPages: Math.ceil((count || mapped.length) / limit),
-          isLiveDb: true,
-          error: null,
+          id: r.id || r.slug,
+          slug: r.slug,
+          category: r.category_slug,
+          title: r.title,
+          summary: cleanSummary,
+          content: cleanContent,
+          difficulty: r.difficulty,
+          readTime: r.read_time,
+          tags: r.tags || fallback?.tags || [],
+          author: r.author || 'Raju Perumalla',
+          publishedDate: r.published_date || fallback?.publishedDate,
+          updatedDate: r.updated_date || fallback?.updatedDate,
+          logoKey: r.logo_key || fallback?.logoKey || null,
+          sourceName: r.source_name || fallback?.sourceName || r.opportunity_data?.organization || null,
+          sourceLocation: r.source_location || fallback?.sourceLocation || null,
+          actionText: r.action_text || fallback?.actionText || 'View resource →',
+          deadlineText: r.deadline_text || fallback?.deadlineText || r.opportunity_data?.deadline || null,
+          status: r.status || (expired ? 'expired' : 'active'),
+          isExpired: expired,
+          applicationDeadline: r.application_deadline || fallback?.applicationDeadline,
+          eligibleBatches,
+          batchLabel: getBatchLabel(eligibleBatches),
+          opportunityType: r.opportunity_type || fallback?.opportunityType,
+          workArrangement: r.work_arrangement || fallback?.workArrangement,
+          stipendAmount: r.stipend_amount || fallback?.stipendAmount,
+          opportunity: r.opportunity_data || fallback?.opportunity,
+          projectSpec: r.project_spec || fallback?.projectSpec,
+          referenceInfo: r.reference_data || fallback?.referenceInfo,
+          isFeatured: r.is_featured || fallback?.isFeatured,
         };
+      });
+
+      // 2. Collect fallback resources not already provided by Supabase
+      const missingFallbacks = fallbackResources.filter((fb) => {
+        if (categorySlug && categorySlug !== 'all' && fb.category !== categorySlug) {
+          return false;
+        }
+        return !dbSlugs.has(fb.slug);
+      }).map((fb) => {
+        const expired = isJobExpired(fb);
+        return {
+          ...fb,
+          isExpired: expired,
+          status: fb.status || (expired ? 'expired' : 'active'),
+          batchLabel: getBatchLabel(fb.eligibleBatches || []),
+        };
+      });
+
+      let allItems = [...mappedDb, ...missingFallbacks];
+
+      // 3. Search query filter
+      if (query && query.trim()) {
+        const cleanQ = query.trim().toLowerCase();
+        allItems = allItems.filter((r) => {
+          const t = (r.title || '').toLowerCase();
+          const s = (r.summary || '').toLowerCase();
+          const org = (r.sourceName || r.opportunity?.organization || '').toLowerCase();
+          const tags = (r.tags || []).join(' ').toLowerCase();
+          return t.includes(cleanQ) || s.includes(cleanQ) || org.includes(cleanQ) || tags.includes(cleanQ);
+        });
       }
 
-      // Fallback search / jobs filter
-      let fallbackData = [];
+      // 4. Difficulty filter
+      if (difficulty && difficulty !== 'All') {
+        allItems = allItems.filter((r) => r.difficulty === difficulty);
+      }
+
+      // 5. Jobs-specific filters
       if (categorySlug === 'jobs') {
-        fallbackData = filterActiveJobs(fallbackResources, {
-          batch,
-          type: opportunityType,
-          mode: workArrangement,
-          stipend,
-          query,
-          includeExpired,
-        });
-      } else {
-        fallbackData = searchFallback(query, categorySlug || 'all');
-        if (difficulty !== 'All') {
-          fallbackData = fallbackData.filter((r) => r.difficulty === difficulty);
+        if (!includeExpired) {
+          allItems = allItems.filter((r) => !r.isExpired);
+        }
+        if (batch && batch !== 'all') {
+          const bYear = parseInt(batch, 10);
+          allItems = allItems.filter((r) => Array.isArray(r.eligibleBatches) && r.eligibleBatches.includes(bYear));
+        }
+        if (opportunityType && opportunityType !== 'all') {
+          const targetType = opportunityType.toLowerCase();
+          allItems = allItems.filter((r) => {
+            const oppType = (r.opportunityType || r.opportunity?.jobType || '').toLowerCase();
+            return oppType.includes(targetType);
+          });
+        }
+        if (workArrangement && workArrangement !== 'all') {
+          const targetMode = workArrangement.toLowerCase();
+          allItems = allItems.filter((r) => {
+            const mode = (r.workArrangement || r.opportunity?.workMode || '').toLowerCase();
+            return mode.includes(targetMode);
+          });
+        }
+        if (stipend === 'paid') {
+          allItems = allItems.filter((r) => {
+            const st = (r.stipendAmount || r.opportunity?.stipend || '').toLowerCase();
+            return !st.includes('unpaid') && !st.includes('voluntary');
+          });
         }
       }
 
-      const paginated = fallbackData.slice((page - 1) * limit, page * limit);
+      // 6. Sort newest first by publishedDate
+      allItems.sort((a, b) => {
+        const dateA = new Date(a.publishedDate || a.published_date || 0);
+        const dateB = new Date(b.publishedDate || b.published_date || 0);
+        return dateB - dateA;
+      });
+
+      // 7. Paginate
+      const from = (page - 1) * limit;
+      const paginated = allItems.slice(from, from + limit);
 
       return {
         data: paginated,
-        total: fallbackData.length,
+        total: allItems.length,
         page,
-        totalPages: Math.ceil(fallbackData.length / limit),
-        isLiveDb: false,
-        error: error ? error.message : null,
+        totalPages: Math.ceil(allItems.length / limit) || 1,
+        isLiveDb: dbRows.length > 0,
+        error: dbError,
       };
     } catch (err) {
       const fallbackData = categorySlug === 'jobs'
