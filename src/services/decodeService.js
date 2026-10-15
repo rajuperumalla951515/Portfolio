@@ -209,13 +209,24 @@ export const decodeService = {
    */
   async getResourceBySlug(categorySlug, resourceSlug) {
     try {
-      const { data, error } = await supabase
+      const targetSlug = resourceSlug || categorySlug;
+      const targetCategory = resourceSlug ? categorySlug : null;
+
+      if (!targetSlug) {
+        return { data: null, isLiveDb: false, error: 'Missing slug' };
+      }
+
+      let query = supabase
         .from('decode_resources')
         .select('*')
-        .eq('category_slug', categorySlug)
-        .eq('slug', resourceSlug)
-        .eq('published', true)
-        .maybeSingle();
+        .eq('slug', targetSlug)
+        .eq('published', true);
+
+      if (targetCategory && targetCategory !== 'all') {
+        query = query.eq('category_slug', targetCategory);
+      }
+
+      const { data, error } = await query.maybeSingle();
 
       if (!error && data) {
         const fallback = getFallbackResource(data.category_slug, data.slug);
@@ -248,19 +259,22 @@ export const decodeService = {
             sourceLocation: data.source_location || fallback?.sourceLocation || null,
             actionText: data.action_text || fallback?.actionText || 'View resource →',
             deadlineText: data.deadline_text || fallback?.deadlineText || data.opportunity_data?.deadline || null,
-            opportunity: data.opportunity_data,
-            projectSpec: data.project_spec,
-            referenceInfo: data.reference_data,
+            opportunity: data.opportunity_data || fallback?.opportunity || null,
+            projectSpec: data.project_spec || fallback?.projectSpec || null,
+            referenceInfo: data.reference_data || fallback?.referenceInfo || null,
+            officialUrl: data.official_url || fallback?.officialUrl || null,
           },
           isLiveDb: true,
           error: null,
         };
       }
 
-      const fallback = getFallbackResource(categorySlug, resourceSlug);
+      const fallback = getFallbackResource(targetCategory, targetSlug);
       return { data: fallback || null, isLiveDb: false, error: error ? error.message : null };
     } catch (err) {
-      const fallback = getFallbackResource(categorySlug, resourceSlug);
+      const targetSlug = resourceSlug || categorySlug;
+      const targetCategory = resourceSlug ? categorySlug : null;
+      const fallback = getFallbackResource(targetCategory, targetSlug);
       return { data: fallback || null, isLiveDb: false, error: err.message };
     }
   },

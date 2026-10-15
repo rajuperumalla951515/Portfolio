@@ -1,4 +1,19 @@
-import { supabase } from '../supabaseClient';
+import { supabase } from '../supabaseClient.js';
+import { getFallbackResource } from '../data/decodeData.js';
+
+export const VERIFIED_FALLBACK_DESTINATIONS = {
+  'clearview-healthcare-data-analyst-advanced-analytics': 'https://www.clearviewhcp.com/careers/',
+  'google-summer-of-code-internship-guide': 'https://summerofcode.withgoogle.com/',
+  'microsoft-software-engineering-internship-2026': 'https://careers.microsoft.com/',
+  'lfx-mentorship-open-source-internship': 'https://lfx.linuxfoundation.org/tools/mentorship/',
+  'mlh-fellowship-software-engineering': 'https://fellowship.mlh.io/',
+  'smart-india-hackathon-sih-strategy': 'https://www.sih.gov.in/',
+  'sap-innovation-marathon-guide': 'https://www.sap.com/',
+  'fastapi-production-handbook': 'https://fastapi.tiangolo.com/',
+  'full-stack-system-design-primer': 'https://github.com/donnemartin/system-design-primer',
+  'docker-containerization-guide': 'https://docs.docker.com/',
+  'github-student-developer-pack-guide': 'https://education.github.com/pack',
+};
 
 /**
  * Validates that an outbound URL is safe and strictly uses http/https.
@@ -72,35 +87,72 @@ export const buildAttributedDestinationUrl = (targetUrl, options = {}) => {
 export const resolveExternalDestination = (resource) => {
   if (!resource) return null;
 
-  // 1. Opportunity Official URL (Jobs, Hackathons)
-  if (resource.opportunity?.officialUrl && isValidOutboundUrl(resource.opportunity.officialUrl)) {
-    return resource.opportunity.officialUrl;
+  // If a string (slug) was provided directly
+  let resObj = resource;
+  if (typeof resource === 'string') {
+    resObj = getFallbackResource(null, resource) || { slug: resource };
+  }
+
+  // 1. Opportunity Official URL (Jobs, Hackathons) - camelCase or snake_case
+  const opp = resObj.opportunity || resObj.opportunity_data;
+  if (opp?.officialUrl && isValidOutboundUrl(opp.officialUrl)) {
+    return opp.officialUrl;
+  }
+  if (opp?.official_url && isValidOutboundUrl(opp.official_url)) {
+    return opp.official_url;
   }
 
   // 2. Direct Official URL attribute
-  if (resource.officialUrl && isValidOutboundUrl(resource.officialUrl)) {
-    return resource.officialUrl;
+  if (resObj.officialUrl && isValidOutboundUrl(resObj.officialUrl)) {
+    return resObj.officialUrl;
+  }
+  if (resObj.official_url && isValidOutboundUrl(resObj.official_url)) {
+    return resObj.official_url;
   }
 
   // 3. Project Spec URLs (Final-Year Projects)
-  if (resource.projectSpec?.demoUrl && isValidOutboundUrl(resource.projectSpec.demoUrl)) {
-    return resource.projectSpec.demoUrl;
+  const proj = resObj.projectSpec || resObj.project_spec;
+  if (proj?.demoUrl && isValidOutboundUrl(proj.demoUrl)) {
+    return proj.demoUrl;
   }
-  if (resource.projectSpec?.repoUrl && isValidOutboundUrl(resource.projectSpec.repoUrl)) {
-    return resource.projectSpec.repoUrl;
+  if (proj?.demo_url && isValidOutboundUrl(proj.demo_url)) {
+    return proj.demo_url;
+  }
+  if (proj?.repoUrl && isValidOutboundUrl(proj.repoUrl)) {
+    return proj.repoUrl;
+  }
+  if (proj?.repo_url && isValidOutboundUrl(proj.repo_url)) {
+    return proj.repo_url;
   }
 
   // 4. Reference Data official URL
-  if (resource.referenceInfo?.officialUrl && isValidOutboundUrl(resource.referenceInfo.officialUrl)) {
-    return resource.referenceInfo.officialUrl;
+  const ref = resObj.referenceInfo || resObj.reference_data;
+  if (ref?.officialUrl && isValidOutboundUrl(ref.officialUrl)) {
+    return ref.officialUrl;
+  }
+  if (ref?.official_url && isValidOutboundUrl(ref.official_url)) {
+    return ref.official_url;
   }
 
   // 5. Check markdown content for an official markdown link [Official...](https://...)
-  if (resource.content && typeof resource.content === 'string') {
-    const linkMatch = resource.content.match(/\[(?:Official|Apply|Portal|Website)[^\]]*\]\((https?:\/\/[^\s)]+)\)/i);
+  if (resObj.content && typeof resObj.content === 'string') {
+    const linkMatch = resObj.content.match(
+      /\[(?:Official|Apply|Portal|Website|Documentation|GitHub|Repo|Project)[^\]]*\]\((https?:\/\/[^\s)]+)\)/i
+    );
     if (linkMatch && isValidOutboundUrl(linkMatch[1])) {
       return linkMatch[1];
     }
+
+    const anyLinkMatch = resObj.content.match(/\[[^\]]+\]\((https?:\/\/[^\s)]+)\)/i);
+    if (anyLinkMatch && isValidOutboundUrl(anyLinkMatch[1])) {
+      return anyLinkMatch[1];
+    }
+  }
+
+  // 6. Check verified destinations map by slug
+  const slug = resObj.slug || (typeof resource === 'string' ? resource : null);
+  if (slug && VERIFIED_FALLBACK_DESTINATIONS[slug]) {
+    return VERIFIED_FALLBACK_DESTINATIONS[slug];
   }
 
   return null;

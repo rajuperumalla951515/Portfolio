@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import * as Lucide from 'lucide-react';
 import { decodeService } from '../services/decodeService';
+import { getFallbackResource } from '../data/decodeData';
 import {
   isValidOutboundUrl,
   getCleanDomain,
@@ -41,30 +42,44 @@ export const DecodeRedirectPage = () => {
       }
 
       try {
-        // 1. Resolve resource from service
-        const categorySlug = category || 'all';
-        const res = await decodeService.getResourceBySlug(categorySlug, slug);
-        const resolvedResource = res.data;
-
-        if (isCancelled) return;
-
-        if (!resolvedResource) {
-          setStatus('not_found');
-          return;
+        // 1. Resolve resource by slug (and category if present)
+        let resolvedResource = null;
+        try {
+          const res = await decodeService.getResourceBySlug(category, slug);
+          resolvedResource = res?.data || null;
+        } catch {
+          // ignore error and proceed to local fallback
         }
 
-        setResource(resolvedResource);
+        // 2. Direct fallback resolution if service didn't yield an object
+        if (!resolvedResource) {
+          resolvedResource = getFallbackResource(category, slug);
+        }
 
-        // 2. Resolve destination URL from trusted resource fields
-        const rawDestination = resolveExternalDestination(resolvedResource);
+        // 3. Resolve destination URL from trusted resource fields or verified destination dictionary
+        const rawDestination = resolveExternalDestination(resolvedResource || slug);
 
         if (!rawDestination || !isValidOutboundUrl(rawDestination)) {
+          if (!resolvedResource) {
+            setStatus('not_found');
+            return;
+          }
           setStatus('error');
           setErrorMessage('This resource does not have a verified external destination configured.');
           return;
         }
 
-        // 3. Build attributed URL with preserved params & UTM tags
+        // Ensure we have a resource context for title and analytics
+        const effectiveResource = resolvedResource || {
+          slug,
+          title: slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+          category: category || 'jobs',
+        };
+
+        if (isCancelled) return;
+        setResource(effectiveResource);
+
+        // 4. Build attributed URL with preserved params & UTM tags
         const finalUrl = buildAttributedDestinationUrl(rawDestination, {
           utmSource: 'rajuperumalla.in',
           utmMedium: 'referral',
@@ -76,10 +91,10 @@ export const DecodeRedirectPage = () => {
         setDestinationDomain(domain);
         setStatus('redirecting');
 
-        // 4. Record outbound click asynchronously (non-blocking)
-        recordOutboundClick(resolvedResource, rawDestination);
+        // 5. Record outbound click asynchronously (non-blocking)
+        recordOutboundClick(effectiveResource, rawDestination);
 
-        // 5. Fast redirect via replace()
+        // 6. Fast redirect via replace()
         const timer = setTimeout(() => {
           if (!isCancelled) {
             window.location.replace(finalUrl);

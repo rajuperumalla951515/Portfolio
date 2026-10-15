@@ -1297,10 +1297,23 @@ export const getResourcesByCategory = (categorySlug) => {
 };
 
 export const getResourceBySlug = (categorySlug, slug) => {
-  return decodeResources.find(
-    (res) => res.category === categorySlug && res.slug === slug
+  const targetSlug = slug || categorySlug;
+  const targetCategory = slug ? categorySlug : null;
+
+  if (!targetSlug) return null;
+
+  if (!targetCategory || targetCategory === 'all') {
+    return decodeResources.find((res) => res.slug === targetSlug) || null;
+  }
+
+  return (
+    decodeResources.find((res) => res.category === targetCategory && res.slug === targetSlug) ||
+    decodeResources.find((res) => res.slug === targetSlug) ||
+    null
   );
 };
+
+export const getFallbackResource = getResourceBySlug;
 
 export const getFeaturedResources = () => {
   const featuredIds = [
