@@ -27,6 +27,9 @@ const assert = (condition, description) => {
 // 1. Verify sitemap.xml exists in dist
 assert(fs.existsSync(sitemapPath), 'dist/sitemap.xml exists');
 
+import { blogPosts } from '../src/data/blogData.js';
+import { decodeCategories, decodeResources } from '../src/data/decodeData.js';
+
 const sitemapContent = fs.readFileSync(sitemapPath, 'utf-8');
 
 // 2. Validate XML syntax basics
@@ -35,8 +38,22 @@ assert(sitemapContent.includes('<urlset xmlns="http://www.sitemaps.org/schemas/s
 assert(sitemapContent.endsWith('</urlset>\n') || sitemapContent.endsWith('</urlset>'), 'sitemap.xml closes urlset tag');
 
 // 3. Extract and check URLs
+const expectedRoutes = [
+  'about',
+  'decode',
+  'decode/analytics',
+  'blog',
+  'contact',
+  'privacy-policy',
+  'terms',
+  ...blogPosts.filter(p => !p.draft && p.published !== false).map(p => `blog/${p.slug}`),
+  ...decodeCategories.map(c => `decode/${c.slug}`),
+  ...decodeResources.filter(r => !r.draft && r.published !== false).map(r => `decode/${r.category}/${r.slug}`),
+];
+const expectedTotalUrls = 1 + expectedRoutes.length; // 1 root + sub-routes
+
 const locMatches = [...sitemapContent.matchAll(/<loc>(.*?)<\/loc>/g)].map(m => m[1]);
-assert(locMatches.length === 10, `sitemap contains exactly 10 URLs (found ${locMatches.length})`);
+assert(locMatches.length === expectedTotalUrls, `sitemap contains exactly ${expectedTotalUrls} URLs (found ${locMatches.length})`);
 
 // 4. Duplicate URL check
 const uniqueLocs = new Set(locMatches);
@@ -64,18 +81,6 @@ assert(robotsContent.includes('Sitemap: https://www.rajuperumalla.in/sitemap.xml
 assert(!robotsContent.includes('.env'), 'robots.txt does not leak .env in disallow rules');
 
 // 9. Verify prerendered route HTML files exist with unique metadata
-const expectedRoutes = [
-  'about',
-  'blog',
-  'contact',
-  'privacy-policy',
-  'terms',
-  'blog/building-smartguardian-iot-accident-detection-system',
-  'blog/securing-academic-data-cipherdoc-rsa-encryption',
-  'blog/fastapi-vs-nodejs-scaling-modern-microservices',
-  'blog/getting-started-with-sap-btp-abap-cloud-developer-guide'
-];
-
 let allRoutesPrerendered = true;
 let allCanonicalsCorrect = true;
 
@@ -83,6 +88,7 @@ for (const r of expectedRoutes) {
   const routeHtmlPath = path.join(distDir, r, 'index.html');
   if (!fs.existsSync(routeHtmlPath)) {
     allRoutesPrerendered = false;
+    console.error(`Missing prerendered route file: ${routeHtmlPath}`);
     break;
   }
   const content = fs.readFileSync(routeHtmlPath, 'utf-8');
@@ -93,7 +99,7 @@ for (const r of expectedRoutes) {
   }
 }
 
-assert(allRoutesPrerendered, 'all 9 sub-routes have prerendered static index.html files');
+assert(allRoutesPrerendered, `all ${expectedRoutes.length} sub-routes have prerendered static index.html files`);
 assert(allCanonicalsCorrect, 'all prerendered routes have exact, matching canonical URL tags');
 
 // 10. Verify required public images exist in dist

@@ -1,10 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Link, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import Tilt from 'react-parallax-tilt';
 import * as Lucide from 'lucide-react';
 import Loader from './components/Loader';
 import { usePageSEO } from './utils/usePageSEO';
+import { useTransitionContext } from './context/TransitionContext';
 
 import myLogo from './assets/mylogo.png';
 import profilePhoto from './assets/profile.png';
@@ -307,9 +308,20 @@ const App = () => {
     ogImage: 'https://www.rajuperumalla.in/images/profile.png',
   });
 
+  const navigate = useNavigate();
+  const shouldReduceMotion = useReducedMotion();
+  const { startTransitionToDecode, isTransitioningToDecode } = useTransitionContext();
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeRoleIndex, setActiveRoleIndex] = useState(0);
+
+  const handleDecodeNav = (e) => {
+    e.preventDefault();
+    setMobileMenuOpen(false);
+    startTransitionToDecode(() => {
+      navigate('/decode', { state: { transitionFromPortfolio: true } });
+    });
+  };
 
   // Contact Form State
   const [contactData, setContactData] = useState({ name: '', email: '', message: '' });
@@ -466,11 +478,31 @@ const App = () => {
 
 
   return (
-    <div
-      className='relative min-h-screen text-white'
+    <motion.div
+      animate={shouldReduceMotion ? (
+        isTransitioningToDecode ? { opacity: 0 } : { opacity: 1 }
+      ) : (
+        isTransitioningToDecode ? {
+          opacity: 0,
+          scale: 0.94,
+          rotateX: -4.5,
+          y: -30,
+          transition: { duration: 0.38, ease: [0.22, 1, 0.36, 1] }
+        } : {
+          opacity: 1,
+          scale: 1,
+          rotateX: 0,
+          y: 0,
+          transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] }
+        }
+      )}
       style={{
+        perspective: '1400px',
+        transformOrigin: 'center top',
+        transformStyle: 'preserve-3d',
         '--scroll-transition-ease': scrollDirection === 'down' ? 'ease-in' : 'ease-out',
       }}
+      className='relative min-h-screen text-white'
     >
       <div className={`bg-red-gradient ${activeSection === 'hero' ? 'bg-fade-in' : ''}`} />
       <div className={`bg-blue-gradient ${activeSection === 'techStack' ? 'bg-fade-in' : ''}`} />
@@ -529,13 +561,13 @@ const App = () => {
                 whileHover={{ scale: 1.1, color: '#ef4444' }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
-                <Link to="/blog" onClick={() => setMobileMenuOpen(false)}>ARTICLES</Link>
+                <a href="#contact" onClick={() => setMobileMenuOpen(false)}>CONTACT</a>
               </motion.li>
               <motion.li
                 whileHover={{ scale: 1.1, color: '#ef4444' }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
-                <a href="#contact" onClick={() => setMobileMenuOpen(false)}>CONTACT</a>
+                <Link to="/decode" onClick={handleDecodeNav}>DECODE</Link>
               </motion.li>
             </ul>
           </motion.div>
@@ -571,8 +603,8 @@ const App = () => {
                     <li><a href="#about">ABOUT</a></li>
                     <li><a href="#skills">SKILLS</a></li>
                     <li><a href="#projects">PROJECTS</a></li>
-                    <li><Link to="/blog">ARTICLES</Link></li>
                     <li><a href="#contact">CONTACT</a></li>
+                    <li><Link to="/decode" onClick={handleDecodeNav}>DECODE</Link></li>
                   </ul>
                 </motion.div>
 
@@ -644,7 +676,7 @@ const App = () => {
                 {/* Top-Right Social Links */}
                 <div className="absolute top-4 right-4 md:top-6 md:right-6 flex gap-3 z-20">
                   <motion.a
-                    href="https://www.linkedin.com/in/rajuperumalla9006"
+                    href="https://www.linkedin.com/in/rajuperumalla/"
                     target="_blank"
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.12, y: -2 }}
@@ -2005,6 +2037,10 @@ const App = () => {
           <div className='flex flex-wrap items-center justify-center md:justify-end gap-3 text-xs'>
             <Link to="/about" className='text-white/40 hover:text-white transition-colors duration-200'>About</Link>
             <span className='text-white/10'>•</span>
+            <Link to="/contact" className='text-white/40 hover:text-white transition-colors duration-200'>Contact</Link>
+            <span className='text-white/10'>•</span>
+            <Link to="/decode" className='text-white/40 hover:text-white transition-colors duration-200'>Decode</Link>
+            <span className='text-white/10'>•</span>
             <Link to="/blog" className='text-white/40 hover:text-white transition-colors duration-200'>Articles</Link>
             <span className='text-white/10'>•</span>
             <Link to="/privacy-policy" className='text-white/40 hover:text-white transition-colors duration-200'>Privacy Policy</Link>
@@ -2014,7 +2050,7 @@ const App = () => {
             <a href='https://github.com/rajuperumalla951515' target='_blank' rel='noopener noreferrer'
               className='text-white/40 hover:text-white transition-colors duration-200'>GitHub</a>
             <span className='text-white/10'>•</span>
-            <a href='https://www.linkedin.com/in/rajuperumalla9006' target='_blank' rel='noopener noreferrer'
+            <a href='https://www.linkedin.com/in/rajuperumalla/' target='_blank' rel='noopener noreferrer'
               className='text-white/40 hover:text-white transition-colors duration-200'>LinkedIn</a>
           </div>
 
@@ -2048,7 +2084,7 @@ const App = () => {
           <feDisplacementMap in="SourceGraphic" in2="blurred" scale="70" xChannelSelector="R" yChannelSelector="G" />
         </filter>
       </svg>
-    </div>
+    </motion.div>
   );
 };
 

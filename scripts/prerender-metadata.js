@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { blogPosts } from '../src/data/blogData.js';
+import { decodeCategories, decodeResources } from '../src/data/decodeData.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,6 +19,18 @@ const routes = [
     title: 'About Raju Perumalla | Full-Stack & AI Engineer',
     description: "Learn about Raju Perumalla's background in software engineering, Cloud architectures, SAP BTP, computer vision systems, and Google Student Ambassador role.",
     canonical: `${BASE_URL}/about`,
+  },
+  {
+    path: 'decode',
+    title: 'Decode – Student Learning, Projects & Career Resources | Raju Perumalla',
+    description: 'Explore study materials, coding roadmaps, internships, hackathons, final-year project guides, freelancing advice, and career resources for students.',
+    canonical: `${BASE_URL}/decode`,
+  },
+  {
+    path: 'decode/analytics',
+    title: 'Decode Outbound Attribution & Referral Analytics | Raju Perumalla',
+    description: 'First-party transparent analytics dashboard for Decode outbound resource clicks, referral performance, and domain destinations.',
+    canonical: `${BASE_URL}/decode/analytics`,
   },
   {
     path: 'blog',
@@ -53,6 +66,29 @@ for (const post of blogPosts) {
     title: `${post.title} | Raju Perumalla`,
     description: post.summary,
     canonical: `${BASE_URL}/blog/${post.slug}`,
+    ogType: 'article',
+  });
+}
+
+// Add Decode category hub routes
+for (const cat of decodeCategories) {
+  routes.push({
+    path: `decode/${cat.slug}`,
+    title: `${cat.title} – Decode Student Hub | Raju Perumalla`,
+    description: cat.metaDescription,
+    canonical: `${BASE_URL}/decode/${cat.slug}`,
+    ogType: 'website',
+  });
+}
+
+// Add Decode detail resource routes
+for (const res of decodeResources) {
+  if (res.draft === true || res.published === false) continue;
+  routes.push({
+    path: `decode/${res.category}/${res.slug}`,
+    title: `${res.title} | Decode | Raju Perumalla`,
+    description: res.summary,
+    canonical: `${BASE_URL}/decode/${res.category}/${res.slug}`,
     ogType: 'article',
   });
 }

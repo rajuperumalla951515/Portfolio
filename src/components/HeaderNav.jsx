@@ -1,23 +1,33 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import * as Lucide from 'lucide-react';
 import linkedinLogo from '../assets/linkedin.png';
 import gmailLogo from '../assets/gmail.png';
-
-const IconWrapper = ({ name, ...props }) => {
-  const Icon = Lucide[name];
-  return Icon ? <Icon {...props} /> : <Lucide.HelpCircle {...props} />;
-};
+import { useTransitionContext } from '../context/TransitionContext';
 
 const HeaderNav = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { startTransitionToDecode } = useTransitionContext();
+
+  const handleLinkClick = (e, itemPath) => {
+    if (itemPath === '/decode') {
+      e.preventDefault();
+      setMobileOpen(false);
+      startTransitionToDecode(() => {
+        navigate('/decode', { state: { transitionFromPortfolio: true } });
+      });
+    } else {
+      setMobileOpen(false);
+    }
+  };
 
   const navLinks = [
     { label: 'HOME', path: '/' },
     { label: 'ABOUT', path: '/about' },
-    { label: 'ARTICLES', path: '/blog' },
     { label: 'CONTACT', path: '/contact' },
+    { label: 'DECODE', path: '/decode' },
   ];
 
   return (
@@ -38,16 +48,19 @@ const HeaderNav = () => {
             <nav className="hidden md:flex items-center gap-6">
               <ul className="flex items-center gap-6 text-xs tracking-widest font-semibold font-outfit">
                 {navLinks.map((item) => {
-                  const isActive = location.pathname === item.path;
+                  const isActive =
+                    item.path === '/decode'
+                      ? location.pathname.startsWith('/decode')
+                      : location.pathname === item.path;
                   return (
                     <li key={item.path}>
                       <Link
                         to={item.path}
-                        className={`transition-colors duration-200 uppercase py-1 px-2 rounded ${
-                          isActive
+                        onClick={(e) => handleLinkClick(e, item.path)}
+                        className={`transition-colors duration-200 uppercase py-1 px-2 rounded ${isActive
                             ? 'text-red-500 font-bold border-b border-red-500/50'
                             : 'text-white/70 hover:text-white'
-                        }`}
+                          }`}
                       >
                         {item.label}
                       </Link>
@@ -59,11 +72,12 @@ const HeaderNav = () => {
               {/* Quick Contact Icons */}
               <div className="flex items-center gap-2 border-l border-white/10 pl-4">
                 <a
-                  href="https://www.linkedin.com/in/rajuperumalla9006"
+                  href="https://www.linkedin.com/in/rajuperumalla/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center bg-white/[0.02] hover:border-red-500/50 transition-all p-1.5"
-                  title="LinkedIn"
+                  title="LinkedIn (@rajuperumalla)"
+                  aria-label="Raju Perumalla's LinkedIn Profile"
                 >
                   <img src={linkedinLogo} alt="LinkedIn" className="w-full h-full object-contain" />
                 </a>
@@ -97,7 +111,7 @@ const HeaderNav = () => {
               <li key={item.path}>
                 <Link
                   to={item.path}
-                  onClick={() => setMobileOpen(false)}
+                  onClick={(e) => handleLinkClick(e, item.path)}
                   className="text-white hover:text-red-500 transition-colors uppercase"
                 >
                   {item.label}

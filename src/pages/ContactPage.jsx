@@ -118,8 +118,8 @@ const ContactPage = () => {
                   </a>
                 </li>
                 <li>
-                  <a href="https://www.linkedin.com/in/rajuperumalla9006" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-white/70 hover:text-white transition-colors">
-                    <IconWrapper name="Linkedin" size={18} className="text-blue-400" /> LinkedIn: /in/rajuperumalla9006
+                  <a href="https://www.linkedin.com/in/rajuperumalla/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-white/70 hover:text-white transition-colors" aria-label="LinkedIn profile @rajuperumalla">
+                    <IconWrapper name="Linkedin" size={18} className="text-blue-400" /> LinkedIn: @rajuperumalla
                   </a>
                 </li>
                 <li>

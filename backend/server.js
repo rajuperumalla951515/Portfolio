@@ -23,6 +23,258 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'OK', message: 'Backend is running with Supabase & MongoDB!' });
 });
 
+// Decode Platform API Endpoints (Supabase-backed)
+app.get('/api/decode/categories', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('decode_categories')
+      .select('*')
+      .eq('published', true)
+      .order('display_order', { ascending: true });
+
+    if (error) {
+      return res.status(500).json({ success: false, error: error.message });
+    }
+    res.json({ success: true, data: data || [] });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.get('/api/decode/resources', async (req, res) => {
+  try {
+    const { category, search, difficulty, page = 1, limit = 20 } = req.query;
+    let query = supabase
+      .from('decode_resources')
+      .select('*', { count: 'exact' })
+      .eq('published', true);
+
+    if (category && category !== 'all') {
+      query = query.eq('category_slug', category);
+    }
+    if (difficulty && difficulty !== 'All') {
+      query = query.eq('difficulty', difficulty);
+    }
+    if (search && search.trim()) {
+      const q = search.trim();
+      query = query.or(`title.ilike.%${q}%,summary.ilike.%${q}%`);
+    }
+
+    query = query.order('published_date', { ascending: false });
+
+    const from = (parseInt(page, 10) - 1) * parseInt(limit, 10);
+    const to = from + parseInt(limit, 10) - 1;
+    query = query.range(from, to);
+
+    const { data, count, error } = await query;
+    if (error) {
+      return res.status(500).json({ success: false, error: error.message });
+    }
+
+    res.json({
+      success: true,
+      data: data || [],
+      total: count || 0,
+      page: parseInt(page, 10),
+      totalPages: Math.ceil((count || 0) / parseInt(limit, 10)),
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.get('/api/decode/resources/:categorySlug/:slug', async (req, res) => {
+  try {
+    const { categorySlug, slug } = req.params;
+    const { data, error } = await supabase
+      .from('decode_resources')
+      .select('*')
+      .eq('category_slug', categorySlug)
+      .eq('slug', slug)
+      .eq('published', true)
+      .maybeSingle();
+
+    if (error) {
+      return res.status(500).json({ success: false, error: error.message });
+    }
+    if (!data) {
+      return res.status(404).json({ success: false, message: 'Resource not found' });
+    }
+    res.json({ success: true, data });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// -------------------------------------------------------------
+// SECURE FIRST-PARTY OUTBOUND REDIRECT & ATTRIBUTION SYSTEM
+// -------------------------------------------------------------
+app.get('/go/:slug', async (req, res) => {
+  try {
+    const { slug } = req.params;
+    if (!slug) {
+      return res.redirect(302, 'https://www.rajuperumalla.in/decode');
+    }
+
+    // 1. Resolve from Supabase database
+    const { data: resource } = await supabase
+      .from('decode_resources')
+      .select('*')
+      .eq('slug', slug)
+      .eq('published', true)
+      .maybeSingle();
+
+    let destinationUrl = resource?.opportunity_data?.officialUrl || resource?.official_url || null;
+
+    // Fallback dictionary for verified destinations
+    if (!destinationUrl) {
+      const fallbackDestinations = {
+        'clearview-healthcare-data-analyst-advanced-analytics': 'https://www.clearviewhcp.com/careers/',
+        'google-summer-of-code-internship-guide': 'https://summerofcode.withgoogle.com/',
+        'microsoft-software-engineering-internship-2026': 'https://careers.microsoft.com/',
+        'lfx-mentorship-open-source-internship': 'https://lfx.linuxfoundation.org/tools/mentorship/',
+        'mlh-fellowship-software-engineering': 'https://fellowship.mlh.io/',
+        'smart-india-hackathon-sih-strategy': 'https://www.sih.gov.in/',
+        'sap-innovation-marathon-guide': 'https://www.sap.com/',
+        'fastapi-production-handbook': 'https://fastapi.tiangolo.com/',
+        'full-stack-system-design-primer': 'https://github.com/donnemartin/system-design-primer',
+        'docker-containerization-guide': 'https://docs.docker.com/',
+      };
+      destinationUrl = fallbackDestinations[slug];
+    }
+
+    if (!destinationUrl) {
+      return res.redirect(302, 'https://www.rajuperumalla.in/decode');
+    }
+
+    // 2. Validate destination URL strictly (Prevent open redirect)
+    let parsedUrl;
+    try {
+      parsedUrl = new URL(destinationUrl);
+      if (!['https:', 'http:'].includes(parsedUrl.protocol)) {
+        return res.status(400).send('Invalid destination protocol');
+      }
+    } catch {
+      return res.redirect(302, 'https://www.rajuperumalla.in/decode');
+    }
+
+    // 3. Attach UTM parameters without overwriting existing query parameters
+    if (!parsedUrl.searchParams.has('utm_source')) {
+      parsedUrl.searchParams.set('utm_source', 'rajuperumalla.in');
+    }
+    if (!parsedUrl.searchParams.has('utm_medium')) {
+      parsedUrl.searchParams.set('utm_medium', 'referral');
+    }
+    if (!parsedUrl.searchParams.has('utm_campaign')) {
+      parsedUrl.searchParams.set('utm_campaign', 'decode');
+    }
+
+    const finalUrl = parsedUrl.toString();
+    const domain = parsedUrl.hostname.replace(/^www\./, '');
+
+    // 4. Record outbound click asynchronously in Supabase
+    const referrer = req.get('referrer') || req.get('referer') || null;
+    const isMobile = /Mobi|Android/i.test(req.get('user-agent') || '');
+
+    supabase.from('decode_outbound_clicks').insert([{
+      resource_slug: slug,
+      category_slug: resource?.category_slug || 'jobs',
+      resource_title: resource?.title || slug,
+      destination_domain: domain,
+      destination_url: destinationUrl,
+      referrer,
+      utm_source: 'rajuperumalla.in',
+      utm_medium: 'referral',
+      utm_campaign: 'decode',
+      user_agent_type: isMobile ? 'mobile' : 'desktop',
+    }]).then(() => {}).catch(err => console.warn('Outbound click record failed:', err.message));
+
+    // 5. Temporary 302 redirect so subsequent visits continue to be recorded
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    return res.redirect(302, finalUrl);
+  } catch (err) {
+    return res.redirect(302, 'https://www.rajuperumalla.in/decode');
+  }
+});
+
+// Outbound Click Tracking API
+app.post('/api/decode/track-click', async (req, res) => {
+  try {
+    const { resource_slug, category_slug, resource_title, destination_url, referrer } = req.body;
+    if (!resource_slug || !destination_url) {
+      return res.status(400).json({ success: false, message: 'Missing required click parameters.' });
+    }
+
+    let domain = '';
+    try {
+      domain = new URL(destination_url).hostname.replace(/^www\./, '');
+    } catch {
+      domain = 'external';
+    }
+
+    const isMobile = /Mobi|Android/i.test(req.get('user-agent') || '');
+
+    const { error } = await supabase.from('decode_outbound_clicks').insert([{
+      resource_slug,
+      category_slug: category_slug || 'general',
+      resource_title: resource_title || resource_slug,
+      destination_domain: domain,
+      destination_url,
+      referrer: referrer || req.get('referrer') || null,
+      utm_source: 'rajuperumalla.in',
+      utm_medium: 'referral',
+      utm_campaign: 'decode',
+      user_agent_type: isMobile ? 'mobile' : 'desktop',
+    }]);
+
+    if (error) {
+      return res.status(500).json({ success: false, error: error.message });
+    }
+
+    res.json({ success: true, message: 'Outbound click recorded successfully.' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Outbound Analytics Aggregation API
+app.get('/api/decode/analytics/outbound', async (req, res) => {
+  try {
+    const { data, count, error } = await supabase
+      .from('decode_outbound_clicks')
+      .select('*', { count: 'exact' })
+      .order('created_at', { ascending: false })
+      .limit(200);
+
+    if (error) {
+      return res.status(500).json({ success: false, error: error.message });
+    }
+
+    const byCategory = {};
+    const byDomain = {};
+
+    (data || []).forEach(c => {
+      byCategory[c.category_slug] = (byCategory[c.category_slug] || 0) + 1;
+      byDomain[c.destination_domain] = (byDomain[c.destination_domain] || 0) + 1;
+    });
+
+    const topDomains = Object.entries(byDomain)
+      .map(([domain, clicks]) => ({ domain, clicks }))
+      .sort((a, b) => b.clicks - a.clicks)
+      .slice(0, 10);
+
+    res.json({
+      success: true,
+      totalClicks: count || (data?.length || 0),
+      byCategory,
+      topDomains,
+      recentClicks: (data || []).slice(0, 10),
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // Contact Route (stores to Supabase & MongoDB + sends email)
 app.post('/api/contact', async (req, res) => {
   try {

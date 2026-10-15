@@ -1,6 +1,17 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useTransitionContext } from '../context/TransitionContext';
 
 const SiteFooter = () => {
+  const navigate = useNavigate();
+  const { startTransitionToDecode } = useTransitionContext();
+
+  const handleDecodeClick = (e) => {
+    e.preventDefault();
+    startTransitionToDecode(() => {
+      navigate('/decode');
+    });
+  };
+
   return (
     <footer className="w-full max-w-[1500px] mx-auto px-4 md:px-6 mt-20 border-t border-white/5 pt-10 pb-6 text-white/50 text-xs font-outfit">
       <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-8">
@@ -18,9 +29,11 @@ const SiteFooter = () => {
         <nav aria-label="Footer Navigation" className="flex flex-wrap justify-center items-center gap-4 text-xs">
           <Link to="/about" className="hover:text-white transition-colors">About</Link>
           <span className="text-white/10">•</span>
-          <Link to="/blog" className="hover:text-white transition-colors">Articles</Link>
-          <span className="text-white/10">•</span>
           <Link to="/contact" className="hover:text-white transition-colors">Contact</Link>
+          <span className="text-white/10">•</span>
+          <Link to="/decode" onClick={handleDecodeClick} className="hover:text-white transition-colors">Decode</Link>
+          <span className="text-white/10">•</span>
+          <Link to="/blog" className="hover:text-white transition-colors">Articles</Link>
           <span className="text-white/10">•</span>
           <Link to="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
           <span className="text-white/10">•</span>
@@ -41,10 +54,11 @@ const SiteFooter = () => {
           </a>
           <span className="text-white/10">|</span>
           <a
-            href="https://www.linkedin.com/in/rajuperumalla9006"
+            href="https://www.linkedin.com/in/rajuperumalla/"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-white transition-colors"
+            aria-label="LinkedIn profile @rajuperumalla"
           >
             LinkedIn
           </a>

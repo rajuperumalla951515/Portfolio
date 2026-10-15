@@ -165,8 +165,8 @@ const AboutPage = () => {
             <Link to="/contact" className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-semibold text-xs tracking-wider uppercase transition-all shadow-lg">
               Get in Touch
             </Link>
-            <Link to="/blog" className="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold text-xs tracking-wider uppercase transition-all">
-              Read Articles
+            <Link to="/decode" className="px-5 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold text-xs tracking-wider uppercase transition-all">
+              Explore Decode
             </Link>
           </div>
         </div>

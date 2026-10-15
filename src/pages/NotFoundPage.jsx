@@ -51,10 +51,10 @@ const NotFoundPage = () => {
             Return to Portfolio
           </Link>
           <Link
-            to="/blog"
+            to="/decode"
             className="px-6 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold text-xs tracking-wider uppercase transition-all"
           >
-            Explore Articles
+            Explore Decode
           </Link>
         </div>
       </main>

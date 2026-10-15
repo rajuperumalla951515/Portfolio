@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { blogPosts } from '../src/data/blogData.js';
+import { decodeCategories, decodeResources } from '../src/data/decodeData.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -76,6 +77,19 @@ const staticPages = [
     },
   },
   {
+    path: 'decode',
+    lastmod: '2026-03-28',
+    image: {
+      loc: `${BASE_URL}/images/profile.png`,
+      title: 'Decode - Student Learning, Career &amp; Opportunity Hub | Raju Perumalla',
+      caption: 'Curated study materials, capstones, internships, and roadmaps for students',
+    },
+  },
+  {
+    path: 'decode/analytics',
+    lastmod: '2026-03-28',
+  },
+  {
     path: 'blog',
     lastmod: '2026-10-12',
   },
@@ -137,6 +151,46 @@ export const generateSitemap = () => {
     seenUrls.add(loc);
 
     const lastmod = formatDate(post.updatedDate || post.publishedDate);
+    const entry = `  <url>\n    <loc>${escapeXml(loc)}</loc>\n    <lastmod>${lastmod}</lastmod>\n  </url>`;
+    urlEntries.push(entry);
+  }
+
+  // 3. Process Decode Category Hub Pages
+  for (const cat of decodeCategories) {
+    const loc = `${BASE_URL}/decode/${cat.slug}`;
+    if (seenUrls.has(loc)) {
+      throw new Error(`Duplicate Decode category URL in sitemap: ${loc}`);
+    }
+    seenUrls.add(loc);
+
+    // Dynamic lastmod based on most recent resource in category
+    const catResources = decodeResources.filter((r) => r.category === cat.slug);
+    const latestDate = catResources.length > 0
+      ? catResources.map((r) => r.updatedDate || r.publishedDate).sort().reverse()[0]
+      : '2026-03-28';
+
+    const lastmod = formatDate(latestDate);
+    const entry = `  <url>\n    <loc>${escapeXml(loc)}</loc>\n    <lastmod>${lastmod}</lastmod>\n  </url>`;
+    urlEntries.push(entry);
+  }
+
+  // 4. Process Decode Detail Resource Pages
+  for (const res of decodeResources) {
+    if (!res.slug || !res.category) {
+      throw new Error(`Invalid slug or category for decode resource: "${res.title}"`);
+    }
+
+    if (res.draft === true || res.published === false) {
+      continue;
+    }
+
+    const loc = `${BASE_URL}/decode/${res.category}/${res.slug}`;
+    if (seenUrls.has(loc)) {
+      throw new Error(`Duplicate Decode resource URL detected in sitemap: ${loc}`);
+    }
+    seenUrls.add(loc);
+
+    const lastmod = formatDate(res.updatedDate || res.publishedDate);
     const entry = `  <url>\n    <loc>${escapeXml(loc)}</loc>\n    <lastmod>${lastmod}</lastmod>\n  </url>`;
     urlEntries.push(entry);
   }

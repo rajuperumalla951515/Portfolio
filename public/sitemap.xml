@@ -22,6 +22,21 @@
   </url>
 
   <url>
+    <loc>https://www.rajuperumalla.in/decode</loc>
+    <lastmod>2026-03-28</lastmod>
+    <image:image>
+      <image:loc>https://www.rajuperumalla.in/images/profile.png</image:loc>
+      <image:title>Decode - Student Learning, Career &amp; Opportunity Hub | Raju Perumalla</image:title>
+      <image:caption>Curated study materials, capstones, internships, and roadmaps for students</image:caption>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/analytics</loc>
+    <lastmod>2026-03-28</lastmod>
+  </url>
+
+  <url>
     <loc>https://www.rajuperumalla.in/blog</loc>
     <lastmod>2026-10-12</lastmod>
   </url>
@@ -59,5 +74,195 @@
   <url>
     <loc>https://www.rajuperumalla.in/blog/getting-started-with-sap-btp-abap-cloud-developer-guide</loc>
     <lastmod>2025-03-28</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/study-material</loc>
+    <lastmod>2026-03-25</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/roadmaps</loc>
+    <lastmod>2026-03-26</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/jobs</loc>
+    <lastmod>2026-03-25</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/hackathons</loc>
+    <lastmod>2026-03-25</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/final-year-projects</loc>
+    <lastmod>2026-03-24</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/freelancing</loc>
+    <lastmod>2026-03-18</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/references</loc>
+    <lastmod>2026-03-26</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/career-guidance</loc>
+    <lastmod>2026-03-25</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/developer-tools</loc>
+    <lastmod>2026-03-24</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/study-material/python-programming-data-structures</loc>
+    <lastmod>2026-03-15</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/study-material/operating-systems-concurrency-fundamentals</loc>
+    <lastmod>2026-03-20</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/study-material/computer-networks-protocols-architecture</loc>
+    <lastmod>2026-03-22</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/study-material/dbms-sql-query-optimization-guide</loc>
+    <lastmod>2026-03-25</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/roadmaps/full-stack-web-development</loc>
+    <lastmod>2026-03-18</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/roadmaps/artificial-intelligence-machine-learning</loc>
+    <lastmod>2026-03-24</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/roadmaps/cloud-devops-system-engineering</loc>
+    <lastmod>2026-03-26</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/jobs/clearview-healthcare-data-analyst-advanced-analytics</loc>
+    <lastmod>2026-03-20</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/jobs/google-summer-of-code-internship-guide</loc>
+    <lastmod>2026-03-10</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/jobs/microsoft-software-engineering-internship-2026</loc>
+    <lastmod>2026-03-25</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/jobs/lfx-mentorship-open-source-internship</loc>
+    <lastmod>2026-03-12</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/jobs/mlh-fellowship-software-engineering</loc>
+    <lastmod>2026-03-15</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/hackathons/smart-india-hackathon-sih-strategy</loc>
+    <lastmod>2026-03-20</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/hackathons/sap-innovation-marathon-guide</loc>
+    <lastmod>2026-03-22</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/hackathons/capgemini-tech-challenge-handbook</loc>
+    <lastmod>2026-03-25</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/final-year-projects/smartguardian-ai-accident-prevention</loc>
+    <lastmod>2026-03-20</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/final-year-projects/cipherdoc-tamper-proof-exam-distribution</loc>
+    <lastmod>2026-03-22</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/final-year-projects/nutrixa-ai-nutrition-prescription-analyzer</loc>
+    <lastmod>2026-03-24</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/freelancing/landing-first-freelance-client-student-guide</loc>
+    <lastmod>2026-03-16</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/freelancing/pricing-contracts-invoicing-for-freelancers</loc>
+    <lastmod>2026-03-18</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/references/react-modern-web-ecosystem-reference</loc>
+    <lastmod>2026-03-22</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/references/python-fastapi-backend-reference</loc>
+    <lastmod>2026-03-24</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/references/verified-public-datasets-for-student-projects</loc>
+    <lastmod>2026-03-26</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/career-guidance/technical-interview-dsa-mastery-plan</loc>
+    <lastmod>2026-03-18</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/career-guidance/crafting-high-impact-swe-resume</loc>
+    <lastmod>2026-03-20</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/career-guidance/system-design-essentials-for-freshers</loc>
+    <lastmod>2026-03-25</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/developer-tools/github-student-developer-pack-guide</loc>
+    <lastmod>2026-03-15</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/developer-tools/essential-modern-developer-terminal-toolchain</loc>
+    <lastmod>2026-03-20</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/developer-tools/ai-assisted-coding-and-engineering-workflow</loc>
+    <lastmod>2026-03-24</lastmod>
   </url>
 </urlset>

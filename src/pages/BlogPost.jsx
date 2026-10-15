@@ -222,7 +222,7 @@ const BlogPost = () => {
                 GitHub Profile
               </a>
               <span className="text-white/20">|</span>
-              <a href="https://www.linkedin.com/in/rajuperumalla9006" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors">
+              <a href="https://www.linkedin.com/in/rajuperumalla/" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white transition-colors" aria-label="LinkedIn profile @rajuperumalla">
                 LinkedIn
               </a>
             </div>
