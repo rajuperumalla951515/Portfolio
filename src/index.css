@@ -771,6 +771,8 @@ body {
   font-weight: 600;
   font-size: 20px;
   margin-bottom: 2px;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .movie_card .movie_header h4 {

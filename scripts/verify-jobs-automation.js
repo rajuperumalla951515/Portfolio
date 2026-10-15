@@ -31,12 +31,10 @@ const {
   evaluateJobLifecycle,
   extractBatchEligibility,
   cleanCanonicalUrl,
-  DEFAULT_NO_DEADLINE_FRESHNESS_DAYS,
 } = require('../backend/jobAutomationService.js');
 
 // Import frontend data helper functions
 import {
-  decodeResources,
   isJobExpired,
   getBatchLabel,
   filterActiveJobs,

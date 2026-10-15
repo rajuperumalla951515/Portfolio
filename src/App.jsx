@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Tilt from 'react-parallax-tilt';
 import * as Lucide from 'lucide-react';
 import Loader from './components/Loader';
@@ -309,7 +309,6 @@ const App = () => {
   });
 
   const navigate = useNavigate();
-  const shouldReduceMotion = useReducedMotion();
   const { startTransitionToDecode, isTransitioningToDecode } = useTransitionContext();
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -479,31 +478,19 @@ const App = () => {
 
 
   return (
-    <motion.div
-      animate={shouldReduceMotion ? (
-        isTransitioningToDecode ? { opacity: 0 } : { opacity: 1 }
-      ) : (
-        isTransitioningToDecode ? {
-          opacity: 0,
-          scale: 0.94,
-          rotateX: -4.5,
-          y: -30,
-          transition: { duration: 0.38, ease: [0.22, 1, 0.36, 1] }
-        } : {
-          opacity: 1,
-          scale: 1,
-          rotateX: 0,
-          y: 0,
-          transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] }
-        }
-      )}
-      style={{
-        perspective: '1400px',
-        transformOrigin: 'center top',
-        transformStyle: 'preserve-3d',
-        '--scroll-transition-ease': scrollDirection === 'down' ? 'ease-in' : 'ease-out',
-      }}
+    <div
       className='relative min-h-screen text-white'
+      style={{
+        '--scroll-transition-ease': scrollDirection === 'down' ? 'ease-in' : 'ease-out',
+        ...(isTransitioningToDecode
+          ? {
+              opacity: 0,
+              transform: 'scale(0.96) translateY(-20px)',
+              transition: 'opacity 0.38s ease, transform 0.38s ease',
+              pointerEvents: 'none',
+            }
+          : {}),
+      }}
     >
       <div className={`bg-red-gradient ${activeSection === 'hero' ? 'bg-fade-in' : ''}`} />
       <div className={`bg-blue-gradient ${activeSection === 'techStack' ? 'bg-fade-in' : ''}`} />
@@ -624,7 +611,7 @@ const App = () => {
 
       <main className='w-full max-w-[1500px] mx-auto px-4 md:px-6 relative'>
         {/* Hero Section */}
-        <section ref={heroSectionRef} className='min-h-screen flex items-center justify-center pt-20 relative'>
+        <section ref={heroSectionRef} className='min-h-screen flex items-center justify-center pt-20 relative overflow-hidden'>
           <motion.div
             className='w-full mx-auto flex flex-col lg:flex-row items-center justify-center gap-10 lg:gap-16'
             initial="hidden"
@@ -1157,8 +1144,8 @@ const App = () => {
                     </div>
                     <div className="mt-auto space-y-2.5">
                       {[
-                        { role: 'Full Stack & Android Development', desc: 'Crafting responsive interfaces, mobile apps, and robust systems.', period: '2021 â€“ Present' },
-                        { role: 'Artificial Intelligence & ML', desc: 'Predictive modeling, data systems, and smart automation pipelines.', period: '2023 â€“ Present' },
+                        { role: 'Full Stack & Android Development', desc: 'Crafting responsive interfaces, mobile apps, and robust systems.', period: '2021 – Present' },
+                        { role: 'Artificial Intelligence & ML', desc: 'Predictive modeling, data systems, and smart automation pipelines.', period: '2023 – Present' },
                         { role: 'Technical Session Host & Mentor', desc: 'Hosted 4+ workshops sharing engineering knowledge on modern tech.', period: 'Active' },
                       ].map((e) => (
                         <div key={e.role} className="p-3 rounded-lg bg-white/[0.01] hover:bg-white/[0.04] border border-white/5 transition-all duration-300">
@@ -1847,7 +1834,7 @@ const App = () => {
                           exit={{ opacity: 0, y: -28, scale: 0.96 }}
                           transition={{ type: 'tween', duration: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
                           style={{ marginLeft: '4px' }}
-                          className="premium-card p-5 bg-gradient-to-br from-[#833ab4]/20 via-[#fd1d1d]/20 to-[#fcb045]/20 border border-pink-500/30 rounded-xl w-[320px]"
+                          className="premium-card p-5 bg-gradient-to-br from-[#833ab4]/20 via-[#fd1d1d]/20 to-[#fcb045]/20 border border-pink-500/30 rounded-xl w-full max-w-[320px]"
                         >
                           <div className="flex items-center gap-4">
                             <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#833ab4] via-[#fd1d1d] to-[#fcb045] p-[2px] flex-shrink-0">
@@ -1877,7 +1864,7 @@ const App = () => {
                           exit={{ opacity: 0, y: -28, scale: 0.96 }}
                           transition={{ type: 'tween', duration: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
                           style={{ marginLeft: '4px' }}
-                          className="premium-card p-5 bg-gradient-to-br from-[#1877F2]/20 to-[#0e5a9c]/20 border border-blue-500/30 rounded-xl w-[320px]"
+                          className="premium-card p-5 bg-gradient-to-br from-[#1877F2]/20 to-[#0e5a9c]/20 border border-blue-500/30 rounded-xl w-full max-w-[320px]"
                         >
                           <div className="flex items-center gap-4">
                             <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#1877F2] to-[#0e5a9c] p-[2px] flex-shrink-0">
@@ -1907,7 +1894,7 @@ const App = () => {
                           exit={{ opacity: 0, y: -28, scale: 0.96 }}
                           transition={{ type: 'tween', duration: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
                           style={{ marginLeft: '4px' }}
-                          className="premium-card p-5 bg-gradient-to-br from-[#5865F2]/20 to-[#7289DA]/20 border border-indigo-500/30 rounded-xl w-[320px]"
+                          className="premium-card p-5 bg-gradient-to-br from-[#5865F2]/20 to-[#7289DA]/20 border border-indigo-500/30 rounded-xl w-full max-w-[320px]"
                         >
                           <div className="flex items-center gap-4">
                             <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#5865F2] to-[#7289DA] p-[2px] flex-shrink-0">
@@ -1940,7 +1927,7 @@ const App = () => {
               {/* Right Side: Let's Connect Form */}
               <div className="w-full lg:w-1/2 flex justify-end lg:translate-x-[60px]">
                 {/* Let's Connect Bento Card */}
-                <BentoCard spotlightClass="spotlight-blue" className="w-full max-w-[500px] h-[450px] !p-8 flex flex-col justify-between ml-auto">
+                <BentoCard spotlightClass="spotlight-blue" className="w-full max-w-[500px] min-h-[450px] h-auto md:h-[450px] !p-6 sm:!p-8 flex flex-col justify-between ml-auto">
                   <div>
                     <div className="flex items-center gap-3 mb-2">
                       <IconWrapper name="Send" size={24} className="text-blue-400" />
@@ -1952,7 +1939,7 @@ const App = () => {
                   </div>
 
                   <form className="space-y-5" onSubmit={handleContactSubmit}>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                       <div className="space-y-2">
                         <label className="text-xs uppercase tracking-widest text-white/40">Name</label>
                         <input
@@ -2034,25 +2021,19 @@ const App = () => {
             <p className='text-white/20 text-[10px] text-center'>Built with React · TailwindCSS · Node.js &nbsp;·&nbsp; Designed &amp; Developed by Raju Perumalla</p>
           </div>
 
-          {/* Right: Policy & Trust Links */}
-          <div className='flex flex-wrap items-center justify-center md:justify-end gap-3 text-xs'>
-            <Link to="/about" className='text-white/40 hover:text-white transition-colors duration-200'>About</Link>
-            <span className='text-white/10'>•</span>
-            <Link to="/contact" className='text-white/40 hover:text-white transition-colors duration-200'>Contact</Link>
-            <span className='text-white/10'>•</span>
-            <Link to="/decode" className='text-white/40 hover:text-white transition-colors duration-200'>Decode</Link>
-            <span className='text-white/10'>•</span>
-            <Link to="/blog" className='text-white/40 hover:text-white transition-colors duration-200'>Articles</Link>
-            <span className='text-white/10'>•</span>
-            <Link to="/privacy-policy" className='text-white/40 hover:text-white transition-colors duration-200'>Privacy Policy</Link>
-            <span className='text-white/10'>•</span>
-            <Link to="/terms" className='text-white/40 hover:text-white transition-colors duration-200'>Terms</Link>
-            <span className='text-white/10'>•</span>
+          {/* Right: Links */}
+          <div className='flex items-center gap-4 sm:gap-5'>
             <a href='https://github.com/rajuperumalla951515' target='_blank' rel='noopener noreferrer'
-              className='text-white/40 hover:text-white transition-colors duration-200'>GitHub</a>
-            <span className='text-white/10'>•</span>
-            <a href='https://www.linkedin.com/in/rajuperumalla/' target='_blank' rel='noopener noreferrer'
-              className='text-white/40 hover:text-white transition-colors duration-200'>LinkedIn</a>
+              className='text-white/30 hover:text-white text-xs tracking-wide transition-colors duration-200'>GitHub</a>
+            <span className='text-white/10'>|</span>
+            <a href='https://www.instagram.com/impressive_dev_34' target='_blank' rel='noopener noreferrer'
+              className='text-white/30 hover:text-white text-xs tracking-wide transition-colors duration-200'>Instagram</a>
+            <span className='text-white/10'>|</span>
+            <a href='#contact'
+              className='text-white/30 hover:text-white text-xs tracking-wide transition-colors duration-200'>Contact</a>
+            <span className='text-white/10'>|</span>
+            <Link to="/decode" onClick={handleDecodeNav}
+              className='text-white/30 hover:text-white text-xs tracking-wide transition-colors duration-200'>Decode</Link>
           </div>
 
         </div>
@@ -2085,7 +2066,7 @@ const App = () => {
           <feDisplacementMap in="SourceGraphic" in2="blurred" scale="70" xChannelSelector="R" yChannelSelector="G" />
         </filter>
       </svg>
-    </motion.div>
+    </div>
   );
 };
 
