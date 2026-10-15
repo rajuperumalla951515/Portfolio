@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { blogPosts } from '../src/data/blogData.js';
-import { decodeCategories, decodeResources } from '../src/data/decodeData.js';
+import { decodeCategories, decodeResources, isJobExpired } from '../src/data/decodeData.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -74,8 +74,12 @@ for (const post of blogPosts) {
 for (const cat of decodeCategories) {
   routes.push({
     path: `decode/${cat.slug}`,
-    title: `${cat.title} – Decode Student Hub | Raju Perumalla`,
-    description: cat.metaDescription,
+    title: cat.slug === 'jobs'
+      ? 'Jobs & Internships (2026 & 2027 Batches) – Decode | Raju Perumalla'
+      : `${cat.title} – Decode Student Hub | Raju Perumalla`,
+    description: cat.slug === 'jobs'
+      ? 'Verified student internships, graduate trainee engineering roles, and fresher software opportunities for 2026 and 2027 graduating batches.'
+      : cat.metaDescription,
     canonical: `${BASE_URL}/decode/${cat.slug}`,
     ogType: 'website',
   });
@@ -84,12 +88,14 @@ for (const cat of decodeCategories) {
 // Add Decode detail resource routes
 for (const res of decodeResources) {
   if (res.draft === true || res.published === false) continue;
+  const expired = res.category === 'jobs' && (res.status === 'expired' || res.status === 'closed' || isJobExpired(res));
   routes.push({
     path: `decode/${res.category}/${res.slug}`,
     title: `${res.title} | Decode | Raju Perumalla`,
     description: res.summary,
     canonical: `${BASE_URL}/decode/${res.category}/${res.slug}`,
     ogType: 'article',
+    robots: expired ? 'noindex, follow' : 'index, follow',
   });
 }
 
@@ -136,6 +142,15 @@ export const prerenderMetadata = () => {
     html = html.replace(/<meta property="twitter:title" content=".*?" \/>/i, `<meta property="twitter:title" content="${escapeHtml(route.title)}" />`);
     html = html.replace(/<meta property="twitter:description" content=".*?" \/>/i, `<meta property="twitter:description" content="${escapeHtml(route.description)}" />`);
     html = html.replace(/<meta property="twitter:url" content=".*?" \/>/i, `<meta property="twitter:url" content="${escapeHtml(route.canonical)}" />`);
+
+    // 6. Handle Robots tag (e.g. noindex, follow for expired opportunities)
+    if (route.robots) {
+      if (html.includes('<meta name="robots"')) {
+        html = html.replace(/<meta name="robots" content=".*?" \/>/i, `<meta name="robots" content="${escapeHtml(route.robots)}" />`);
+      } else {
+        html = html.replace('</head>', `    <meta name="robots" content="${escapeHtml(route.robots)}" />\n  </head>`);
+      }
+    }
 
     // 6. Ensure Open Graph & Twitter Image are absolute HTTPS
     const metaImage = route.image || DEFAULT_IMAGE;

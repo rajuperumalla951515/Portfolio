@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { blogPosts } from '../src/data/blogData.js';
-import { decodeCategories, decodeResources } from '../src/data/decodeData.js';
+import { decodeCategories, decodeResources, isJobExpired } from '../src/data/decodeData.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -181,6 +181,11 @@ export const generateSitemap = () => {
     }
 
     if (res.draft === true || res.published === false) {
+      continue;
+    }
+
+    // Exclude expired or closed jobs from sitemap to prevent indexing retired opportunities
+    if (res.category === 'jobs' && (res.status === 'expired' || res.status === 'closed' || isJobExpired(res))) {
       continue;
     }
 

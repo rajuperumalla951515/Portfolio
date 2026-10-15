@@ -5,6 +5,16 @@ const cors = require('cors');
 
 const Contact = require('./models/Contact');
 const supabase = require('./supabaseClient');
+const {
+  isSafePublicUrl,
+  normalizeDeadline,
+  evaluateJobLifecycle,
+  extractBatchEligibility,
+  cleanCanonicalUrl,
+  sanitizeText,
+  expireStaleJobs,
+  parseJobPostingFromUrl,
+} = require('./jobAutomationService');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -35,8 +45,8 @@ app.use(cors({
     }
     return callback(new Error('Cross-Origin Request Blocked by CORS Security Policy'));
   },
-  methods: ['GET', 'POST', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'x-admin-key'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-admin-key', 'x-cron-secret'],
   credentials: true,
 }));
 
@@ -95,8 +105,14 @@ const redirectLimiter = createRateLimiter({
   message: 'Too many redirects requested. Please wait a moment.'
 });
 
+const importLimiter = createRateLimiter({
+  windowMs: 60 * 1000,
+  max: 20,
+  message: 'Too many import requests. Please wait a minute.'
+});
+
 // -------------------------------------------------------------
-// 3. ADMIN AUTHORIZATION MIDDLEWARE
+// 3. ADMIN & CRON AUTHORIZATION MIDDLEWARE
 // -------------------------------------------------------------
 const requireAdminAuth = (req, res, next) => {
   const adminKey = process.env.ADMIN_API_KEY;
@@ -105,10 +121,31 @@ const requireAdminAuth = (req, res, next) => {
   if (!adminKey || !providedKey || providedKey !== adminKey) {
     return res.status(401).json({
       success: false,
-      message: 'Unauthorized: Administrative authentication required to view internal inquiries.'
+      message: 'Unauthorized: Administrative authentication required.'
     });
   }
   next();
+};
+
+const requireCronOrAdminAuth = (req, res, next) => {
+  const adminKey = process.env.ADMIN_API_KEY;
+  const cronSecret = process.env.CRON_SECRET;
+  const providedKey =
+    req.headers['x-admin-key'] ||
+    req.headers['x-cron-secret'] ||
+    req.query.admin_key ||
+    req.query.cron_secret;
+
+  if (
+    (adminKey && providedKey === adminKey) ||
+    (cronSecret && providedKey === cronSecret)
+  ) {
+    return next();
+  }
+  return res.status(401).json({
+    success: false,
+    message: 'Unauthorized: Valid administrative key or cron secret required.'
+  });
 };
 
 // -------------------------------------------------------------
@@ -152,7 +189,7 @@ app.get('/api/decode/categories', async (req, res) => {
 // Decode Resources Query API
 app.get('/api/decode/resources', async (req, res) => {
   try {
-    const { category, search, difficulty, page = 1, limit = 20 } = req.query;
+    const { category, search, difficulty, batch, page = 1, limit = 20, includeExpired } = req.query;
     let query = supabase
       .from('decode_resources')
       .select('*', { count: 'exact' })
@@ -186,16 +223,469 @@ app.get('/api/decode/resources', async (req, res) => {
       return res.status(500).json({ success: false, message: 'Failed to query resources.' });
     }
 
+    // Server-side expiry & batch eligibility enforcement
+    const now = new Date();
+    let filteredData = (data || []).filter((item) => {
+      if (item.category_slug !== 'jobs') return true;
+
+      // Allow admin / explicitly requested historical views
+      if (includeExpired === 'true') return true;
+
+      // Exclude explicitly expired or closed listings
+      if (item.status === 'expired' || item.status === 'closed' || item.status === 'flagged_for_review') {
+        return false;
+      }
+
+      // Live deadline & freshness check
+      const lifecycle = evaluateJobLifecycle(item, { referenceTime: now });
+      if (lifecycle.isExpired) {
+        return false;
+      }
+
+      // Batch filter check (2026 / 2027)
+      if (batch && ['2026', '2027'].includes(String(batch).trim())) {
+        const targetBatch = parseInt(batch, 10);
+        const batches = Array.isArray(item.eligible_batches) ? item.eligible_batches : [];
+        const inBatches = batches.includes(targetBatch);
+        const text = `${item.title} ${item.opportunity_data?.eligibility || ''} ${item.summary || ''}`;
+        const extracted = extractBatchEligibility(text);
+        if (!inBatches && !extracted.batches.includes(targetBatch)) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+
     res.json({
       success: true,
-      data: data || [],
-      total: count || 0,
+      data: filteredData,
+      total: filteredData.length,
       page: safePage,
-      totalPages: Math.ceil((count || 0) / safeLimit),
+      totalPages: Math.ceil(filteredData.length / safeLimit),
     });
   } catch (err) {
     console.error('Resources API error:', err);
     res.status(500).json({ success: false, message: 'Internal server error.' });
+  }
+});
+
+// -------------------------------------------------------------
+// DEDICATED DECODE JOBS & INTERNSHIPS API (2026 & 2027 FRESHERS)
+// -------------------------------------------------------------
+app.get('/api/jobs', async (req, res) => {
+  try {
+    const {
+      batch, // '2026', '2027', 'all'
+      type, // 'Internship', 'Full-time', 'Graduate Trainee'
+      mode, // 'Remote', 'Hybrid', 'On-site'
+      stipend, // 'paid', 'all'
+      search,
+      sort = 'recent', // 'recent', 'closing_soon'
+      page = 1,
+      limit = 30,
+      includeExpired,
+    } = req.query;
+
+    let query = supabase
+      .from('decode_resources')
+      .select('*', { count: 'exact' })
+      .eq('category_slug', 'jobs')
+      .eq('published', true);
+
+    const { data: rawJobs, error } = await query;
+    if (error) {
+      console.error('Supabase jobs query error:', error.message);
+      return res.status(500).json({ success: false, message: 'Failed to retrieve jobs.' });
+    }
+
+    const now = new Date();
+
+    // In-memory filter with full lifecycle & freshness evaluation
+    let processed = (rawJobs || []).map((job) => {
+      const lifecycle = evaluateJobLifecycle(job, { referenceTime: now });
+      const eligibility = extractBatchEligibility(
+        `${job.title} ${job.summary} ${job.opportunity_data?.eligibility || ''}`,
+        job.title
+      );
+
+      const batches = Array.isArray(job.eligible_batches) && job.eligible_batches.length > 0
+        ? job.eligible_batches
+        : eligibility.batches;
+
+      return {
+        ...job,
+        computedStatus: lifecycle.status,
+        isExpired: lifecycle.isExpired,
+        lifecycleReason: lifecycle.reason,
+        effectiveBatches: batches,
+        batchLabel:
+          batches.length === 2
+            ? '2026 & 2027 Batches'
+            : batches.includes(2026)
+            ? '2026 Batch'
+            : batches.includes(2027)
+            ? '2027 Batch'
+            : 'Unknown (Check Source)',
+        workMode: job.work_arrangement || job.opportunity_data?.workMode || 'Remote',
+        jobType: job.opportunity_type || job.opportunity_data?.jobType || 'Internship',
+        stipendText: job.stipend_amount || job.opportunity_data?.stipend || 'Competitive Stipend',
+        deadlineText: job.application_deadline
+          ? new Date(job.application_deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+          : job.opportunity_data?.deadline || 'Rolling Admissions',
+      };
+    });
+
+    // 1. Filter out expired jobs unless explicitly requested
+    if (includeExpired !== 'true') {
+      processed = processed.filter((j) => !j.isExpired && j.status !== 'closed' && j.status !== 'flagged_for_review');
+    }
+
+    // 2. Filter by Graduating Batch (2026 / 2027)
+    if (batch && batch !== 'all') {
+      const targetYear = parseInt(batch, 10);
+      if ([2026, 2027].includes(targetYear)) {
+        processed = processed.filter((j) => j.effectiveBatches.includes(targetYear));
+      }
+    }
+
+    // 3. Filter by Opportunity Type (Internship / Full-time / Graduate Trainee)
+    if (type && type !== 'all') {
+      const cleanType = String(type).toLowerCase();
+      processed = processed.filter((j) => j.jobType.toLowerCase().includes(cleanType));
+    }
+
+    // 4. Filter by Work Mode (Remote / Hybrid / On-site)
+    if (mode && mode !== 'all') {
+      const cleanMode = String(mode).toLowerCase();
+      processed = processed.filter((j) => j.workMode.toLowerCase().includes(cleanMode));
+    }
+
+    // 5. Filter by Stipend / Paid
+    if (stipend === 'paid') {
+      processed = processed.filter((j) => {
+        const text = (j.stipendText || '').toLowerCase();
+        return !text.includes('unpaid') && !text.includes('voluntary');
+      });
+    }
+
+    // 6. Search query
+    if (search && typeof search === 'string' && search.trim()) {
+      const q = search.trim().toLowerCase();
+      processed = processed.filter((j) => {
+        const titleMatch = (j.title || '').toLowerCase().includes(q);
+        const companyMatch = (j.source_name || j.opportunity_data?.organization || '').toLowerCase().includes(q);
+        const tagsMatch = Array.isArray(j.tags) && j.tags.some((t) => t.toLowerCase().includes(q));
+        const summaryMatch = (j.summary || '').toLowerCase().includes(q);
+        return titleMatch || companyMatch || tagsMatch || summaryMatch;
+      });
+    }
+
+    // 7. Sort
+    if (sort === 'closing_soon') {
+      processed.sort((a, b) => {
+        if (!a.application_deadline && !b.application_deadline) return 0;
+        if (!a.application_deadline) return 1;
+        if (!b.application_deadline) return -1;
+        return new Date(a.application_deadline) - new Date(b.application_deadline);
+      });
+    } else {
+      // Recent first
+      processed.sort((a, b) => {
+        const dateA = new Date(a.published_at || a.published_date || a.created_at || 0);
+        const dateB = new Date(b.published_at || b.published_date || b.created_at || 0);
+        return dateB - dateA;
+      });
+    }
+
+    // Stats for UI header
+    const stats = {
+      totalActive: processed.filter((j) => !j.isExpired).length,
+      batch2026Count: processed.filter((j) => j.effectiveBatches.includes(2026) && !j.isExpired).length,
+      batch2027Count: processed.filter((j) => j.effectiveBatches.includes(2027) && !j.isExpired).length,
+      internshipsCount: processed.filter((j) => j.jobType.toLowerCase().includes('intern') && !j.isExpired).length,
+    };
+
+    // Pagination
+    const safePage = Math.max(1, parseInt(page, 10) || 1);
+    const safeLimit = Math.min(100, Math.max(1, parseInt(limit, 10) || 30));
+    const paginated = processed.slice((safePage - 1) * safeLimit, safePage * safeLimit);
+
+    res.json({
+      success: true,
+      stats,
+      total: processed.length,
+      page: safePage,
+      totalPages: Math.ceil(processed.length / safeLimit),
+      data: paginated,
+    });
+  } catch (err) {
+    console.error('Jobs API query error:', err);
+    res.status(500).json({ success: false, message: 'Internal server error.' });
+  }
+});
+
+// Single Job Query with Detailed Expiry Status
+app.get('/api/jobs/:slug', async (req, res) => {
+  try {
+    const { slug } = req.params;
+    const { data: job, error } = await supabase
+      .from('decode_resources')
+      .select('*')
+      .eq('category_slug', 'jobs')
+      .eq('slug', slug)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Single job query error:', error.message);
+      return res.status(500).json({ success: false, message: 'Failed to retrieve job.' });
+    }
+    if (!job) {
+      return res.status(404).json({ success: false, message: 'Job opportunity not found.' });
+    }
+
+    const lifecycle = evaluateJobLifecycle(job);
+    const eligibility = extractBatchEligibility(
+      `${job.title} ${job.summary} ${job.opportunity_data?.eligibility || ''}`,
+      job.title
+    );
+
+    res.json({
+      success: true,
+      data: {
+        ...job,
+        computedStatus: lifecycle.status,
+        isExpired: lifecycle.isExpired,
+        lifecycleReason: lifecycle.reason,
+        effectiveBatches: Array.isArray(job.eligible_batches) && job.eligible_batches.length > 0
+          ? job.eligible_batches
+          : eligibility.batches,
+      },
+    });
+  } catch (err) {
+    console.error('Single job API error:', err);
+    res.status(500).json({ success: false, message: 'Internal server error.' });
+  }
+});
+
+// Scheduled Expiry Execution Route (Called by Cloudflare Cron Trigger or Server Scheduler)
+app.post('/api/jobs/run-expiry', requireCronOrAdminAuth, async (req, res) => {
+  try {
+    const result = await expireStaleJobs(supabase);
+    res.json({
+      success: result.success,
+      expiredCount: result.expiredCount || 0,
+      timestamp: result.timestamp || new Date().toISOString(),
+      message: result.message || `Job expiry completed: ${result.expiredCount || 0} listings expired.`,
+    });
+  } catch (err) {
+    console.error('Job expiry endpoint error:', err);
+    res.status(500).json({ success: false, message: 'Expiry execution failed.' });
+  }
+});
+
+// -------------------------------------------------------------
+// ADMINISTRATIVE JOB INGESTION & MANAGEMENT ROUTES (PROTECTED)
+// -------------------------------------------------------------
+
+// URL Importer: Ingests an opportunity from a URL with SSRF protection & deduplication
+app.post('/api/admin/jobs/import-url', requireAdminAuth, importLimiter, async (req, res) => {
+  try {
+    const { url, batchOverride, typeOverride, deadlineOverride } = req.body || {};
+    if (!url || typeof url !== 'string') {
+      return res.status(400).json({ success: false, message: 'Valid job URL is required.' });
+    }
+
+    if (!isSafePublicUrl(url)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Security Violation: Provided URL failed SSRF validation (private/internal IP or invalid protocol).',
+      });
+    }
+
+    // 1. Heuristic Extraction
+    const parsed = await parseJobPostingFromUrl(url);
+
+    // Apply manual overrides if admin specified them
+    if (Array.isArray(batchOverride) && batchOverride.length > 0) {
+      parsed.eligibleBatches = batchOverride.map(Number);
+    }
+    if (typeOverride) parsed.opportunityType = sanitizeText(typeOverride, 50);
+    if (deadlineOverride) {
+      const norm = normalizeDeadline(deadlineOverride);
+      if (norm.deadlineDate) parsed.applicationDeadline = norm.isoString;
+    }
+
+    // 2. Canonical Deduplication Check
+    const { data: existingJob } = await supabase
+      .from('decode_resources')
+      .select('id, slug, title, canonical_url')
+      .eq('canonical_url', parsed.canonicalUrl)
+      .maybeSingle();
+
+    if (existingJob) {
+      // Update existing record rather than creating duplicate
+      const { data: updated, error: updateErr } = await supabase
+        .from('decode_resources')
+        .update({
+          title: parsed.title,
+          summary: parsed.summary,
+          status: 'active',
+          application_deadline: parsed.applicationDeadline,
+          eligible_batches: parsed.eligibleBatches,
+          opportunity_type: parsed.opportunityType,
+          work_arrangement: parsed.workMode,
+          stipend_amount: parsed.stipend,
+          last_verified_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+          verification_notes: 'Re-verified via Admin URL Importer',
+        })
+        .eq('id', existingJob.id)
+        .select()
+        .single();
+
+      if (updateErr) {
+        return res.status(500).json({ success: false, message: 'Failed to update existing job record.' });
+      }
+
+      return res.json({
+        success: true,
+        action: 'updated',
+        message: `Existing listing "${existingJob.title}" updated and re-verified.`,
+        data: updated,
+      });
+    }
+
+    // 3. Insert New Job Listing
+    const newJobRecord = {
+      slug: parsed.slug,
+      category_slug: 'jobs',
+      title: parsed.title,
+      summary: parsed.summary,
+      content: `## Position Details\n\n${parsed.summary}\n\n---\n\n## Official Application\nApply directly at the [${parsed.company} Careers Portal](${parsed.officialUrl}).`,
+      difficulty: parsed.opportunityType,
+      readTime: '5 min read',
+      author: 'Raju Perumalla (Decode Bot)',
+      published_date: new Date().toISOString().split('T')[0],
+      source_name: parsed.company,
+      source_location: parsed.workMode,
+      action_text: 'Apply →',
+      deadline_text: parsed.applicationDeadline
+        ? `Deadline: ${new Date(parsed.applicationDeadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
+        : 'Rolling Applications',
+      is_featured: false,
+      published: true,
+      status: 'active',
+      application_deadline: parsed.applicationDeadline,
+      eligible_batches: parsed.eligibleBatches,
+      experience_level: 'Fresher',
+      opportunity_type: parsed.opportunityType,
+      work_arrangement: parsed.workMode,
+      stipend_amount: parsed.stipend,
+      is_stipend_paid: true,
+      source_platform: 'admin_importer',
+      canonical_url: parsed.canonicalUrl,
+      auto_imported: true,
+      last_verified_at: new Date().toISOString(),
+      opportunity_data: {
+        organization: parsed.company,
+        role: parsed.title,
+        eligibility: parsed.batchLabel,
+        deadline: parsed.applicationDeadline ? parsed.applicationDeadline.split('T')[0] : 'Rolling Admissions',
+        location: parsed.workMode,
+        workMode: parsed.workMode,
+        jobType: parsed.opportunityType,
+        stipend: parsed.stipend,
+        officialUrl: parsed.officialUrl,
+        isVerified: true,
+      },
+    };
+
+    const { data: created, error: insertErr } = await supabase
+      .from('decode_resources')
+      .insert([newJobRecord])
+      .select()
+      .single();
+
+    if (insertErr) {
+      console.error('Job creation error:', insertErr.message);
+      return res.status(500).json({ success: false, message: 'Failed to create job listing.' });
+    }
+
+    res.status(201).json({
+      success: true,
+      action: 'created',
+      message: `Job listing "${parsed.title}" successfully ingested and verified.`,
+      data: created,
+    });
+  } catch (err) {
+    console.error('Import URL error:', err);
+    res.status(500).json({ success: false, message: err.message || 'Import failed.' });
+  }
+});
+
+// Admin Update Job Listing (Close early, flag, modify status or deadline)
+app.put('/api/admin/jobs/:id', requireAdminAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status, application_deadline, eligible_batches, verification_notes, is_featured } = req.body || {};
+
+    const updates = {
+      updated_at: new Date().toISOString(),
+      last_verified_at: new Date().toISOString(),
+    };
+
+    if (status && ['active', 'expired', 'closed', 'flagged_for_review'].includes(status)) {
+      updates.status = status;
+    }
+    if (application_deadline !== undefined) {
+      updates.application_deadline = application_deadline ? normalizeDeadline(application_deadline).isoString : null;
+    }
+    if (Array.isArray(eligible_batches)) {
+      updates.eligible_batches = eligible_batches.map(Number);
+    }
+    if (verification_notes !== undefined) {
+      updates.verification_notes = sanitizeText(verification_notes, 500);
+    }
+    if (is_featured !== undefined) {
+      updates.is_featured = Boolean(is_featured);
+    }
+
+    const { data, error } = await supabase
+      .from('decode_resources')
+      .update(updates)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      return res.status(500).json({ success: false, message: error.message });
+    }
+
+    res.json({ success: true, message: 'Job opportunity updated successfully.', data });
+  } catch (err) {
+    console.error('Update job error:', err);
+    res.status(500).json({ success: false, message: 'Failed to update job.' });
+  }
+});
+
+// Admin Delete Job Listing
+app.delete('/api/admin/jobs/:id', requireAdminAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { error } = await supabase
+      .from('decode_resources')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      return res.status(500).json({ success: false, message: error.message });
+    }
+
+    res.json({ success: true, message: 'Job opportunity deleted successfully.' });
+  } catch (err) {
+    console.error('Delete job error:', err);
+    res.status(500).json({ success: false, message: 'Failed to delete job.' });
   }
 });
 
@@ -253,6 +743,10 @@ app.get('/go/:slug', redirectLimiter, async (req, res) => {
     if (!destinationUrl) {
       const fallbackDestinations = {
         'clearview-healthcare-data-analyst-advanced-analytics': 'https://www.clearviewhcp.com/careers/',
+        'cisco-graduate-engineer-trainee-2026': 'https://jobs.cisco.com/',
+        'amazon-software-dev-engineer-intern-2027': 'https://www.amazon.jobs/',
+        'tcs-digital-associate-software-engineer-2026': 'https://www.tcs.com/careers',
+        'goldman-sachs-engineering-summer-analyst-2027': 'https://www.goldmansachs.com/careers',
         'google-summer-of-code-internship-guide': 'https://summerofcode.withgoogle.com/',
         'microsoft-software-engineering-internship-2026': 'https://careers.microsoft.com/',
         'lfx-mentorship-open-source-internship': 'https://lfx.linuxfoundation.org/tools/mentorship/',
@@ -627,7 +1121,31 @@ app.get('/api/assets', async (req, res) => {
   }
 });
 
-// Start Server
-app.listen(PORT, () => {
+// Start Server & Background Expiry Task
+const server = app.listen(PORT, () => {
   console.log(`Server running securely on port ${PORT}`);
+
+  // 1. Run initial job expiry check on startup
+  expireStaleJobs(supabase)
+    .then((res) => {
+      if (res && res.expiredCount > 0) {
+        console.log(`[Expiry Scheduler] Initial startup expired ${res.expiredCount} listings.`);
+      }
+    })
+    .catch((err) => console.warn('[Expiry Scheduler] Initial check skipped or Supabase offline:', err.message));
+
+  // 2. Schedule hourly expiry verification (Every 60 minutes)
+  const EXPIRY_INTERVAL_MS = 60 * 60 * 1000;
+  setInterval(() => {
+    expireStaleJobs(supabase)
+      .then((res) => {
+        if (res && res.expiredCount > 0) {
+          console.log(`[Expiry Scheduler] Hourly sweep expired ${res.expiredCount} listings.`);
+        }
+      })
+      .catch((err) => console.warn('[Expiry Scheduler] Sweep error:', err.message));
+  }, EXPIRY_INTERVAL_MS);
 });
+
+module.exports = { app, server };
+

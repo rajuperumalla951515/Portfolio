@@ -106,6 +106,12 @@ export const DecodeDetail = () => {
   const [copied, setCopied] = useState(false);
   const [logoError, setLogoError] = useState(false);
 
+  const isExpired = Boolean(
+    resource?.isExpired ||
+    resource?.status === 'expired' ||
+    resource?.status === 'closed'
+  );
+
   usePageSEO({
     title: resource
       ? `${resource.title} | Decode | Raju Perumalla`
@@ -116,6 +122,7 @@ export const DecodeDetail = () => {
     canonical: `https://www.rajuperumalla.in/decode/${categorySlug}/${slug}`,
     ogType: 'article',
     ogImage: 'https://www.rajuperumalla.in/images/profile.png',
+    robots: isExpired ? 'noindex, follow' : 'index, follow',
   });
 
   useEffect(() => {
@@ -580,12 +587,39 @@ export const DecodeDetail = () => {
               <section aria-label="Official Program Details" className="mb-8 p-5 sm:p-6 rounded-2xl bg-white border border-zinc-200 shadow-2xs space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-xs uppercase font-bold tracking-wider text-zinc-900 flex items-center gap-1.5">
-                    <Lucide.ShieldCheck size={16} className="text-emerald-600" /> Program Specifications
+                    <Lucide.ShieldCheck size={16} className={isExpired ? 'text-amber-600' : 'text-emerald-600'} /> Program Specifications
                   </span>
-                  <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2.5 py-0.5 rounded-full">
-                    Verified Opportunity
+                  <span
+                    className={`text-[10px] font-semibold border px-2.5 py-0.5 rounded-full ${
+                      isExpired
+                        ? 'text-amber-800 bg-amber-50 border-amber-200'
+                        : 'text-emerald-700 bg-emerald-50 border-emerald-200/80'
+                    }`}
+                  >
+                    {isExpired ? 'Opportunity Expired / Closed' : 'Verified Active Opportunity'}
                   </span>
                 </div>
+
+                {/* Prominent Expired Alert Notice */}
+                {isExpired && (
+                  <div className="p-4 rounded-xl bg-amber-50/80 border border-amber-200 text-amber-900 flex items-start gap-3">
+                    <Lucide.AlertTriangle size={18} className="text-amber-600 shrink-0 mt-0.5" />
+                    <div className="space-y-1">
+                      <h4 className="font-bold text-xs uppercase tracking-wider text-amber-900">
+                        Applications Closed
+                      </h4>
+                      <p className="text-xs text-amber-800 leading-relaxed">
+                        This opportunity's application window has expired ({resource.deadlineText || resource.opportunity.deadline || 'Deadline passed'}). This record is preserved as a verified historical reference for exam and interview preparation.
+                      </p>
+                      <Link
+                        to="/decode/jobs"
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-blue-700 hover:text-blue-900 pt-1 underline"
+                      >
+                        Explore active 2026 & 2027 fresher opportunities →
+                      </Link>
+                    </div>
+                  </div>
+                )}
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">
                   <div>
@@ -593,37 +627,55 @@ export const DecodeDetail = () => {
                     <span className="font-semibold text-zinc-900 text-sm">{resource.opportunity.organization}</span>
                   </div>
                   <div>
-                    <span className="text-zinc-400 block text-[10px] uppercase font-semibold">Role / Event</span>
+                    <span className="text-zinc-400 block text-[10px] uppercase font-semibold">Role / Opportunity</span>
                     <span className="font-semibold text-zinc-900 text-sm">{resource.opportunity.role}</span>
                   </div>
                   <div>
-                    <span className="text-zinc-400 block text-[10px] uppercase font-semibold">Eligibility</span>
-                    <span className="text-zinc-700">{resource.opportunity.eligibility}</span>
+                    <span className="text-zinc-400 block text-[10px] uppercase font-semibold">Target Eligibility</span>
+                    <span className="text-zinc-700 font-medium">{resource.opportunity.eligibility}</span>
                   </div>
                   <div>
                     <span className="text-zinc-400 block text-[10px] uppercase font-semibold">Application Deadline</span>
-                    <span className="text-zinc-700 font-medium">{resource.opportunity.deadline}</span>
+                    <span className={`font-medium ${isExpired ? 'text-amber-800 line-through' : 'text-zinc-700'}`}>
+                      {resource.opportunity.deadline}
+                    </span>
                   </div>
                   {resource.opportunity.stipend && (
                     <div className="sm:col-span-2 pt-1 border-t border-zinc-100">
-                      <span className="text-zinc-400 block text-[10px] uppercase font-semibold">Funding / Stipend / Prize</span>
+                      <span className="text-zinc-400 block text-[10px] uppercase font-semibold">Funding / Stipend / Compensation</span>
                       <span className="text-emerald-700 font-bold">{resource.opportunity.stipend}</span>
                     </div>
                   )}
                 </div>
 
                 {resource.opportunity.officialUrl && (
-                  <div className="pt-2">
-                    <a
-                      href={`/go/${resource.slug}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white font-semibold text-xs tracking-wide transition-all shadow-2xs hover:shadow-xs"
-                      title="Open verified official portal via Decode redirect"
-                    >
-                      <span>Open Official Portal</span>
-                      <Lucide.ExternalLink size={13} />
-                    </a>
+                  <div className="pt-2 flex items-center gap-3 flex-wrap">
+                    {isExpired ? (
+                      <>
+                        <span className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-zinc-100 border border-zinc-200 text-zinc-400 font-semibold text-xs cursor-not-allowed">
+                          <Lucide.Clock size={13} />
+                          <span>Applications Closed</span>
+                        </span>
+                        <Link
+                          to="/decode/jobs"
+                          className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white font-semibold text-xs tracking-wide transition-all shadow-2xs"
+                        >
+                          <span>Browse Active Fresher Jobs</span>
+                          <Lucide.ArrowRight size={13} />
+                        </Link>
+                      </>
+                    ) : (
+                      <a
+                        href={`/go/${resource.slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0a66c2] hover:bg-[#004182] text-white font-semibold text-xs tracking-wide transition-all shadow-2xs hover:shadow-xs"
+                        title="Open verified official portal via Decode redirect"
+                      >
+                        <span>Apply Officially</span>
+                        <Lucide.ExternalLink size={13} />
+                      </a>
+                    )}
                   </div>
                 )}
               </section>

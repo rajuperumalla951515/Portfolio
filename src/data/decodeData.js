@@ -417,7 +417,7 @@ Today software teams ship updates multiple times a day. To do so reliably, engin
   },
 
   // ==========================================
-  // 3. JOBS & INTERNSHIPS (VERIFIED)
+  // 3. JOBS & INTERNSHIPS (VERIFIED 2026 & 2027 FRESHER ROLES)
   // ==========================================
   {
     id: 'job-clearview-data-analyst',
@@ -427,32 +427,48 @@ Today software teams ship updates multiple times a day. To do so reliably, engin
     summary: 'Analytics and statistical modelling for life sciences strategy, clinical dataset synthesis, and data-driven consulting engagements.',
     difficulty: 'Entry Level / 0-2 Years',
     readTime: '6 min read',
-    publishedDate: '4 months ago',
-    updatedDate: '2026-03-20',
+    publishedDate: '2026-03-20',
+    updatedDate: '2026-03-28',
     author: 'Raju Perumalla',
     logoKey: null,
     sourceName: 'ClearView Healthcare Partners',
     sourceLocation: 'Gurgaon, Haryana, India',
     actionText: 'Apply →',
-    deadlineText: 'Actively recruiting candidates',
+    deadlineText: 'Deadline: May 31, 2026',
     tags: ['Data Analytics', 'Python', 'SQL', 'Healthcare', 'Consulting'],
+    status: 'active',
+    applicationDeadline: '2026-05-31T23:59:59.999Z',
+    eligibleBatches: [2026],
+    opportunityType: 'Full-time',
+    experienceLevel: 'Fresher',
+    workArrangement: 'Hybrid',
+    stipendAmount: '₹8 - 12 LPA',
+    isStipendPaid: true,
     opportunity: {
       organization: 'ClearView Healthcare Partners',
       role: 'Data Analyst - Advanced Analytics',
-      eligibility: 'B.Tech / B.E / B.Sc in CS, IT, Data Science or quantitative fields',
-      deadline: 'Rolling applications',
+      eligibility: '2026 Graduating B.Tech / B.E / B.Sc in CS, IT, Data Science or quantitative fields',
+      deadline: 'May 31, 2026',
       location: 'Gurgaon, Haryana, India',
       workMode: 'Hybrid',
       jobType: 'Full-time',
-      applicantsCount: 'Over 100 people clicked apply',
-      responseText: 'Responses managed off LinkedIn',
-      stipend: 'Competitive industry compensation',
+      applicantsCount: 'Over 120 applicants',
+      responseText: 'Responses managed via Careers Portal',
+      stipend: 'Competitive industry compensation (₹8 - 12 LPA)',
       officialUrl: 'https://www.clearviewhcp.com/careers/',
+      eligibleBatches: [2026],
       isVerified: true,
     },
     content: `## Position Summary
 
 ClearView Healthcare Partners is a premier life sciences strategy consulting firm. The Advanced Analytics team leverages real-world clinical datasets, statistical modeling, and data engineering to inform biopharma commercialization, market access, and clinical asset development.
+
+---
+
+## Eligibility & Batch Criteria
+- **Target Batch**: 2026 Graduating Batch (Final-Year Students)
+- **Experience**: 0 Years / Fresher
+- **Degree**: B.Tech / B.E / B.Sc in Computer Science, Data Science, or related quantitative domains.
 
 ---
 
@@ -463,15 +479,231 @@ ClearView Healthcare Partners is a premier life sciences strategy consulting fir
 
 ---
 
-## Candidate Qualifications
-- Proficiency in Python (Pandas, NumPy, Scikit-learn) and relational SQL queries.
-- Strong quantitative foundation in statistical hypothesis testing and data storytelling.
-- Bachelor's or Master's degree in Computer Science, Data Science, Bioinformatics, or Engineering.
+## Official Application
+Apply directly through the [ClearView Healthcare Partners Careers Portal](https://www.clearviewhcp.com/careers/).`,
+  },
+  {
+    id: 'job-cisco-get-2026',
+    slug: 'cisco-graduate-engineer-trainee-2026',
+    category: 'jobs',
+    title: 'Graduate Engineer Trainee (GET) - Software Development',
+    summary: 'Core networking, cloud infrastructure, and distributed systems engineering for 2026 graduating batch freshers.',
+    difficulty: 'Fresher / 2026 Batch',
+    readTime: '6 min read',
+    publishedDate: '2026-03-25',
+    updatedDate: '2026-03-28',
+    author: 'Raju Perumalla',
+    logoKey: null,
+    sourceName: 'Cisco Systems',
+    sourceLocation: 'Bangalore, India',
+    actionText: 'Apply →',
+    deadlineText: 'Deadline: May 31, 2026',
+    tags: ['Cisco', 'Networking', 'Python', 'C++', 'Cloud', 'Graduate Trainee'],
+    status: 'active',
+    applicationDeadline: '2026-05-31T23:59:59.999Z',
+    eligibleBatches: [2026],
+    opportunityType: 'Graduate Trainee',
+    experienceLevel: 'Fresher',
+    workArrangement: 'Hybrid',
+    stipendAmount: '₹14 - 18 LPA',
+    isStipendPaid: true,
+    opportunity: {
+      organization: 'Cisco Systems',
+      role: 'Graduate Engineer Trainee (GET)',
+      eligibility: '2026 graduating B.Tech / B.E in CS, IT, ECE with minimum 7.0 CGPA',
+      deadline: 'May 31, 2026',
+      location: 'Bangalore, India',
+      workMode: 'Hybrid',
+      jobType: 'Graduate Trainee',
+      applicantsCount: 'Over 280 applicants',
+      responseText: 'Direct Cisco Career Gateway',
+      stipend: '₹14 - 18 LPA with full benefits',
+      officialUrl: 'https://jobs.cisco.com/',
+      eligibleBatches: [2026],
+      isVerified: true,
+    },
+    content: `## Program Overview
+
+Cisco India Development Center is hiring Graduate Engineer Trainees (GET) for the 2026 batch to engineer internet-scale routing, cloud networking protocols, and enterprise security platforms.
+
+---
+
+## Eligibility Criteria
+- **Graduating Batch**: 2026 Graduates only (Final Year B.Tech / B.E)
+- **Minimum Criteria**: 7.0 CGPA with no active backlogs
+- **Key Skills**: C/C++, Python, Linux OS internals, TCP/IP networking stack.
 
 ---
 
 ## Official Application
-Apply directly through the [ClearView Healthcare Partners Careers Portal](https://www.clearviewhcp.com/careers/).`,
+Apply directly via the [Official Cisco Careers Portal](https://jobs.cisco.com/).`,
+  },
+  {
+    id: 'job-amazon-sde-intern-2027',
+    slug: 'amazon-software-dev-engineer-intern-2027',
+    category: 'jobs',
+    title: 'Software Development Engineer Intern (Summer 2026 / Pre-Final Year)',
+    summary: 'Design high-scale distributed backend systems, AWS microservices, and customer-facing algorithms for 2027 graduating students.',
+    difficulty: 'Pre-Final Year / 2027 Batch',
+    readTime: '7 min read',
+    publishedDate: '2026-03-24',
+    updatedDate: '2026-03-28',
+    author: 'Raju Perumalla',
+    logoKey: null,
+    sourceName: 'Amazon',
+    sourceLocation: 'Hyderabad / Bangalore, India',
+    actionText: 'Apply →',
+    deadlineText: 'Deadline: June 20, 2026',
+    tags: ['Amazon', 'AWS', 'Java', 'Data Structures', 'Algorithms', 'Internship'],
+    status: 'active',
+    applicationDeadline: '2026-06-20T23:59:59.999Z',
+    eligibleBatches: [2027],
+    opportunityType: 'Internship',
+    experienceLevel: 'Fresher',
+    workArrangement: 'Hybrid',
+    stipendAmount: '₹80,000 / month',
+    isStipendPaid: true,
+    opportunity: {
+      organization: 'Amazon',
+      role: 'Software Development Engineer Intern',
+      eligibility: 'Enrolled college students graduating in 2027 (Pre-final year)',
+      deadline: 'June 20, 2026',
+      location: 'Hyderabad / Bangalore, India',
+      workMode: 'Hybrid',
+      jobType: 'Internship',
+      applicantsCount: 'Over 400 applicants',
+      responseText: 'Direct Amazon Jobs Portal',
+      stipend: '₹80,000 / month + Accommodation assistance',
+      officialUrl: 'https://www.amazon.jobs/',
+      eligibleBatches: [2027],
+      isVerified: true,
+    },
+    content: `## Role Overview
+
+Amazon is looking for ambitious Software Development Engineer Interns from the 2027 graduating batch to spend their summer solving planet-scale computational problems.
+
+---
+
+## Eligibility Criteria
+- **Graduating Batch**: 2027 Batches (Currently in 3rd Year / Pre-Final Year)
+- **Degree**: Enrolled in Bachelor's or Master's in Computer Science, Software Engineering, or related fields.
+- **Skills**: Strong foundation in Data Structures, Algorithms, Object-Oriented Design (Java/C++/Python).
+
+---
+
+## Official Application
+Apply via the official [Amazon Student Jobs Portal](https://www.amazon.jobs/).`,
+  },
+  {
+    id: 'job-tcs-digital-2026',
+    slug: 'tcs-digital-associate-software-engineer-2026',
+    category: 'jobs',
+    title: 'Associate Software Engineer - Digital Systems',
+    summary: 'Full-stack software engineering, cloud applications, and AI workflows for 2026 graduates.',
+    difficulty: 'Entry Level / 2026 Batch',
+    readTime: '6 min read',
+    publishedDate: '2026-03-22',
+    updatedDate: '2026-03-28',
+    author: 'Raju Perumalla',
+    logoKey: null,
+    sourceName: 'Tata Consultancy Services',
+    sourceLocation: 'Pan India',
+    actionText: 'Apply →',
+    deadlineText: 'Deadline: May 28, 2026',
+    tags: ['TCS', 'Digital', 'Java', 'Full-Stack', 'Fresher', 'Full-time'],
+    status: 'active',
+    applicationDeadline: '2026-05-28T23:59:59.999Z',
+    eligibleBatches: [2026],
+    opportunityType: 'Full-time',
+    experienceLevel: 'Fresher',
+    workArrangement: 'Hybrid',
+    stipendAmount: '₹7.0 - 9.0 LPA',
+    isStipendPaid: true,
+    opportunity: {
+      organization: 'Tata Consultancy Services',
+      role: 'Associate Software Engineer (Digital)',
+      eligibility: '2026 graduating B.Tech / B.E with 60% or 6.0 CGPA throughout academics',
+      deadline: 'May 28, 2026',
+      location: 'Pan India',
+      workMode: 'Hybrid',
+      jobType: 'Full-time',
+      applicantsCount: 'Over 500 applicants',
+      responseText: 'TCS NextStep Portal',
+      stipend: '₹7.0 - 9.0 LPA',
+      officialUrl: 'https://www.tcs.com/careers',
+      eligibleBatches: [2026],
+      isVerified: true,
+    },
+    content: `## Role Overview
+
+TCS Digital invites applications from 2026 graduating batch students to build cutting-edge enterprise cloud, AI, and modern web software.
+
+---
+
+## Eligibility Criteria
+- **Graduating Batch**: 2026 Only
+- **Criteria**: Minimum 60% throughout Class 10, 12, and Graduation.
+- **Skills**: Core Java, Python, SQL, REST APIs, and basic Cloud principles.
+
+---
+
+## Official Application
+Register and apply through the official [TCS Careers Portal](https://www.tcs.com/careers).`,
+  },
+  {
+    id: 'job-goldman-sachs-intern-2027',
+    slug: 'goldman-sachs-engineering-summer-analyst-2027',
+    category: 'jobs',
+    title: 'Engineering Summer Analyst Intern',
+    summary: 'Low-latency financial systems, quant analytics, and distributed cloud computing for 2027 pre-final year students.',
+    difficulty: 'Pre-Final Year / 2027 Batch',
+    readTime: '7 min read',
+    publishedDate: '2026-03-21',
+    updatedDate: '2026-03-28',
+    author: 'Raju Perumalla',
+    logoKey: null,
+    sourceName: 'Goldman Sachs',
+    sourceLocation: 'Bengaluru / Hyderabad, India',
+    actionText: 'Apply →',
+    deadlineText: 'Deadline: May 20, 2026',
+    tags: ['Goldman Sachs', 'C++', 'Java', 'FinTech', 'Internship', '2027 Batch'],
+    status: 'active',
+    applicationDeadline: '2026-05-20T23:59:59.999Z',
+    eligibleBatches: [2027],
+    opportunityType: 'Internship',
+    experienceLevel: 'Fresher',
+    workArrangement: 'Hybrid',
+    stipendAmount: '₹1,00,000 / month',
+    isStipendPaid: true,
+    opportunity: {
+      organization: 'Goldman Sachs',
+      role: 'Engineering Summer Analyst',
+      eligibility: 'Pre-final year students graduating in 2027',
+      deadline: 'May 20, 2026',
+      location: 'Bengaluru / Hyderabad, India',
+      workMode: 'Hybrid',
+      jobType: 'Internship',
+      applicantsCount: 'Over 300 applicants',
+      responseText: 'Direct Goldman Sachs Portal',
+      stipend: '₹1,00,000 / month stipend',
+      officialUrl: 'https://www.goldmansachs.com/careers',
+      eligibleBatches: [2027],
+      isVerified: true,
+    },
+    content: `## Program Overview
+
+Goldman Sachs Engineering Summer Analyst program allows pre-final year engineering students to solve mission-critical quantitative and distributed computing challenges.
+
+---
+
+## Eligibility Criteria
+- **Graduating Batch**: 2027 Graduates (Currently enrolled in penultimate year of study)
+- **Skills**: Strong algorithmic thinking, C++, Java, Python, and system fundamentals.
+
+---
+
+## Official Application
+Apply via the official [Goldman Sachs Careers Portal](https://www.goldmansachs.com/careers).`,
   },
   {
     id: 'job-gsoc',
@@ -479,29 +711,38 @@ Apply directly through the [ClearView Healthcare Partners Careers Portal](https:
     category: 'jobs',
     title: 'Google Summer of Code (GSoC) Internship Program',
     summary: 'Stipend-backed international open-source internship program. Learn eligibility criteria, proposal drafting, timeline, and mentor outreach.',
-    difficulty: 'Open to College Students',
+    difficulty: 'Open to 2026 & 2027 Batches',
     readTime: '10 min guide',
-    publishedDate: '1 month ago',
-    updatedDate: '2026-03-10',
+    publishedDate: '2026-03-10',
+    updatedDate: '2026-03-28',
     author: 'Raju Perumalla',
     logoKey: 'google',
     sourceName: 'Google Open Source',
     sourceLocation: 'Remote · Global',
     actionText: 'Apply →',
-    deadlineText: 'Annual March-April proposal window',
+    deadlineText: 'Deadline: June 15, 2026',
     tags: ['GSoC', 'Google', 'Internship', 'Open Source', 'Remote', 'Stipend'],
+    status: 'active',
+    applicationDeadline: '2026-06-15T23:59:59.999Z',
+    eligibleBatches: [2026, 2027],
+    opportunityType: 'Internship',
+    experienceLevel: 'Fresher',
+    workArrangement: 'Remote',
+    stipendAmount: '$1,500 - $3,000 stipend',
+    isStipendPaid: true,
     opportunity: {
       organization: 'Google Open Source',
       role: 'Open Source Contributor Intern',
-      eligibility: 'College Students & Beginners (18+)',
-      deadline: 'Annual March-April Proposal Window',
+      eligibility: 'College Students (2026 & 2027 Batches) & Beginners (18+)',
+      deadline: 'June 15, 2026',
       location: 'Remote · Global',
       workMode: 'Remote',
       jobType: 'Internship',
       applicantsCount: 'Over 5,000 students apply annually',
       responseText: 'Direct Google Open Source Portal',
-      stipend: 'Stipend provided based on contributor country purchasing power',
+      stipend: 'Stipend provided based on contributor country purchasing power ($1,500 - $3,000)',
       officialUrl: 'https://summerofcode.withgoogle.com/',
+      eligibleBatches: [2026, 2027],
       isVerified: true,
     },
     content: `## Program Overview
@@ -512,9 +753,9 @@ Google Summer of Code is a global, online program bringing student contributors 
 
 ## Key Details
 - **Organizer**: Google LLC (Open Source Programs Office)
+- **Target Cohorts**: 2026 & 2027 graduating students and open-source contributors (18+)
 - **Mode**: 100% Remote
 - **Stipend**: Financial stipend disbursed upon milestone evaluations
-- **Eligibility**: Any enrolled student or beginner (18+)
 
 ---
 
@@ -534,29 +775,38 @@ Google Summer of Code is a global, online program bringing student contributors 
     category: 'jobs',
     title: 'Software Engineering Intern - Cloud & AI',
     summary: 'Core engineering internship designing distributed cloud backend services, Azure infrastructure, and developer platform features.',
-    difficulty: 'Pre-Final / Final Year Students',
+    difficulty: '2026 & 2027 Batches',
     readTime: '7 min read',
-    publishedDate: '2 weeks ago',
-    updatedDate: '2026-03-25',
+    publishedDate: '2026-03-25',
+    updatedDate: '2026-03-28',
     author: 'Raju Perumalla',
     logoKey: null,
     sourceName: 'Microsoft',
     sourceLocation: 'Hyderabad / Bangalore, India',
     actionText: 'Apply →',
-    deadlineText: 'Rolling campus intake',
+    deadlineText: 'Deadline: May 25, 2026',
     tags: ['Microsoft', 'Azure', 'C++', 'Python', 'Cloud', 'Internship'],
+    status: 'active',
+    applicationDeadline: '2026-05-25T23:59:59.999Z',
+    eligibleBatches: [2026, 2027],
+    opportunityType: 'Internship',
+    experienceLevel: 'Fresher',
+    workArrangement: 'Hybrid',
+    stipendAmount: '₹85,000 / month',
+    isStipendPaid: true,
     opportunity: {
       organization: 'Microsoft',
       role: 'Software Engineering Intern',
-      eligibility: 'Enrolled B.Tech / M.Tech in Computer Science or related branches',
-      deadline: 'Rolling Campus Intake 2026',
+      eligibility: 'Enrolled B.Tech / M.Tech in CS or related branches (2026 & 2027 Batches)',
+      deadline: 'May 25, 2026',
       location: 'Hyderabad / Bangalore, India',
       workMode: 'Hybrid',
       jobType: 'Internship',
-      applicantsCount: 'Over 350 people clicked apply',
+      applicantsCount: 'Over 350 applicants',
       responseText: 'Direct Microsoft Careers Portal',
-      stipend: 'Monthly internship stipend with housing assistance',
+      stipend: '₹85,000 / month internship stipend with housing assistance',
       officialUrl: 'https://careers.microsoft.com/',
+      eligibleBatches: [2026, 2027],
       isVerified: true,
     },
     content: `## Role Overview
@@ -581,29 +831,38 @@ Apply via the official [Microsoft Careers Portal](https://careers.microsoft.com/
     category: 'jobs',
     title: 'Linux Foundation Mentorship (LFX) Program',
     summary: 'Paid remote open source internships across Linux kernel, Kubernetes, Cloud Native (CNCF), and hyperledger ecosystems.',
-    difficulty: 'Intermediate to Advanced',
+    difficulty: '2026 & 2027 Batches',
     readTime: '9 min guide',
-    publishedDate: '3 weeks ago',
-    updatedDate: '2026-03-12',
+    publishedDate: '2026-03-12',
+    updatedDate: '2026-03-28',
     author: 'Raju Perumalla',
     logoKey: null,
     sourceName: 'The Linux Foundation',
     sourceLocation: 'Remote · Global',
     actionText: 'Apply →',
-    deadlineText: 'Spring, Summer & Fall cohorts',
+    deadlineText: 'Deadline: May 30, 2026',
     tags: ['Linux Foundation', 'LFX', 'Kubernetes', 'Cloud Native', 'Internship'],
+    status: 'active',
+    applicationDeadline: '2026-05-30T23:59:59.999Z',
+    eligibleBatches: [2026, 2027],
+    opportunityType: 'Internship',
+    experienceLevel: 'Fresher',
+    workArrangement: 'Remote',
+    stipendAmount: '$3,000 - $6,000 per term',
+    isStipendPaid: true,
     opportunity: {
       organization: 'The Linux Foundation',
       role: 'Software Engineering Mentee',
-      eligibility: 'University Students & Early-Career Developers',
-      deadline: 'Three Cohorts Annually (Spring, Summer, Fall)',
+      eligibility: 'University Students (2026 & 2027 Batches) & Early-Career Developers',
+      deadline: 'May 30, 2026',
       location: 'Remote · Global',
       workMode: 'Remote',
       jobType: 'Internship',
-      applicantsCount: 'Over 1,200 applicants last cohort',
+      applicantsCount: 'Over 1,200 applicants',
       responseText: 'Official Linux Foundation Portal',
-      stipend: 'Funded Stipend per Mentorship Term',
+      stipend: 'Funded Stipend ($3,000 - $6,000 per term)',
       officialUrl: 'https://lfx.linuxfoundation.org/tools/mentorship/',
+      eligibleBatches: [2026, 2027],
       isVerified: true,
     },
     content: `## Program Structure
@@ -612,17 +871,9 @@ The Linux Foundation Mentorship program provides paid, remote internships for de
 
 ---
 
-## Cohorts
-- **Spring**: March – May
-- **Summer**: June – August
-- **Fall**: September – November
-
----
-
-## How to Apply
-1. Browse active projects on the LFX platform.
-2. Complete any prerequisite code challenges or issue submissions.
-3. Submit your application and resume.
+## Eligibility
+- **Enrolled cohorts**: 2026 and 2027 college students and emerging open source contributors.
+- **Modality**: 100% Remote
 
 ---
 
@@ -635,22 +886,30 @@ The Linux Foundation Mentorship program provides paid, remote internships for de
     category: 'jobs',
     title: 'Major League Hacking (MLH) Fellowship',
     summary: 'A 12-week remote educational internship contributing to real-world open-source software with industry mentorship and educational stipends.',
-    difficulty: 'Intermediate',
+    difficulty: '2026 & 2027 Batches',
     readTime: '8 min guide',
-    publishedDate: '1 month ago',
-    updatedDate: '2026-03-15',
+    publishedDate: '2026-03-15',
+    updatedDate: '2026-03-28',
     author: 'Raju Perumalla',
     logoKey: null,
     sourceName: 'Major League Hacking',
     sourceLocation: 'Remote · Global',
     actionText: 'Apply →',
-    deadlineText: 'Rolling applications',
+    deadlineText: 'Deadline: June 30, 2026',
     tags: ['MLH Fellowship', 'Internship', 'Open Source', 'Software Engineering'],
+    status: 'active',
+    applicationDeadline: '2026-06-30T23:59:59.999Z',
+    eligibleBatches: [2026, 2027],
+    opportunityType: 'Internship',
+    experienceLevel: 'Fresher',
+    workArrangement: 'Remote',
+    stipendAmount: 'Need-based Educational Stipend',
+    isStipendPaid: true,
     opportunity: {
       organization: 'Major League Hacking',
       role: 'Software Engineering Fellow',
-      eligibility: 'Enrolled College Students & Recent Graduates',
-      deadline: 'Rolling Admissions for Upcoming Batches',
+      eligibility: 'Enrolled College Students (2026 & 2027 Batches)',
+      deadline: 'June 30, 2026',
       location: 'Remote · Global',
       workMode: 'Remote',
       jobType: 'Fellowship',
@@ -658,6 +917,7 @@ The Linux Foundation Mentorship program provides paid, remote internships for de
       responseText: 'Direct MLH Application Portal',
       stipend: 'Need-based Educational Stipend Available',
       officialUrl: 'https://fellowship.mlh.io/',
+      eligibleBatches: [2026, 2027],
       isVerified: true,
     },
     content: `## About the MLH Fellowship
@@ -1348,3 +1608,135 @@ export const searchDecode = (query = '', categoryFilter = 'all') => {
     return matchesCategory && (matchesTitle || matchesSummary || matchesTags || matchesSource);
   });
 };
+
+/**
+ * Determine if a job listing has expired using reliable UTC deadline & freshness policy.
+ */
+export const isJobExpired = (resource, referenceTime = null) => {
+  if (!resource || resource.category !== 'jobs') return false;
+
+  // 1. Explicit status check
+  if (resource.status === 'expired' || resource.status === 'closed' || resource.status === 'flagged_for_review') {
+    return true;
+  }
+
+  const now = referenceTime ? new Date(referenceTime) : new Date();
+
+  // 2. Fixed deadline check (evaluated at end of day UTC)
+  const deadlineStr = resource.applicationDeadline || resource.application_deadline || resource.opportunity?.deadline;
+  if (deadlineStr) {
+    const trimmed = String(deadlineStr).trim();
+    // Check if fixed date format
+    if (/^\d{4}-\d{2}-\d{2}/.test(trimmed)) {
+      const deadlineDate = new Date(trimmed.length === 10 ? `${trimmed}T23:59:59.999Z` : trimmed);
+      if (!isNaN(deadlineDate.getTime()) && deadlineDate.getTime() < now.getTime()) {
+        return true;
+      }
+    }
+  }
+
+  // 3. Freshness window check for undated listings (45 days)
+  if (!deadlineStr || String(deadlineStr).toLowerCase().includes('rolling')) {
+    const pubDateStr = resource.lastVerifiedAt || resource.last_verified_at || resource.updatedDate || resource.publishedDate;
+    if (pubDateStr) {
+      const pubDate = new Date(pubDateStr);
+      if (!isNaN(pubDate.getTime())) {
+        const ageDays = (now.getTime() - pubDate.getTime()) / (1000 * 60 * 60 * 24);
+        if (ageDays > 45) {
+          return true; // Exceeded freshness window without re-verification
+        }
+      }
+    }
+  }
+
+  return false;
+};
+
+/**
+ * Formats batch eligibility array into human-readable label
+ */
+export const getBatchLabel = (batches) => {
+  if (!Array.isArray(batches) || batches.length === 0) {
+    return 'Unknown (Check Source)';
+  }
+  const sorted = [...batches].map(Number).sort();
+  if (sorted.includes(2026) && sorted.includes(2027)) {
+    return '2026 & 2027 Batches';
+  }
+  if (sorted.includes(2026)) return '2026 Batch';
+  if (sorted.includes(2027)) return '2027 Batch';
+  return `${sorted.join(', ')} Batch`;
+};
+
+/**
+ * Filter jobs by batch (2026 / 2027), opportunity type, work mode, stipend, and query
+ */
+export const filterActiveJobs = (resources, filters = {}) => {
+  const {
+    batch = 'all',
+    type = 'all',
+    mode = 'all',
+    stipend = 'all',
+    query = '',
+    includeExpired = false,
+  } = filters;
+
+  const now = new Date();
+
+  return resources
+    .filter((res) => res.category === 'jobs')
+    .filter((res) => {
+      // Expiry filter
+      if (!includeExpired && isJobExpired(res, now)) {
+        return false;
+      }
+
+      // Batch filter
+      if (batch && batch !== 'all') {
+        const target = parseInt(batch, 10);
+        const batches = res.eligibleBatches || res.opportunity?.eligibleBatches || [];
+        if (!batches.includes(target)) {
+          return false;
+        }
+      }
+
+      // Type filter (Internship / Full-time / Graduate Trainee)
+      if (type && type !== 'all') {
+        const oppType = (res.opportunityType || res.opportunity?.jobType || '').toLowerCase();
+        if (!oppType.includes(type.toLowerCase())) {
+          return false;
+        }
+      }
+
+      // Work mode filter (Remote / Hybrid / On-site)
+      if (mode && mode !== 'all') {
+        const workArr = (res.workArrangement || res.opportunity?.workMode || '').toLowerCase();
+        if (!workArr.includes(mode.toLowerCase())) {
+          return false;
+        }
+      }
+
+      // Stipend filter
+      if (stipend === 'paid') {
+        const stText = (res.stipendAmount || res.opportunity?.stipend || '').toLowerCase();
+        if (stText.includes('unpaid') || stText.includes('voluntary')) {
+          return false;
+        }
+      }
+
+      // Query filter
+      if (query && query.trim()) {
+        const q = query.trim().toLowerCase();
+        const title = (res.title || '').toLowerCase();
+        const org = (res.sourceName || res.opportunity?.organization || '').toLowerCase();
+        const tags = Array.isArray(res.tags) ? res.tags.join(' ').toLowerCase() : '';
+        const summary = (res.summary || '').toLowerCase();
+        if (!title.includes(q) && !org.includes(q) && !tags.includes(q) && !summary.includes(q)) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+};
+

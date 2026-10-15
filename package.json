@@ -10,6 +10,8 @@
     "build": "node scripts/generate-sitemap.js && vite build && node scripts/prerender-metadata.js",
     "test:seo": "node scripts/verify-seo-production.js",
     "test:security": "node scripts/verify-security-audit.js",
+    "test:jobs": "node scripts/verify-jobs-automation.js",
+    "test": "npm run test:seo && npm run test:security && npm run test:jobs",
     "deploy": "npm run build && wrangler deploy",
     "lint": "eslint .",
     "preview": "vite preview"

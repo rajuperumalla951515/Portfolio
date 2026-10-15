@@ -50,6 +50,23 @@ CREATE TABLE decode_resources (
     deadline_text TEXT,
     is_featured BOOLEAN DEFAULT false,
     published BOOLEAN DEFAULT true,
+    -- Automated Jobs & Internships Fields
+    status TEXT DEFAULT 'active',
+    application_deadline TIMESTAMPTZ,
+    eligible_batches INT[] DEFAULT ARRAY[]::INT[],
+    experience_level TEXT DEFAULT 'Fresher',
+    opportunity_type TEXT DEFAULT 'Internship',
+    work_arrangement TEXT DEFAULT 'Remote',
+    stipend_amount TEXT,
+    is_stipend_paid BOOLEAN DEFAULT true,
+    salary_currency TEXT DEFAULT 'INR',
+    source_platform TEXT DEFAULT 'official',
+    source_job_id TEXT,
+    canonical_url TEXT,
+    auto_imported BOOLEAN DEFAULT false,
+    published_at TIMESTAMPTZ DEFAULT NOW(),
+    last_verified_at TIMESTAMPTZ DEFAULT NOW(),
+    verification_notes TEXT,
     opportunity_data JSONB,
     project_spec JSONB,
     reference_data JSONB,
@@ -62,6 +79,9 @@ CREATE INDEX idx_decode_resources_category ON decode_resources(category_slug);
 CREATE INDEX idx_decode_resources_slug ON decode_resources(slug);
 CREATE INDEX idx_decode_resources_published ON decode_resources(published);
 CREATE INDEX idx_decode_resources_featured ON decode_resources(is_featured);
+CREATE INDEX idx_decode_jobs_status_deadline ON decode_resources(status, application_deadline) WHERE category_slug = 'jobs';
+CREATE INDEX idx_decode_jobs_batches ON decode_resources USING GIN (eligible_batches) WHERE category_slug = 'jobs';
+CREATE INDEX idx_decode_jobs_canonical ON decode_resources(canonical_url) WHERE canonical_url IS NOT NULL;
 CREATE INDEX idx_decode_categories_slug ON decode_categories(slug);
 CREATE INDEX idx_decode_categories_order ON decode_categories(display_order);
 

@@ -28,7 +28,7 @@ const assert = (condition, description) => {
 assert(fs.existsSync(sitemapPath), 'dist/sitemap.xml exists');
 
 import { blogPosts } from '../src/data/blogData.js';
-import { decodeCategories, decodeResources } from '../src/data/decodeData.js';
+import { decodeCategories, decodeResources, isJobExpired } from '../src/data/decodeData.js';
 
 const sitemapContent = fs.readFileSync(sitemapPath, 'utf-8');
 
@@ -48,7 +48,10 @@ const expectedRoutes = [
   'terms',
   ...blogPosts.filter(p => !p.draft && p.published !== false).map(p => `blog/${p.slug}`),
   ...decodeCategories.map(c => `decode/${c.slug}`),
-  ...decodeResources.filter(r => !r.draft && r.published !== false).map(r => `decode/${r.category}/${r.slug}`),
+  ...decodeResources
+    .filter(r => !r.draft && r.published !== false)
+    .filter(r => r.category !== 'jobs' || (!isJobExpired(r) && r.status !== 'expired' && r.status !== 'closed'))
+    .map(r => `decode/${r.category}/${r.slug}`),
 ];
 const expectedTotalUrls = 1 + expectedRoutes.length; // 1 root + sub-routes
 

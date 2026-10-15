@@ -1,12 +1,14 @@
-// Database Data-Access Layer for Decode
-// Primary Source of Truth: Supabase PostgreSQL (decode_categories, decode_resources)
 import { supabase } from '../supabaseClient';
 import {
   decodeCategories as fallbackCategories,
+  decodeResources as fallbackResources,
   getCategoryBySlug as getFallbackCategory,
   getResourceBySlug as getFallbackResource,
   getFeaturedResources as getFallbackFeatured,
   searchDecode as searchFallback,
+  isJobExpired,
+  getBatchLabel,
+  filterActiveJobs,
 } from '../data/decodeData';
 
 export const decodeService = {
@@ -22,7 +24,6 @@ export const decodeService = {
         .order('display_order', { ascending: true });
 
       if (error) {
-        // Table not created yet or network error
         return {
           data: fallbackCategories,
           isLiveDb: false,
@@ -31,7 +32,6 @@ export const decodeService = {
       }
 
       if (data && data.length > 0) {
-        // Map snake_case columns to camelCase expected by components
         const mapped = data.map((c) => ({
           id: c.slug,
           slug: c.slug,
@@ -83,7 +83,6 @@ export const decodeService = {
         };
       }
 
-      // Fallback if not migrated yet
       const fallback = getFallbackCategory(slug);
       return { data: fallback || null, isLiveDb: false, error: error ? error.message : null };
     } catch (err) {
@@ -99,8 +98,13 @@ export const decodeService = {
     categorySlug = null,
     query = '',
     difficulty = 'All',
+    batch = 'all',
+    opportunityType = 'all',
+    workArrangement = 'all',
+    stipend = 'all',
     page = 1,
     limit = 20,
+    includeExpired = false,
   } = {}) {
     try {
       let req = supabase
@@ -130,7 +134,7 @@ export const decodeService = {
       const { data, count, error } = await req;
 
       if (!error && data && data.length > 0) {
-        const mapped = data.map((r) => {
+        let mapped = data.map((r) => {
           const fallback = getFallbackResource(r.category_slug, r.slug);
           const rawContent = r.content || fallback?.content || null;
           const cleanContent = rawContent
@@ -138,6 +142,9 @@ export const decodeService = {
             : null;
           const rawSummary = r.summary || fallback?.summary || '';
           const cleanSummary = String(rawSummary).replace(/\\r\\n/g, '\n').replace(/\\n/g, '\n');
+
+          const eligibleBatches = r.eligible_batches || fallback?.eligibleBatches || [];
+          const expired = isJobExpired({ ...r, category: r.category_slug });
 
           return {
             id: r.id || r.slug,
@@ -157,12 +164,31 @@ export const decodeService = {
             sourceLocation: r.source_location || fallback?.sourceLocation || null,
             actionText: r.action_text || fallback?.actionText || 'View resource →',
             deadlineText: r.deadline_text || fallback?.deadlineText || r.opportunity_data?.deadline || null,
-            opportunity: r.opportunity_data,
+            status: r.status || (expired ? 'expired' : 'active'),
+            isExpired: expired,
+            applicationDeadline: r.application_deadline || fallback?.applicationDeadline,
+            eligibleBatches,
+            batchLabel: getBatchLabel(eligibleBatches),
+            opportunityType: r.opportunity_type || fallback?.opportunityType,
+            workArrangement: r.work_arrangement || fallback?.workArrangement,
+            stipendAmount: r.stipend_amount || fallback?.stipendAmount,
+            opportunity: r.opportunity_data || fallback?.opportunity,
             projectSpec: r.project_spec,
             referenceInfo: r.reference_data,
             isFeatured: r.is_featured,
           };
         });
+
+        // Filter out expired jobs from active category feed
+        if (categorySlug === 'jobs' && !includeExpired) {
+          mapped = mapped.filter((r) => !r.isExpired);
+        }
+
+        // Batch filter
+        if (categorySlug === 'jobs' && batch && batch !== 'all') {
+          const bYear = parseInt(batch, 10);
+          mapped = mapped.filter((r) => Array.isArray(r.eligibleBatches) && r.eligibleBatches.includes(bYear));
+        }
 
         return {
           data: mapped,
@@ -174,25 +200,38 @@ export const decodeService = {
         };
       }
 
-      // Fallback search
-      const fallbackData = searchFallback(query, categorySlug || 'all');
-      const filteredByDiff =
-        difficulty === 'All'
-          ? fallbackData
-          : fallbackData.filter((r) => r.difficulty === difficulty);
+      // Fallback search / jobs filter
+      let fallbackData = [];
+      if (categorySlug === 'jobs') {
+        fallbackData = filterActiveJobs(fallbackResources, {
+          batch,
+          type: opportunityType,
+          mode: workArrangement,
+          stipend,
+          query,
+          includeExpired,
+        });
+      } else {
+        fallbackData = searchFallback(query, categorySlug || 'all');
+        if (difficulty !== 'All') {
+          fallbackData = fallbackData.filter((r) => r.difficulty === difficulty);
+        }
+      }
 
-      const paginated = filteredByDiff.slice((page - 1) * limit, page * limit);
+      const paginated = fallbackData.slice((page - 1) * limit, page * limit);
 
       return {
         data: paginated,
-        total: filteredByDiff.length,
+        total: fallbackData.length,
         page,
-        totalPages: Math.ceil(filteredByDiff.length / limit),
+        totalPages: Math.ceil(fallbackData.length / limit),
         isLiveDb: false,
         error: error ? error.message : null,
       };
     } catch (err) {
-      const fallbackData = searchFallback(query, categorySlug || 'all');
+      const fallbackData = categorySlug === 'jobs'
+        ? filterActiveJobs(fallbackResources, { batch, type: opportunityType, mode: workArrangement, stipend, query, includeExpired })
+        : searchFallback(query, categorySlug || 'all');
       return {
         data: fallbackData,
         total: fallbackData.length,
@@ -202,6 +241,49 @@ export const decodeService = {
         error: err.message,
       };
     }
+  },
+
+  /**
+   * Specialized fetch method for Decode Jobs & Internships
+   */
+  async getJobs(filters = {}) {
+    const {
+      batch = 'all',
+      type = 'all',
+      mode = 'all',
+      stipend = 'all',
+      query = '',
+      includeExpired = false,
+    } = filters;
+
+    // Use getResources targeting 'jobs'
+    const res = await this.getResources({
+      categorySlug: 'jobs',
+      batch,
+      opportunityType: type,
+      workArrangement: mode,
+      stipend,
+      query,
+      includeExpired,
+      limit: 100,
+    });
+
+    const activeList = (res.data || []).filter((j) => !j.isExpired);
+
+    const stats = {
+      totalActive: activeList.length,
+      batch2026Count: activeList.filter((j) => (j.eligibleBatches || []).includes(2026)).length,
+      batch2027Count: activeList.filter((j) => (j.eligibleBatches || []).includes(2027)).length,
+      internshipsCount: activeList.filter((j) => (j.opportunityType || j.opportunity?.jobType || '').toLowerCase().includes('intern')).length,
+    };
+
+    return {
+      data: res.data || [],
+      total: res.total,
+      stats,
+      isLiveDb: res.isLiveDb,
+      error: res.error,
+    };
   },
 
   /**
@@ -230,7 +312,6 @@ export const decodeService = {
 
       if (!error && data) {
         const fallback = getFallbackResource(data.category_slug, data.slug);
-        // If live DB has a truncated version or lacks full stages, prefer rich fallback content
         const rawContent = (fallback?.content && (!data.content || data.content.length < fallback.content.length))
           ? fallback.content
           : (data.content || fallback?.content || null);
@@ -239,6 +320,9 @@ export const decodeService = {
           : null;
         const rawSummary = data.summary || fallback?.summary || '';
         const cleanSummary = String(rawSummary).replace(/\\r\\n/g, '\n').replace(/\\n/g, '\n');
+
+        const eligibleBatches = data.eligible_batches || fallback?.eligibleBatches || [];
+        const expired = isJobExpired({ ...data, category: data.category_slug });
 
         return {
           data: {
@@ -259,6 +343,14 @@ export const decodeService = {
             sourceLocation: data.source_location || fallback?.sourceLocation || null,
             actionText: data.action_text || fallback?.actionText || 'View resource →',
             deadlineText: data.deadline_text || fallback?.deadlineText || data.opportunity_data?.deadline || null,
+            status: data.status || (expired ? 'expired' : 'active'),
+            isExpired: expired,
+            applicationDeadline: data.application_deadline || fallback?.applicationDeadline,
+            eligibleBatches,
+            batchLabel: getBatchLabel(eligibleBatches),
+            opportunityType: data.opportunity_type || fallback?.opportunityType,
+            workArrangement: data.work_arrangement || fallback?.workArrangement,
+            stipendAmount: data.stipend_amount || fallback?.stipendAmount,
             opportunity: data.opportunity_data || fallback?.opportunity || null,
             projectSpec: data.project_spec || fallback?.projectSpec || null,
             referenceInfo: data.reference_data || fallback?.referenceInfo || null,
@@ -270,7 +362,21 @@ export const decodeService = {
       }
 
       const fallback = getFallbackResource(targetCategory, targetSlug);
-      return { data: fallback || null, isLiveDb: false, error: error ? error.message : null };
+      if (fallback) {
+        const expired = isJobExpired(fallback);
+        return {
+          data: {
+            ...fallback,
+            isExpired: expired,
+            status: fallback.status || (expired ? 'expired' : 'active'),
+            batchLabel: getBatchLabel(fallback.eligibleBatches || []),
+          },
+          isLiveDb: false,
+          error: error ? error.message : null,
+        };
+      }
+
+      return { data: null, isLiveDb: false, error: error ? error.message : null };
     } catch (err) {
       const targetSlug = resourceSlug || categorySlug;
       const targetCategory = resourceSlug ? categorySlug : null;
