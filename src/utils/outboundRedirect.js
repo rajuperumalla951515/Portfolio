@@ -13,6 +13,13 @@ export const VERIFIED_FALLBACK_DESTINATIONS = {
   'full-stack-system-design-primer': 'https://github.com/donnemartin/system-design-primer',
   'docker-containerization-guide': 'https://docs.docker.com/',
   'github-student-developer-pack-guide': 'https://education.github.com/pack',
+  'citi-java-fullstack-developer-chennai': 'https://jobs.citi.com/job/chennai/java-fullstack-developer/287/101944267120',
+  'aguttaa-associate-software-intern-remote': 'https://aguttaa.com/careers/associate-software-intern',
+  'aguttaa-hr-recruiter-intern-remote': 'https://aguttaa.com/careers/hr-recruiter-intern',
+  'cognizant-fresher-customer-support-data-mapping': 'https://bebee.com/in/jobs/fresher-customer-support-data-mapping-process-cognizant-hyderabad--t7xk-853218746',
+  'fresher-process-associate-voice-process-bangalore': 'https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=N-edGDrJWk-LaG9MqZQZEjMyU26NbD5BgSc_JO7O4FVUQUlWQUE3UVhXOVhLNTRJM0I1N0tOUVNFMC4u',
+  'citi-full-stack-java-developer-commercial-cards': 'https://jobs.citi.com/job/chennai/full-stack-java-developer/287/101956556992',
+  'citi-sap-cte-fieldglass-senior-business-analyst': 'https://jobs.citi.com/job/chennai/sap-cte-fieldglass-senior-business-analyst-avp/287/101736842464',
 };
 
 /**

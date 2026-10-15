@@ -936,6 +936,452 @@ The MLH Fellowship is a remote 12-week internship alternative where fellows cont
 ## Official Link
 [Official MLH Fellowship Portal](https://fellowship.mlh.io/)`,
   },
+  {
+    id: 'job-citi-java-fullstack-chennai',
+    slug: 'citi-java-fullstack-developer-chennai',
+    category: 'jobs',
+    title: 'Java Fullstack Developer (Early Career)',
+    summary: 'Develop high-scale enterprise microservices, transactional backend systems, and modern web applications at Citi Technology.',
+    difficulty: '0-2 Years / 2026 Batch Eligible',
+    readTime: '6 min read',
+    publishedDate: '2026-10-14',
+    updatedDate: '2026-10-15',
+    author: 'Raju Perumalla',
+    logoKey: null,
+    sourceName: 'Citi Careers',
+    sourceLocation: 'Chennai, Tamil Nadu, India',
+    actionText: 'Apply →',
+    deadlineText: 'Deadline: November 30, 2026',
+    tags: ['Citi', 'Java', 'Spring Boot', 'Microservices', 'Early Career', 'SQL', 'Chennai'],
+    status: 'active',
+    applicationDeadline: '2026-11-30T23:59:59.999Z',
+    eligibleBatches: [2026],
+    opportunityType: 'Full-time',
+    experienceLevel: 'Fresher / Early Career',
+    workArrangement: 'Hybrid',
+    stipendAmount: '₹12 - 18 LPA (Industry Standard)',
+    isStipendPaid: true,
+    opportunity: {
+      organization: 'Citi (Citigroup)',
+      role: 'Java Fullstack Developer (Applications Development Programmer Analyst)',
+      eligibility: 'Bachelor’s / University degree in CS, IT or equivalent (0-2 years experience / 2026 graduates eligible)',
+      deadline: 'November 30, 2026',
+      location: 'Chennai, Tamil Nadu, India',
+      workMode: 'Hybrid',
+      jobType: 'Full-time',
+      applicantsCount: 'Early application window open',
+      responseText: 'Direct Citi Careers Workday Portal',
+      stipend: '₹12 - 18 LPA with comprehensive health & retirement benefits',
+      officialUrl: 'https://jobs.citi.com/job/chennai/java-fullstack-developer/287/101944267120',
+      eligibleBatches: [2026],
+      isVerified: true,
+    },
+    content: `## Position Summary
+
+Citi is hiring an Applications Development Programmer Analyst for its Chennai Technology Center. This role participates in the development and enhancement of mission-critical banking and financial applications.
+
+---
+
+## Eligibility Criteria
+- **Graduating Batch**: 2026 Graduates & Early Career (0–2 Years Experience)
+- **Education**: Bachelor’s or University degree in Computer Science, IT, or related engineering discipline
+- **Key Skills**: Java, Spring Boot, Microservices, REST APIs, SQL, UNIX/Linux
+
+---
+
+## Core Technical Responsibilities
+- Design and code robust application modules using Core Java, J2EE, Spring Boot, and JDBC.
+- Develop RESTful microservices and WebSockets for low-latency financial transaction workflows.
+- Write unit and integration test suites using JUnit, TestNG, and Mockito.
+- Participate in CI/CD pipeline deployments and agile sprint ceremonies.
+
+---
+
+## Official Application
+Apply directly through the [Citi Careers Portal](https://jobs.citi.com/job/chennai/java-fullstack-developer/287/101944267120).`,
+  },
+  {
+    id: 'job-aguttaa-associate-software-intern',
+    slug: 'aguttaa-associate-software-intern-remote',
+    category: 'jobs',
+    title: 'Associate Software Intern (Web, Mobile & Backend)',
+    summary: '6-month software engineering internship spanning React, Node.js, Python, and SQL with senior mentorship and permanent PPO conversion.',
+    difficulty: '0-1 Years / 2026 & 2027 Batches',
+    readTime: '5 min read',
+    publishedDate: '2026-10-15',
+    updatedDate: '2026-10-15',
+    author: 'Raju Perumalla',
+    logoKey: null,
+    sourceName: 'Aguttaa',
+    sourceLocation: 'Remote (Work From Home)',
+    actionText: 'Apply →',
+    deadlineText: 'Deadline: December 15, 2026',
+    tags: ['Aguttaa', 'React', 'Node.js', 'Python', 'SQL', 'Internship', 'Remote'],
+    status: 'active',
+    applicationDeadline: '2026-12-15T23:59:59.999Z',
+    eligibleBatches: [2026, 2027],
+    opportunityType: 'Internship',
+    experienceLevel: 'Fresher / Intern',
+    workArrangement: 'Remote',
+    stipendAmount: '₹5,000 - ₹10,000 / month (Converts to ₹3 LPA+ permanent role)',
+    isStipendPaid: true,
+    opportunity: {
+      organization: 'Aguttaa',
+      role: 'Associate Software Intern',
+      eligibility: 'Enrolled or graduating college students (2026 & 2027 Batches) with core programming fundamentals',
+      deadline: 'December 15, 2026',
+      location: 'Remote · Work From Home',
+      workMode: 'Remote',
+      jobType: 'Internship',
+      applicantsCount: 'Screened via TalentScope AI',
+      responseText: 'Response within 5 working days',
+      stipend: '₹5,000 - ₹10,000 / month performance stipend with ₹3 LPA+ permanent offer',
+      officialUrl: 'https://aguttaa.com/careers/associate-software-intern',
+      eligibleBatches: [2026, 2027],
+      isVerified: true,
+    },
+    content: `## Program Overview
+
+Aguttaa is a recruitment tech firm built around TalentScope, its AI-powered candidate evaluation platform. As an Associate Software Intern, you will work alongside senior software engineers on delivery work across web, mobile, and backend microservices.
+
+---
+
+## Internship Structure
+- **Months 1–3**: Guided training and hands-on codebase orientation.
+- **Months 4–6**: Performance-based stipend of ₹5,000–₹10,000/month working on live features.
+- **Post-Internship**: Eligible for permanent full-time conversion starting from ₹3 LPA+.
+
+---
+
+## Eligibility Criteria
+- **Target Batches**: 2026 (Final Year) & 2027 (Pre-Final Year)
+- **Skills**: Basic knowledge of HTML, CSS, JavaScript, React, Node.js, Python, or SQL
+- **Format**: 100% Remote, work from home
+
+---
+
+## Official Application
+Apply in 2 minutes without resume via the [Aguttaa Careers Portal](https://aguttaa.com/careers/associate-software-intern).`,
+  },
+  {
+    id: 'job-aguttaa-hr-recruiter-intern',
+    slug: 'aguttaa-hr-recruiter-intern-remote',
+    category: 'jobs',
+    title: 'HR Recruiter Intern (Talent Acquisition & Sourcing)',
+    summary: 'Remote human resources internship managing candidate sourcing, LinkedIn talent mapping, screening, and interview coordination.',
+    difficulty: '0-1 Years / 2026 & 2027 Batches',
+    readTime: '5 min read',
+    publishedDate: '2026-10-15',
+    updatedDate: '2026-10-15',
+    author: 'Raju Perumalla',
+    logoKey: null,
+    sourceName: 'Aguttaa',
+    sourceLocation: 'Remote (Work From Home)',
+    actionText: 'Apply →',
+    deadlineText: 'Deadline: December 15, 2026',
+    tags: ['Aguttaa', 'HR', 'Recruitment', 'Talent Acquisition', 'LinkedIn', 'Internship', 'Remote'],
+    status: 'active',
+    applicationDeadline: '2026-12-15T23:59:59.999Z',
+    eligibleBatches: [2026, 2027],
+    opportunityType: 'Internship',
+    experienceLevel: 'Fresher / Intern',
+    workArrangement: 'Remote',
+    stipendAmount: '₹5,000 - ₹10,000 / month (Converts to ₹3 LPA+ permanent role)',
+    isStipendPaid: true,
+    opportunity: {
+      organization: 'Aguttaa',
+      role: 'HR Recruiter Intern',
+      eligibility: 'Graduating or enrolled students (2026 & 2027 Batches) across any degree (B.Tech, BBA, MBA, B.Com, BA)',
+      deadline: 'December 15, 2026',
+      location: 'Remote · Work From Home',
+      workMode: 'Remote',
+      jobType: 'Internship',
+      applicantsCount: 'Screened via TalentScope AI',
+      responseText: 'Response within 5 working days',
+      stipend: '₹5,000 - ₹10,000 / month performance stipend with ₹3 LPA+ permanent offer',
+      officialUrl: 'https://aguttaa.com/careers/hr-recruiter-intern',
+      eligibleBatches: [2026, 2027],
+      isVerified: true,
+    },
+    content: `## Program Overview
+
+Join Aguttaa's recruitment and talent solutions division as an HR Recruiter Intern. You will gain practical exposure across IT and non-IT hiring, candidate communication, screening calls, and interview pipeline coordination.
+
+---
+
+## Internship Structure
+- **Duration**: 6-Month Remote Internship
+- **Stipend**: Performance-based stipend of ₹5,000–₹10,000/month after training.
+- **Career Growth**: Direct eligibility for a permanent HR Specialist role starting at ₹3 LPA+.
+
+---
+
+## Key Responsibilities
+- Source potential candidates across job boards, LinkedIn, and internal database pipelines.
+- Conduct initial candidate telephone screening calls and verify job alignment.
+- Coordinate interview schedules between candidates and technical evaluation panels.
+- Maintain tracking spreadsheets and candidate databases.
+
+---
+
+## Official Application
+Apply directly via the [Aguttaa HR Careers Portal](https://aguttaa.com/careers/hr-recruiter-intern).`,
+  },
+  {
+    id: 'job-cognizant-data-mapping-process',
+    slug: 'cognizant-fresher-customer-support-data-mapping',
+    category: 'jobs',
+    title: 'Customer Support Executive (Data - Mapping Process)',
+    summary: 'Analyze, validate, and maintain geospatial and mapping data accuracy within Cognizant’s digital operations center.',
+    difficulty: 'Fresher / 2026 Batch & Recent Graduates',
+    readTime: '5 min read',
+    publishedDate: '2026-09-25',
+    updatedDate: '2026-10-15',
+    author: 'Raju Perumalla',
+    logoKey: null,
+    sourceName: 'Cognizant',
+    sourceLocation: 'Hyderabad, Telangana, India',
+    actionText: 'Apply →',
+    deadlineText: 'Deadline: November 15, 2026',
+    tags: ['Cognizant', 'Data Mapping', 'Customer Support', 'Operations', 'Fresher', 'Hyderabad'],
+    status: 'active',
+    applicationDeadline: '2026-11-15T23:59:59.999Z',
+    eligibleBatches: [2026],
+    opportunityType: 'Full-time',
+    experienceLevel: 'Fresher (0 to 0 years)',
+    workArrangement: 'On-site',
+    stipendAmount: '₹2.5 - 3.5 LPA + Shift Allowances',
+    isStipendPaid: true,
+    opportunity: {
+      organization: 'Cognizant',
+      role: 'Customer Support Executive - Data Mapping Process',
+      eligibility: 'Any Graduate (2026 Batch or recent graduates) with 0 years experience and good analytical communication skills',
+      deadline: 'November 15, 2026',
+      location: 'Hyderabad (HYD), Telangana, India',
+      workMode: 'On-site (Work From Office)',
+      jobType: 'Full-time',
+      applicantsCount: 'High volume fresher drive',
+      responseText: 'Direct hiring cycle via Cognizant partner gateways',
+      stipend: '₹2.5 - 3.5 LPA + rotational shift allowance and transportation',
+      officialUrl: 'https://bebee.com/in/jobs/fresher-customer-support-data-mapping-process-cognizant-hyderabad--t7xk-853218746',
+      eligibleBatches: [2026],
+      isVerified: true,
+    },
+    content: `## Role Overview
+
+Cognizant Hyderabad is recruiting freshers for its Data Mapping Operations team. The role focuses on verifying, updating, and auditing geo-navigation and mapping datasets for global enterprise clients.
+
+---
+
+## Eligibility Criteria
+- **Experience**: Freshers Eligible (0 to 0 years experience)
+- **Batch**: 2026 Graduating Batch & Recent Graduates
+- **Location**: Hyderabad (Work From Office)
+- **Work Shifts**: 24/7 Rotational shifts with company-provided transport
+
+---
+
+## Core Responsibilities
+- Analyze and validate map data attributes including roads, points of interest, and navigational pathways.
+- Ensure strict adherence to client quality benchmarks and data hygiene standards.
+- Troubleshoot mapping anomalies and flag discrepancies for engineering review.
+
+---
+
+## Official Application
+View full job specifications and apply via the [Cognizant / BeBee Career Gateway](https://bebee.com/in/jobs/fresher-customer-support-data-mapping-process-cognizant-hyderabad--t7xk-853218746).`,
+  },
+  {
+    id: 'job-virtual-drive-voice-process-bangalore',
+    slug: 'fresher-process-associate-voice-process-bangalore',
+    category: 'jobs',
+    title: 'Process Associate - Voice Process (Mega Virtual Drive)',
+    summary: 'Virtual hiring drive for non-engineering freshers for voice customer support and communication operations in Bangalore.',
+    difficulty: 'Fresher / Non-Engineering Graduates',
+    readTime: '5 min read',
+    publishedDate: '2026-10-15',
+    updatedDate: '2026-10-15',
+    author: 'Raju Perumalla',
+    logoKey: null,
+    sourceName: 'Mega Virtual Hiring Drive',
+    sourceLocation: 'Bangalore, Karnataka, India',
+    actionText: 'Register →',
+    deadlineText: 'Deadline: November 10, 2026',
+    tags: ['Voice Process', 'Customer Support', 'BPO', 'Mega Drive', 'Fresher', 'Bangalore'],
+    status: 'active',
+    applicationDeadline: '2026-11-10T23:59:59.999Z',
+    eligibleBatches: [2026],
+    opportunityType: 'Full-time',
+    experienceLevel: 'Fresher',
+    workArrangement: 'On-site',
+    stipendAmount: '₹2.8 - 3.6 LPA + Night Shift Allowances',
+    isStipendPaid: true,
+    opportunity: {
+      organization: 'Enterprise Operations Drive',
+      role: 'Process Associate - Voice Process',
+      eligibility: 'Non-tech graduates (B.Com, BBA, BA, B.Sc); note: B.Tech / BE / MCA are not eligible',
+      deadline: 'November 10, 2026',
+      location: 'Bangalore, Karnataka, India',
+      workMode: 'On-site (Night Shifts)',
+      jobType: 'Full-time',
+      applicantsCount: 'Online registration drive',
+      responseText: 'Direct Microsoft Forms registration',
+      stipend: 'Competitive fresher compensation + night shift allowances',
+      officialUrl: 'https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=N-edGDrJWk-LaG9MqZQZEjMyU26NbD5BgSc_JO7O4FVUQUlWQUE3UVhXOVhLNTRJM0I1N0tOUVNFMC4u',
+      eligibleBatches: [2026],
+      isVerified: true,
+    },
+    content: `## Program Overview
+
+A Mega Virtual Hiring Drive is currently underway for Process Associate positions in Bangalore. The role entails providing high-quality voice support, resolving customer inquiries, and managing inbound communication channels.
+
+---
+
+## Eligibility & Exclusions
+- **Target Qualification**: B.Com, BBA, BA, B.Sc, and other non-technical bachelor degrees.
+- **Exclusion**: Candidates with B.Tech, B.E, MCA, or IT technical degrees are **not** eligible for this specific drive.
+- **Shift Requirements**: Must be comfortable working rotational night shifts.
+- **Location**: Bangalore, Karnataka (On-site).
+
+---
+
+## Key Skills
+- Excellent verbal and written English communication.
+- Strong active listening and empathetic customer resolution skills.
+- Basic computer and data entry fluency.
+
+---
+
+## Official Registration Link
+Register directly through the official [Microsoft Forms Registration Page](https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=N-edGDrJWk-LaG9MqZQZEjMyU26NbD5BgSc_JO7O4FVUQUlWQUE3UVhXOVhLNTRJM0I1N0tOUVNFMC4u).`,
+  },
+  {
+    id: 'job-citi-fullstack-cards-chennai',
+    slug: 'citi-full-stack-java-developer-commercial-cards',
+    category: 'jobs',
+    title: 'Full Stack Java Developer (Commercial Cards & Payments)',
+    summary: 'Design high-volume card transaction architectures, Spring Boot microservices, and modern web applications for Citibank Commercial Cards.',
+    difficulty: 'Early Career / Software Engineer',
+    readTime: '6 min read',
+    publishedDate: '2026-10-14',
+    updatedDate: '2026-10-15',
+    author: 'Raju Perumalla',
+    logoKey: null,
+    sourceName: 'Citi Careers',
+    sourceLocation: 'Chennai, Tamil Nadu, India',
+    actionText: 'Apply →',
+    deadlineText: 'Deadline: November 30, 2026',
+    tags: ['Citi', 'Java', 'Spring Boot', 'Angular', 'React', 'Payment Systems', 'Microservices'],
+    status: 'active',
+    applicationDeadline: '2026-11-30T23:59:59.999Z',
+    eligibleBatches: [2026],
+    opportunityType: 'Full-time',
+    experienceLevel: 'Early Career / Software Engineer',
+    workArrangement: 'Hybrid',
+    stipendAmount: '₹14 - 22 LPA Industry Package',
+    isStipendPaid: true,
+    opportunity: {
+      organization: 'Citi (Citigroup)',
+      role: 'Full Stack Java Developer (Commercial Cards Technology)',
+      eligibility: 'B.Tech / B.E in CS, IT, or related degree with practical experience in Java, Spring Boot, and modern web frameworks',
+      deadline: 'November 30, 2026',
+      location: 'Chennai, Tamil Nadu, India',
+      workMode: 'Hybrid',
+      jobType: 'Full-time',
+      applicantsCount: 'Early applications open',
+      responseText: 'Direct Citi Careers Workday Portal',
+      stipend: 'Comprehensive compensation with global health and bonus incentives',
+      officialUrl: 'https://jobs.citi.com/job/chennai/full-stack-java-developer/287/101956556992',
+      eligibleBatches: [2026],
+      isVerified: true,
+    },
+    content: `## Position Summary
+
+Citibank Commercial Cards powers card-based payment solutions for large corporations, state and federal governments worldwide. This engineering team designs and scales high-availability transactional architectures and customer-facing management dashboards.
+
+---
+
+## Technical Stack & Qualifications
+- **Backend**: Core Java, J2EE, Spring Boot, JPA/Hibernate, Microservices, REST APIs, JMS / Message Queues.
+- **Frontend**: Modern JavaScript, HTML5/CSS3, Angular or React.
+- **Database**: Oracle, DB2, or SQL with query optimization.
+- **Testing**: Test-driven development (TDD) using JUnit and Mockito.
+
+---
+
+## Key Responsibilities
+- Architect high-throughput, low-latency financial transaction pipelines.
+- Implement microservices with service registry and discovery patterns.
+- Partner with global cross-functional product teams across LATAM, EMEA, and ASPAC.
+
+---
+
+## Official Application
+Apply directly on the [Citi Careers Portal](https://jobs.citi.com/job/chennai/full-stack-java-developer/287/101956556992).`,
+  },
+  {
+    id: 'job-citi-sap-fieldglass-analyst-chennai',
+    slug: 'citi-sap-cte-fieldglass-senior-business-analyst',
+    category: 'jobs',
+    title: 'SAP CTE / Fieldglass Senior Business Analyst (AVP)',
+    summary: 'Lead enterprise procurement, Concur Travel & Expense (CTE), and SAP Fieldglass integrations within Citi Technology & Supply Chain.',
+    difficulty: 'Experienced / AVP',
+    readTime: '6 min read',
+    publishedDate: '2026-10-09',
+    updatedDate: '2026-10-15',
+    author: 'Raju Perumalla',
+    logoKey: null,
+    sourceName: 'Citi Careers',
+    sourceLocation: 'Chennai, Tamil Nadu, India',
+    actionText: 'Apply →',
+    deadlineText: 'Deadline: November 30, 2026',
+    tags: ['Citi', 'SAP', 'Fieldglass', 'Concur', 'Business Analyst', 'Supply Chain', 'AVP'],
+    status: 'active',
+    applicationDeadline: '2026-11-30T23:59:59.999Z',
+    eligibleBatches: [],
+    opportunityType: 'Full-time',
+    experienceLevel: 'Experienced (AVP / Senior)',
+    workArrangement: 'Hybrid',
+    stipendAmount: 'Senior Executive Compensation (₹25 - 40 LPA)',
+    isStipendPaid: true,
+    opportunity: {
+      organization: 'Citi (Citigroup)',
+      role: 'SAP CTE / Fieldglass Senior Business Analyst (AVP)',
+      eligibility: 'Bachelor’s / University degree with expertise in Enterprise SAP platforms, Concur Travel & Expense, and Fieldglass',
+      deadline: 'November 30, 2026',
+      location: 'Chennai, Tamil Nadu, India',
+      workMode: 'Hybrid',
+      jobType: 'Full-time',
+      applicantsCount: 'Executive hiring track',
+      responseText: 'Direct Citi Careers Portal',
+      stipend: 'Competitive leadership compensation package',
+      officialUrl: 'https://jobs.citi.com/job/chennai/sap-cte-fieldglass-senior-business-analyst-avp/287/101736842464',
+      eligibleBatches: [],
+      isVerified: true,
+    },
+    content: `## Position Summary
+
+The SAP CTE / Fieldglass Senior Business Analyst (AVP) is an executive technologist position responsible for bridging global business operations, supply chain management, and SAP enterprise platforms.
+
+---
+
+## Core Focus Areas
+- **Platforms**: SAP Platform tools, Concur and Travel Expenses (CTE), SAP Fieldglass, and enterprise data warehousing.
+- **Integration**: Middleware tools, data pipelines, electronic workflows, and automated P2P processes.
+- **Delivery**: Managing BRD signoffs, testing support, UAT resolution, and production migration workflows.
+
+---
+
+## Qualifications
+- Deep domain knowledge in enterprise procurement, travel & expense management, and contractor workforce management.
+- Proficiency in writing complex SQL and PL/SQL analytical queries.
+- Proven leadership in liaising with senior stakeholders and global cross-functional delivery teams.
+
+---
+
+## Official Application
+Apply directly on the [Citi Careers Portal](https://jobs.citi.com/job/chennai/sap-cte-fieldglass-senior-business-analyst-avp/287/101736842464).`,
+  },
 
   // ==========================================
   // 4. HACKATHONS
