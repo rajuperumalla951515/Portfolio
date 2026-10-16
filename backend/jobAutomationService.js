@@ -324,7 +324,7 @@ async function expireStaleJobs(supabase) {
     // 1. Mark past-deadline jobs as expired in database
     const { data: expiredList, error: queryErr } = await supabase
       .from('decode_resources')
-      .select('id, slug, title, application_deadline, last_verified_at, published_at, status')
+      .select('id, slug, title, application_deadline, last_verified_at, published_date, created_at, status')
       .eq('category_slug', 'jobs')
       .eq('status', 'active');
 

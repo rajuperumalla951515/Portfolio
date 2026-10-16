@@ -20,6 +20,12 @@ export const VERIFIED_FALLBACK_DESTINATIONS = {
   'fresher-process-associate-voice-process-bangalore': 'https://forms.cloud.microsoft/Pages/ResponsePage.aspx?id=N-edGDrJWk-LaG9MqZQZEjMyU26NbD5BgSc_JO7O4FVUQUlWQUE3UVhXOVhLNTRJM0I1N0tOUVNFMC4u',
   'citi-full-stack-java-developer-commercial-cards': 'https://jobs.citi.com/job/chennai/full-stack-java-developer/287/101956556992',
   'citi-sap-cte-fieldglass-senior-business-analyst': 'https://jobs.citi.com/job/chennai/sap-cte-fieldglass-senior-business-analyst-avp/287/101736842464',
+  'ibm-intern-associate-engineer-bangalore-137023': 'https://careers.ibm.com/en_US/careers/JobDetail?jobId=137023&source=SN_LinkedIn',
+  'salesforce-summer-2027-intern-ui-ux-designer': 'https://salesforce.wd12.myworkdayjobs.com/External_Career_Site/job/India---Hyderabad/Summer-2027-Intern---UI-UX-Designer_JR363342?utm_source=chatgpt.com',
+  'honeywell-intern-bachelors-mechanical-eng-2027': 'https://thejobcompany.co.in/frontend/job_details.php?job_id=6504&utm_source=chatgpt.com',
+  'pwc-business-ai-engineer-intern-2027': 'https://thejobcompany.co.in/frontend/job_details.php?job_id=6501&utm_source=chatgpt.com',
+  'hsbc-intern-apprentice-12-months-gurugram': 'https://portal.careers.hsbc.com/careers/job/563774612428195-intern-apprentice-12-months--gurugram-haryana-india?domain=hsbc.com&utm_source=chatgpt.com',
+  'standard-chartered-apprentice-operations-gbs-india-2026': 'https://jobs.standardchartered.com/job/Apprentice-Operations-GBS-India-2026/58757-en_GB?utm_source=lilimitedlistings&feedid=363857',
 };
 
 /**

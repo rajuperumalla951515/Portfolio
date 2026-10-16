@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 
 const Contact = require('./models/Contact');
+const Job = require('./models/Job');
 const supabase = require('./supabaseClient');
 const {
   isSafePublicUrl,
@@ -287,16 +288,35 @@ app.get('/api/jobs', async (req, res) => {
       includeExpired,
     } = req.query;
 
-    let query = supabase
-      .from('decode_resources')
-      .select('*', { count: 'exact' })
-      .eq('category_slug', 'jobs')
-      .eq('published', true);
+    let rawJobs = [];
+    try {
+      const { data: sbJobs, error: sbErr } = await supabase
+        .from('decode_resources')
+        .select('*')
+        .eq('category_slug', 'jobs')
+        .eq('published', true);
+      if (!sbErr && Array.isArray(sbJobs)) {
+        rawJobs = sbJobs;
+      } else if (sbErr) {
+        console.warn('Supabase jobs query warning:', sbErr.message);
+      }
+    } catch (sbEx) {
+      console.warn('Supabase jobs exception:', sbEx.message);
+    }
 
-    const { data: rawJobs, error } = await query;
-    if (error) {
-      console.error('Supabase jobs query error:', error.message);
-      return res.status(500).json({ success: false, message: 'Failed to retrieve jobs.' });
+    // Merge with MongoDB database jobs (ensures full coverage of all 22 database jobs)
+    try {
+      if (mongoose.connection.readyState === 1) {
+        const mongoJobs = await Job.find({ published: true }).lean();
+        const existingSlugs = new Set(rawJobs.map((j) => j.slug));
+        for (const mj of mongoJobs) {
+          if (!existingSlugs.has(mj.slug)) {
+            rawJobs.push(mj);
+          }
+        }
+      }
+    } catch (mErr) {
+      console.warn('MongoDB jobs query warning:', mErr.message);
     }
 
     const now = new Date();
@@ -429,17 +449,23 @@ app.get('/api/jobs', async (req, res) => {
 app.get('/api/jobs/:slug', async (req, res) => {
   try {
     const { slug } = req.params;
-    const { data: job, error } = await supabase
-      .from('decode_resources')
-      .select('*')
-      .eq('category_slug', 'jobs')
-      .eq('slug', slug)
-      .maybeSingle();
-
-    if (error) {
-      console.error('Single job query error:', error.message);
-      return res.status(500).json({ success: false, message: 'Failed to retrieve job.' });
+    let job = null;
+    try {
+      const { data: sbJob } = await supabase
+        .from('decode_resources')
+        .select('*')
+        .eq('category_slug', 'jobs')
+        .eq('slug', slug)
+        .maybeSingle();
+      if (sbJob) job = sbJob;
+    } catch (e) {
+      console.warn('Supabase single job fetch error:', e.message);
     }
+
+    if (!job && mongoose.connection.readyState === 1) {
+      job = await Job.findOne({ slug, published: true }).lean();
+    }
+
     if (!job) {
       return res.status(404).json({ success: false, message: 'Job opportunity not found.' });
     }
@@ -703,16 +729,15 @@ app.get('/api/decode/resources/:categorySlug/:slug', async (req, res) => {
       query = query.eq('category_slug', categorySlug);
     }
 
-    const { data, error } = await query.maybeSingle();
-
-    if (error) {
-      console.error('Supabase single resource error:', error.message);
-      return res.status(500).json({ success: false, message: 'Failed to load resource.' });
+    let resourceData = data;
+    if (!resourceData && (!categorySlug || categorySlug === 'jobs') && mongoose.connection.readyState === 1) {
+      resourceData = await Job.findOne({ slug, published: true }).lean();
     }
-    if (!data) {
+
+    if (!resourceData) {
       return res.status(404).json({ success: false, message: 'Resource not found.' });
     }
-    res.json({ success: true, data });
+    res.json({ success: true, data: resourceData });
   } catch (err) {
     console.error('Single resource API error:', err);
     res.status(500).json({ success: false, message: 'Internal server error.' });
@@ -739,6 +764,11 @@ app.get('/go/:slug', redirectLimiter, async (req, res) => {
 
     let destinationUrl = resource?.opportunity_data?.officialUrl || resource?.opportunity_data?.official_url || resource?.official_url || null;
 
+    if (!destinationUrl && mongoose.connection.readyState === 1) {
+      const mJob = await Job.findOne({ slug, published: true }).lean();
+      destinationUrl = mJob?.opportunity_data?.officialUrl || mJob?.opportunity_data?.official_url || mJob?.official_url || null;
+    }
+
     // Verified destinations allowlist dictionary
     if (!destinationUrl) {
       const fallbackDestinations = {
@@ -757,6 +787,12 @@ app.get('/go/:slug', redirectLimiter, async (req, res) => {
         'full-stack-system-design-primer': 'https://github.com/donnemartin/system-design-primer',
         'docker-containerization-guide': 'https://docs.docker.com/',
         'github-student-developer-pack-guide': 'https://education.github.com/pack',
+        'ibm-intern-associate-engineer-bangalore-137023': 'https://careers.ibm.com/en_US/careers/JobDetail?jobId=137023&source=SN_LinkedIn',
+        'salesforce-summer-2027-intern-ui-ux-designer': 'https://salesforce.wd12.myworkdayjobs.com/External_Career_Site/job/India---Hyderabad/Summer-2027-Intern---UI-UX-Designer_JR363342?utm_source=chatgpt.com',
+        'honeywell-intern-bachelors-mechanical-eng-2027': 'https://thejobcompany.co.in/frontend/job_details.php?job_id=6504&utm_source=chatgpt.com',
+        'pwc-business-ai-engineer-intern-2027': 'https://thejobcompany.co.in/frontend/job_details.php?job_id=6501&utm_source=chatgpt.com',
+        'hsbc-intern-apprentice-12-months-gurugram': 'https://portal.careers.hsbc.com/careers/job/563774612428195-intern-apprentice-12-months--gurugram-haryana-india?domain=hsbc.com&utm_source=chatgpt.com',
+        'standard-chartered-apprentice-operations-gbs-india-2026': 'https://jobs.standardchartered.com/job/Apprentice-Operations-GBS-India-2026/58757-en_GB?utm_source=lilimitedlistings&feedid=363857',
       };
       destinationUrl = fallbackDestinations[slug];
     }

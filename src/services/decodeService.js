@@ -11,6 +11,15 @@ import {
   filterActiveJobs,
 } from '../data/decodeData.js';
 
+export const getApiUrl = () => {
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (envUrl) return envUrl.replace(/\/+$/, '');
+  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+    return 'http://localhost:5000';
+  }
+  return 'https://portfolio-crql.onrender.com';
+};
+
 export const decodeService = {
   /**
    * Fetch all active categories from Supabase (or fallback seed if awaiting SQL migration)
@@ -106,7 +115,28 @@ export const decodeService = {
     page = 1,
     limit = 20,
     includeExpired = false,
+    skipApi = false,
   } = {}) {
+    // When querying jobs, prioritize fetching live from backend database API
+    if (categorySlug === 'jobs' && !skipApi) {
+      const jobsRes = await this.getJobs({
+        batch,
+        type: opportunityType,
+        mode: workArrangement,
+        stipend,
+        query,
+        includeExpired,
+      });
+      return {
+        data: jobsRes.data,
+        total: jobsRes.total,
+        page: 1,
+        totalPages: 1,
+        isLiveDb: jobsRes.isLiveDb,
+        error: jobsRes.error,
+      };
+    }
+
     try {
       let dbRows = [];
       let dbError = null;
@@ -280,6 +310,7 @@ export const decodeService = {
 
   /**
    * Specialized fetch method for Decode Jobs & Internships
+   * Fetches directly from the backend API server (/api/jobs) which queries the database.
    */
   async getJobs(filters = {}) {
     const {
@@ -291,7 +322,95 @@ export const decodeService = {
       includeExpired = false,
     } = filters;
 
-    // Use getResources targeting 'jobs'
+    // 1. PRIMARY SOURCE: Attempt to fetch live from backend API server (/api/jobs)
+    const apiUrl = getApiUrl();
+    try {
+      const qParams = new URLSearchParams({
+        batch,
+        type,
+        mode,
+        stipend,
+        search: query,
+        includeExpired: String(includeExpired),
+        limit: '100',
+      });
+
+      const response = await fetch(`${apiUrl}/api/jobs?${qParams.toString()}`);
+      if (response.ok) {
+        const json = await response.json();
+        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+          const mappedDbJobs = json.data.map((j) => {
+            const fallback = getFallbackResource('jobs', j.slug);
+            const rawContent = j.content || fallback?.content || null;
+            const cleanContent = rawContent
+              ? String(rawContent).replace(/\\r\\n/g, '\n').replace(/\\n/g, '\n').replace(/\\t/g, '  ')
+              : null;
+            const rawSummary = j.summary || fallback?.summary || '';
+            const cleanSummary = String(rawSummary).replace(/\\r\\n/g, '\n').replace(/\\n/g, '\n');
+
+            const eligibleBatches = Array.isArray(j.effectiveBatches) && j.effectiveBatches.length > 0
+              ? j.effectiveBatches
+              : Array.isArray(j.eligible_batches) && j.eligible_batches.length > 0
+              ? j.eligible_batches
+              : fallback?.eligibleBatches || [];
+
+            const expired = Boolean(j.isExpired || j.status === 'expired' || j.status === 'closed');
+
+            return {
+              id: j._id || j.id || j.slug,
+              slug: j.slug,
+              category: 'jobs',
+              title: j.title,
+              summary: cleanSummary,
+              content: cleanContent,
+              difficulty: j.difficulty || fallback?.difficulty || 'Fresher / Entry Level',
+              readTime: j.read_time || j.readTime || fallback?.readTime || '5 min read',
+              tags: j.tags || fallback?.tags || [],
+              author: j.author || fallback?.author || 'Raju Perumalla',
+              publishedDate: j.published_date || fallback?.publishedDate,
+              updatedDate: j.updated_date || fallback?.updatedDate,
+              logoKey: j.logo_key || fallback?.logoKey || null,
+              sourceName: j.source_name || fallback?.sourceName || j.opportunity_data?.organization || null,
+              sourceLocation: j.source_location || fallback?.sourceLocation || j.opportunity_data?.location || null,
+              actionText: j.action_text || fallback?.actionText || 'Apply now →',
+              deadlineText: j.deadlineText || j.deadline_text || fallback?.deadlineText || null,
+              status: j.computedStatus || j.status || (expired ? 'expired' : 'active'),
+              isExpired: expired,
+              applicationDeadline: j.application_deadline || fallback?.applicationDeadline,
+              eligibleBatches,
+              batchLabel: j.batchLabel || getBatchLabel(eligibleBatches),
+              opportunityType: j.jobType || j.opportunity_type || fallback?.opportunityType,
+              workArrangement: j.workMode || j.work_arrangement || fallback?.workArrangement,
+              stipendAmount: j.stipendText || j.stipend_amount || fallback?.stipendAmount,
+              opportunity: j.opportunity_data || fallback?.opportunity,
+              projectSpec: j.project_spec || fallback?.projectSpec,
+              referenceInfo: j.reference_data || fallback?.referenceInfo,
+              isFeatured: j.is_featured || fallback?.isFeatured,
+            };
+          });
+
+          const activeList = mappedDbJobs.filter((j) => !j.isExpired);
+          const computedStats = json.stats || {
+            totalActive: activeList.length,
+            batch2026Count: activeList.filter((j) => (j.eligibleBatches || []).includes(2026)).length,
+            batch2027Count: activeList.filter((j) => (j.eligibleBatches || []).includes(2027)).length,
+            internshipsCount: activeList.filter((j) => (j.opportunityType || j.opportunity?.jobType || '').toLowerCase().includes('intern')).length,
+          };
+
+          return {
+            data: mappedDbJobs,
+            total: json.total || mappedDbJobs.length,
+            stats: computedStats,
+            isLiveDb: true,
+            error: null,
+          };
+        }
+      }
+    } catch (err) {
+      console.warn('Backend API /api/jobs fetch error, continuing to database/fallback source:', err.message);
+    }
+
+    // 2. BACKUP SOURCE: Direct Supabase database query + Curated records
     const res = await this.getResources({
       categorySlug: 'jobs',
       batch,
@@ -301,6 +420,7 @@ export const decodeService = {
       query,
       includeExpired,
       limit: 100,
+      skipApi: true,
     });
 
     const activeList = (res.data || []).filter((j) => !j.isExpired);
@@ -331,6 +451,71 @@ export const decodeService = {
 
       if (!targetSlug) {
         return { data: null, isLiveDb: false, error: 'Missing slug' };
+      }
+
+      // If querying a job opportunity, prioritize fetching live from backend API (/api/jobs/:slug)
+      if (targetCategory === 'jobs' || !targetCategory) {
+        const apiUrl = getApiUrl();
+        try {
+          const apiRes = await fetch(`${apiUrl}/api/jobs/${targetSlug}`);
+          if (apiRes.ok) {
+            const json = await apiRes.json();
+            if (json.success && json.data) {
+              const data = json.data;
+              const fallback = getFallbackResource('jobs', data.slug);
+              const rawContent = data.content || fallback?.content || null;
+              const cleanContent = rawContent
+                ? String(rawContent).replace(/\\r\\n/g, '\n').replace(/\\n/g, '\n').replace(/\\t/g, '  ')
+                : null;
+              const rawSummary = data.summary || fallback?.summary || '';
+              const cleanSummary = String(rawSummary).replace(/\\r\\n/g, '\n').replace(/\\n/g, '\n');
+              const eligibleBatches = Array.isArray(data.effectiveBatches) && data.effectiveBatches.length > 0
+                ? data.effectiveBatches
+                : Array.isArray(data.eligible_batches) && data.eligible_batches.length > 0
+                ? data.eligible_batches
+                : fallback?.eligibleBatches || [];
+              const expired = Boolean(data.isExpired || data.status === 'expired' || data.status === 'closed');
+
+              return {
+                data: {
+                  id: data._id || data.id || data.slug,
+                  slug: data.slug,
+                  category: 'jobs',
+                  title: data.title,
+                  summary: cleanSummary,
+                  content: cleanContent,
+                  difficulty: data.difficulty || fallback?.difficulty || 'Fresher / Entry Level',
+                  readTime: data.read_time || data.readTime || fallback?.readTime || '5 min read',
+                  tags: data.tags || fallback?.tags || [],
+                  author: data.author || fallback?.author || 'Raju Perumalla',
+                  publishedDate: data.published_date || fallback?.publishedDate,
+                  updatedDate: data.updated_date || fallback?.updatedDate,
+                  logoKey: data.logo_key || fallback?.logoKey || null,
+                  sourceName: data.source_name || fallback?.sourceName || data.opportunity_data?.organization || null,
+                  sourceLocation: data.source_location || fallback?.sourceLocation || data.opportunity_data?.location || null,
+                  actionText: data.action_text || fallback?.actionText || 'Apply now →',
+                  deadlineText: data.deadlineText || data.deadline_text || fallback?.deadlineText || null,
+                  status: data.computedStatus || data.status || (expired ? 'expired' : 'active'),
+                  isExpired: expired,
+                  applicationDeadline: data.application_deadline || fallback?.applicationDeadline,
+                  eligibleBatches,
+                  batchLabel: data.batchLabel || getBatchLabel(eligibleBatches),
+                  opportunityType: data.jobType || data.opportunity_type || fallback?.opportunityType,
+                  workArrangement: data.workMode || data.work_arrangement || fallback?.workArrangement,
+                  stipendAmount: data.stipendText || data.stipend_amount || fallback?.stipendAmount,
+                  opportunity: data.opportunity_data || fallback?.opportunity || null,
+                  projectSpec: data.project_spec || fallback?.projectSpec || null,
+                  referenceInfo: data.reference_data || fallback?.referenceInfo || null,
+                  officialUrl: data.official_url || data.canonical_url || fallback?.opportunity?.officialUrl || null,
+                },
+                isLiveDb: true,
+                error: null,
+              };
+            }
+          }
+        } catch (apiErr) {
+          console.warn('Backend API /api/jobs/:slug fetch skipped, continuing to DB/fallback:', apiErr.message);
+        }
       }
 
       let query = supabase
