@@ -35,6 +35,7 @@ createRoot(document.getElementById('root')).render(
           {/* Decode Platform Routes */}
           <Route path="/decode" element={<DecodeHome />} />
           <Route path="/decode/analytics" element={<DecodeAnalytics />} />
+          <Route path="/decode/internships" element={<Navigate to="/decode/jobs" replace />} />
           <Route path="/decode/:category" element={<DecodeCategory />} />
           <Route path="/decode/:category/:slug" element={<DecodeDetail />} />
           <Route path="/articles" element={<Navigate to="/decode" replace />} />

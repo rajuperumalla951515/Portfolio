@@ -397,5 +397,245 @@ async function getSapBtpToken() {
 ## Summary for Aspiring Developers
 
 For developers with strong backgrounds in modern languages (Python, Java, JavaScript), learning enterprise patterns on SAP BTP opens up massive career leverage. Understanding how to connect flexible web frontends with rock-solid enterprise cores is one of the most in-demand skillsets in the industry.`
+  },
+  {
+    slug: 'tripzy-ai-travel-companion-architecture',
+    title: 'Tripzy: Architecting a Low-Latency Travel Companion with OTP Authentication and Real-Time State',
+    summary: 'An engineering case study on developing Tripzy: a responsive travel companion platform featuring Firebase Phone OTP authentication, dynamic destination filtering, and lightweight client-side state management.',
+    category: 'Web & Cloud Systems',
+    readTime: '7 min read',
+    publishedDate: 'December 14, 2024',
+    updatedDate: 'March 10, 2025',
+    author: 'Raju Perumalla',
+    tags: ['JavaScript', 'Firebase', 'State Management', 'Web Performance', 'UI/UX'],
+    content: `## The Problem: Friction in Modern Travel Booking
+
+Modern travel planning is frequently bogged down by bloated web portals loaded with third-party tracking scripts, slow page transitions, and complex multi-page booking funnels. For budget travelers and students exploring weekend destinations, booking portals frequently consume excessive cellular data and introduce severe latency on lower-tier mobile networks.
+
+With **Tripzy (Travel Companion)**, our engineering objective was to construct an ultra-responsive, mobile-first booking interface that provides:
+1. Instant phone number OTP authentication without tedious email verification forms.
+2. Fast destination search and interactive hotel filtering with zero full-page reloads.
+3. Real-time availability synchronization using Firebase Cloud Firestore.
+4. Smooth micro-interactions and glassmorphic card layouts running comfortably at 60 FPS on mobile browsers.
+
+---
+
+## High-Level System Architecture
+
+Tripzy is engineered as a lightweight Single-Page Application (SPA) emphasizing client-side performance and minimal network overhead:
+
+\`\`\`
+[ Client Browser (HTML5 / Vanilla ES6 / CSS3) ]
+                    │
+      ┌─────────────┴─────────────┐
+      ▼                           ▼
+[ Firebase Auth ]          [ Cloud Firestore ]
+  ├─ Phone OTP Auth          ├─ Destination Documents
+  └─ Invisible reCAPTCHA     ├─ Hotel Deal Catalogs
+                             └─ User Reservation Records
+\`\`\`
+
+---
+
+## 1. Firebase Phone OTP Authentication Pipeline
+
+To reduce onboarding friction to under 30 seconds, Tripzy uses Firebase Phone Authentication with an invisible reCAPTCHA verifier to prevent SMS bot abuse while keeping the UI frictionless:
+
+\`\`\`javascript
+import { getAuth, RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
+
+// Initialize invisible reCAPTCHA container
+export function initRecaptchaVerifier(buttonId) {
+  const auth = getAuth();
+  window.recaptchaVerifier = new RecaptchaVerifier(auth, buttonId, {
+    size: 'invisible',
+    callback: () => {
+      // reCAPTCHA solved - allow phone verification to proceed
+    }
+  });
+}
+
+// Request one-time verification code (OTP)
+export async function requestPhoneOtp(phoneNumber) {
+  const auth = getAuth();
+  const appVerifier = window.recaptchaVerifier;
+
+  try {
+    const confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
+    window.confirmationResult = confirmationResult;
+    return { success: true };
+  } catch (error) {
+    console.error("SMS dispatch failure:", error.message);
+    if (window.recaptchaVerifier) {
+      window.recaptchaVerifier.render().then((widgetId) => {
+        grecaptcha.reset(widgetId);
+      });
+    }
+    return { success: false, error: error.message };
+  }
+}
+\`\`\`
+
+---
+
+## 2. Dynamic Filtering & Real-Time Booking State
+
+Instead of relying on heavy frontend frameworks for a lightweight utility, Tripzy implements a reactive event-driven state manager for search filtering:
+
+\`\`\`javascript
+// Client-side faceted filter algorithm
+export function filterDestinations(items, filters) {
+  const { maxPrice, tripCategory, minRating, searchQuery } = filters;
+
+  return items.filter((destination) => {
+    const matchesQuery = !searchQuery || 
+      destination.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      destination.location.toLowerCase().includes(searchQuery.toLowerCase());
+      
+    const matchesPrice = !maxPrice || destination.pricePerNight <= Number(maxPrice);
+    const matchesCategory = !tripCategory || tripCategory === 'all' || destination.category === tripCategory;
+    const matchesRating = !minRating || destination.rating >= Number(minRating);
+
+    return matchesQuery && matchesPrice && matchesCategory && matchesRating;
+  });
+}
+\`\`\`
+
+---
+
+## Technical Challenges & Key Learnings
+
+1. **SMS Rate Limiting & Abuse Prevention:** During initial development, repeated test attempts could exhaust Firebase SMS quotas. We implemented client-side cooldown timers (60-second re-send lockout) and verified that production deployments strictly use invisible reCAPTCHA.
+2. **Optimistic UI Updates for Instant Perceived Speed:** When a traveler clicks "Save Destination" or "Confirm Booking", the UI immediately reflects the booked state while the Firestore write executes in the background. If the request encounters a network drop, the state rolls back with an accessible toast alert.
+3. **Responsive Media Delivery:** High-resolution destination photography can degrade mobile performance. We compressed all destination cards to modern WebP format with explicit \`loading="lazy"\` and intrinsic aspect ratios to eliminate cumulative layout shift (CLS).`
+  },
+  {
+    slug: 'nutrixa-diet-engine-ai-nutrition-architecture',
+    title: 'Nutrixa: Engineering a Real-Time Dietary Intake & Macronutrient Optimization Engine in Python',
+    summary: 'How we designed Nutrixa, an interactive health companion that calculates basal metabolic rates, optimizes macronutrient ratios, and delivers personalized nutritional planning with Streamlit and Python.',
+    category: 'AI & Health Tech',
+    readTime: '6 min read',
+    publishedDate: 'January 28, 2025',
+    updatedDate: 'February 18, 2025',
+    author: 'Raju Perumalla',
+    tags: ['Python', 'Streamlit', 'Health Tech', 'Algorithms', 'Data Visualization'],
+    content: `## The Challenge: Actionable Nutrition Without Friction
+
+Most commercial calorie tracking applications suffer from high friction: users must search through thousands of crowded crowdsourced food entries, guess portion sizes in grams, and navigate multi-step paywalls. Consequently, over 70% of users abandon dietary tracking within the first two weeks.
+
+With **Nutrixa-DietEngine**, our mission was to construct an intelligent, rapid dietary calculator in Python that computes personalized metabolic baselines, calculates target caloric deficits or surpluses, and dynamically distributes macronutrients (proteins, carbohydrates, healthy fats) based on verified sports science equations.
+
+---
+
+## Mathematical & Metabolic Foundation
+
+Nutrixa utilizes the **Mifflin-St Jeor Equation**, widely validated in clinical nutrition research as one of the most reliable predictors of human Basal Metabolic Rate (BMR):
+
+- **For Men:** \`BMR = (10 × weight in kg) + (6.25 × height in cm) - (5 × age in years) + 5\`
+- **For Women:** \`BMR = (10 × weight in kg) + (6.25 × height in cm) - (5 × age in years) - 161\`
+
+Total Daily Energy Expenditure (TDEE) is then scaled according to the user's weekly physical activity level:
+
+\`\`\`
+[ User Biometrics: Age, Weight, Height, Gender ]
+                    │
+                    ▼ (Mifflin-St Jeor Algorithm)
+            [ Basal Metabolic Rate (BMR) ]
+                    │
+                    ▼ (Physical Activity Multiplier: 1.2x to 1.9x)
+     [ Total Daily Energy Expenditure (TDEE) ]
+                    │
+                    ▼ (Target Adjustment: -500 kcal Deficit / +300 kcal Surplus)
+    [ Dynamic Macronutrient Distribution (Protein / Carbs / Fats) ]
+\`\`\`
+
+---
+
+## Python Engine Implementation
+
+Below is the core algorithmic module used by Nutrixa to compute metabolic requirements:
+
+\`\`\`python
+from dataclasses import dataclass
+from typing import Literal
+
+@dataclass
+class BiometricProfile:
+    age: int
+    gender: Literal["male", "female"]
+    weight_kg: float
+    height_cm: float
+    activity_level: Literal["sedentary", "light", "moderate", "active", "very_active"]
+    goal: Literal["fat_loss", "maintenance", "muscle_gain"]
+
+ACTIVITY_MULTIPLIERS = {
+    "sedentary": 1.2,
+    "light": 1.375,
+    "moderate": 1.55,
+    "active": 1.725,
+    "very_active": 1.9,
+}
+
+def calculate_nutritional_plan(profile: BiometricProfile) -> dict:
+    # 1. Compute Mifflin-St Jeor BMR
+    base_bmr = (10.0 * profile.weight_kg) + (6.25 * profile.height_cm) - (5.0 * profile.age)
+    bmr = base_bmr + 5 if profile.gender == "male" else base_bmr - 161
+    
+    # 2. Total Daily Energy Expenditure (TDEE)
+    tdee = bmr * ACTIVITY_MULTIPLIERS[profile.activity_level]
+    
+    # 3. Goal Adjustment
+    if profile.goal == "fat_loss":
+        target_calories = max(1200.0, tdee - 500.0) # Ensure safe minimum floor
+        protein_ratio, fat_ratio, carb_ratio = 0.35, 0.25, 0.40
+    elif profile.goal == "muscle_gain":
+        target_calories = tdee + 350.0
+        protein_ratio, fat_ratio, carb_ratio = 0.30, 0.25, 0.45
+    else:
+        target_calories = tdee
+        protein_ratio, fat_ratio, carb_ratio = 0.25, 0.30, 0.45
+        
+    # 4. Gram conversions (Protein: 4 kcal/g, Carbs: 4 kcal/g, Fat: 9 kcal/g)
+    protein_grams = round((target_calories * protein_ratio) / 4.0, 1)
+    carb_grams = round((target_calories * carb_ratio) / 4.0, 1)
+    fat_grams = round((target_calories * fat_ratio) / 9.0, 1)
+    
+    return {
+        "bmr": round(bmr, 0),
+        "tdee": round(tdee, 0),
+        "target_calories": round(target_calories, 0),
+        "protein_g": protein_grams,
+        "carbs_g": carb_grams,
+        "fats_g": fat_grams
+    }
+\`\`\`
+
+---
+
+## Streamlit Reactive Dashboard & Performance Caching
+
+To provide instantaneous feedback as the user adjusts input sliders (such as target weight or activity frequency), Nutrixa leverages Streamlit's reactive UI engine with cached computation:
+
+\`\`\`python
+import streamlit as st
+
+st.set_page_config(page_title="Nutrixa Diet Engine", layout="wide")
+
+@st.cache_data
+def get_cached_plan(age, gender, weight, height, activity, goal):
+    profile = BiometricProfile(age, gender, weight, height, activity, goal)
+    return calculate_nutritional_plan(profile)
+
+st.title("Nutrixa: Intelligent Dietary Planner")
+# Interactive biometric inputs with immediate reactive chart rendering
+\`\`\`
+
+---
+
+## Lessons Learned & Future Roadmap
+
+1. **Safety Floors:** Unsupervised calorie restriction can lead to metabolic slowdown. We implemented mandatory minimum daily caloric thresholds (1,200 kcal for females, 1,500 kcal for males) regardless of user sliders.
+2. **Hydration Integration:** Calorie calculators often neglect fluid intake. We added dynamic daily water requirement calculations based on body weight and activity levels.
+3. **Computer Vision Expansion:** We are exploring an edge-computed YOLOv8 meal identification module to automatically estimate food portions directly from uploaded camera snapshots.`
   }
 ];

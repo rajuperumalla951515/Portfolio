@@ -73,28 +73,53 @@ const PrivacyPolicy = () => {
                 <strong>Direct Communications (Contact Form):</strong> When you submit a message through our contact interface, we collect your name, email address, and message content. This data is transmitted securely and stored in our database (Supabase / MongoDB Atlas) to enable us to read and respond to your inquiry.
               </li>
               <li>
-                <strong>Technical & Server Logs:</strong> Like most web servers, our hosting provider (Vercel) automatically logs standard network requests, including IP address, browser user-agent, operating system, referring URL, and page timestamps for DDoS protection, performance monitoring, and security diagnosis.
+                <strong>Technical & Server Logs:</strong> Like most web servers, our edge hosting provider (Cloudflare Workers & Pages) automatically processes standard network requests, including IP address, browser user-agent, operating system, referring URL, and page timestamps for DDoS protection, performance monitoring, and security diagnosis.
               </li>
             </ul>
           </section>
 
-          <section className="space-y-3">
+          <section className="space-y-4">
             <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-              3. Cookies & Advertising Technologies (Google AdSense Disclosure)
+              3. Analytics & Advertising Technologies
             </h2>
-            <p>
-              This website is prepared for advertising partnerships, specifically <strong>Google AdSense</strong>. In compliance with Google's publisher policies and international privacy standards, we disclose the following:
-            </p>
+            
+            {/* Google Analytics Subsection */}
             <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3 text-white/90">
-              <p>
-                <strong>Third-Party Vendors & Cookies:</strong> Third-party vendors, including Google, use cookies to serve ads based on a user's prior visits to this website or other websites on the Internet.
+              <h3 className="text-base font-semibold text-white flex items-center gap-2">
+                <IconWrapper name="Activity" size={16} className="text-blue-400" />
+                Google Analytics (Measurement ID: G-S7VZQBBTXZ)
+              </h3>
+              <p className="text-sm leading-relaxed">
+                We use <strong>Google Analytics 4</strong> to understand how visitors engage with our portfolio, project case studies, and Decode educational resources. Google Analytics uses first-party cookies and anonymous device identifiers to collect aggregated metrics such as page views, session duration, general geographic region (country/city level), browser type, and referral sources.
               </p>
-              <p>
-                <strong>Advertising Cookies:</strong> Google's use of advertising cookies enables it and its partners to serve ads to our visitors based on their visit to our site and/or other sites on the Internet.
+              <p className="text-sm leading-relaxed">
+                We do not transmit personally identifiable information (PII) such as your name, email address, or banking credentials to Google Analytics. You can prevent Google Analytics from collecting data on your visits by installing the official <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">Google Analytics Opt-out Browser Add-on</a>.
               </p>
-              <p>
-                <strong>How to Opt-Out:</strong> Users may opt out of personalized advertising by visiting Google's <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">Ads Settings</a>. Alternatively, users can opt out of a third-party vendor's use of cookies for personalized advertising by visiting <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">www.aboutads.info</a>.
+            </div>
+
+            {/* Google AdSense Subsection */}
+            <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/10 space-y-3 text-white/90">
+              <h3 className="text-base font-semibold text-white flex items-center gap-2">
+                <IconWrapper name="Shield" size={16} className="text-emerald-400" />
+                Google AdSense & Third-Party Cookies (Publisher ID: pub-9580287704146288)
+              </h3>
+              <p className="text-sm leading-relaxed">
+                This website is configured for monetization through <strong>Google AdSense</strong>. In strict compliance with Google Publisher Policies, we disclose the following operational practices:
               </p>
+              <ul className="list-disc pl-5 space-y-2 text-sm text-white/80">
+                <li>
+                  Third-party vendors, including Google, use cookies to serve ads based on a user's prior visits to this website or other websites on the Internet.
+                </li>
+                <li>
+                  Google's use of advertising cookies (such as the DoubleClick cookie) enables it and its partners to serve ads to our visitors based on their visit to our site and/or other sites across the web.
+                </li>
+                <li>
+                  <strong>Opting Out of Personalized Advertising:</strong> Visitors may opt out of personalized advertising by visiting Google's <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">Ads Settings</a>. Alternatively, you can opt out of a third-party vendor's use of cookies for personalized advertising by visiting <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">www.aboutads.info</a> or <a href="https://youronlinechoices.com/" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">Your Online Choices</a>.
+                </li>
+                <li>
+                  <strong>Browser-Level Cookie Controls:</strong> You can configure your browser (Chrome, Safari, Firefox, Edge) to block cookies, clear existing cookies, or notify you when cookies are being set. Note that disabling cookies does not prevent you from browsing our articles or portfolio.
+                </li>
+              </ul>
             </div>
           </section>
 
@@ -106,9 +131,11 @@ const PrivacyPolicy = () => {
               We utilize trusted cloud infrastructure to maintain, deploy, and secure this platform:
             </p>
             <ul className="list-disc pl-6 space-y-2 text-white/70">
-              <li><strong>Hosting & Edge Delivery:</strong> Cloudflare Inc. (DNS, SSL/TLS, edge computing, and global static asset delivery).</li>
+              <li><strong>Hosting & Edge Delivery:</strong> Cloudflare Inc. (DNS, SSL/TLS, edge computing, and global static asset delivery via Cloudflare Workers).</li>
+              <li><strong>Website Analytics:</strong> Google LLC (Google Analytics telemetry, Measurement ID: G-S7VZQBBTXZ).</li>
+              <li><strong>Advertising Services:</strong> Google LLC (Google AdSense publisher network, Publisher ID: pub-9580287704146288).</li>
               <li><strong>Database Services:</strong> Supabase Inc. (PostgreSQL with Row Level Security) and MongoDB Atlas (encrypted cloud database).</li>
-              <li><strong>Notification Services:</strong> EmailJS (secure relay of contact form messages).</li>
+              <li><strong>Notification Services:</strong> Backend API & EmailJS (secure relay of contact form messages).</li>
               <li><strong>Embedded Content:</strong> YouTube (technical video demonstrations). Playing embedded videos may allow YouTube to place functional cookies on your browser.</li>
             </ul>
           </section>

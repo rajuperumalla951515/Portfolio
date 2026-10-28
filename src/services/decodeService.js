@@ -12,7 +12,7 @@ import {
 } from '../data/decodeData.js';
 
 export const getApiUrl = () => {
-  const envUrl = import.meta.env.VITE_API_URL;
+  const envUrl = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_API_URL : null;
   if (envUrl) return envUrl.replace(/\/+$/, '');
   if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
     return 'http://localhost:5000';
@@ -66,11 +66,12 @@ export const decodeService = {
    * Fetch a single category by slug
    */
   async getCategoryBySlug(slug) {
+    const effectiveSlug = slug === 'internships' ? 'jobs' : slug;
     try {
       const { data, error } = await supabase
         .from('decode_categories')
         .select('*')
-        .eq('slug', slug)
+        .eq('slug', effectiveSlug)
         .eq('published', true)
         .maybeSingle();
 
@@ -92,10 +93,10 @@ export const decodeService = {
         };
       }
 
-      const fallback = getFallbackCategory(slug);
+      const fallback = getFallbackCategory(effectiveSlug);
       return { data: fallback || null, isLiveDb: false, error: error ? error.message : null };
     } catch (err) {
-      const fallback = getFallbackCategory(slug);
+      const fallback = getFallbackCategory(effectiveSlug);
       return { data: fallback || null, isLiveDb: false, error: err.message };
     }
   },
@@ -117,8 +118,10 @@ export const decodeService = {
     includeExpired = false,
     skipApi = false,
   } = {}) {
+    const effectiveCategory = categorySlug === 'internships' ? 'jobs' : categorySlug;
+
     // When querying jobs, prioritize fetching live from backend database API
-    if (categorySlug === 'jobs' && !skipApi) {
+    if (effectiveCategory === 'jobs' && !skipApi) {
       const jobsRes = await this.getJobs({
         batch,
         type: opportunityType,
@@ -147,8 +150,8 @@ export const decodeService = {
           .select('*')
           .eq('published', true);
 
-        if (categorySlug && categorySlug !== 'all') {
-          req = req.eq('category_slug', categorySlug);
+        if (effectiveCategory && effectiveCategory !== 'all') {
+          req = req.eq('category_slug', effectiveCategory);
         }
 
         const { data, error } = await req;
@@ -244,7 +247,7 @@ export const decodeService = {
       }
 
       // 5. Jobs-specific filters
-      if (categorySlug === 'jobs') {
+      if (effectiveCategory === 'jobs') {
         if (!includeExpired) {
           allItems = allItems.filter((r) => !r.isExpired);
         }
@@ -255,7 +258,16 @@ export const decodeService = {
         if (opportunityType && opportunityType !== 'all') {
           const targetType = opportunityType.toLowerCase();
           allItems = allItems.filter((r) => {
-            const oppType = (r.opportunityType || r.opportunity?.jobType || '').toLowerCase();
+            const oppType = `${r.opportunityType || ''} ${r.opportunity?.jobType || ''}`.toLowerCase();
+            if (targetType === 'internship') {
+              return oppType.includes('intern') || oppType.includes('apprentice') || oppType.includes('trainee');
+            }
+            if (targetType === 'full-time') {
+              return oppType.includes('full-time') || oppType.includes('full time') || oppType.includes('fte');
+            }
+            if (targetType === 'trainee') {
+              return oppType.includes('trainee') || oppType.includes('apprentice');
+            }
             return oppType.includes(targetType);
           });
         }
@@ -322,8 +334,11 @@ export const decodeService = {
       includeExpired = false,
     } = filters;
 
-    // 1. PRIMARY SOURCE: Attempt to fetch live from backend API server (/api/jobs)
+    // 1. PRIMARY SOURCE: Attempt to fetch live from backend API server (/api/jobs) with fast timeout
+    let apiJobs = [];
+    let isLiveDb = false;
     const apiUrl = getApiUrl();
+
     try {
       const qParams = new URLSearchParams({
         batch,
@@ -335,11 +350,19 @@ export const decodeService = {
         limit: '100',
       });
 
-      const response = await fetch(`${apiUrl}/api/jobs?${qParams.toString()}`);
+      const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      const timeoutId = controller ? setTimeout(() => controller.abort(), 3500) : null;
+
+      const response = await fetch(`${apiUrl}/api/jobs?${qParams.toString()}`, {
+        signal: controller?.signal,
+      });
+      if (timeoutId) clearTimeout(timeoutId);
+
       if (response.ok) {
         const json = await response.json();
-        if (json.success && Array.isArray(json.data) && json.data.length > 0) {
-          const mappedDbJobs = json.data.map((j) => {
+        if (json.success && Array.isArray(json.data)) {
+          isLiveDb = true;
+          apiJobs = json.data.map((j) => {
             const fallback = getFallbackResource('jobs', j.slug);
             const rawContent = j.content || fallback?.content || null;
             const cleanContent = rawContent
@@ -379,7 +402,7 @@ export const decodeService = {
               applicationDeadline: j.application_deadline || fallback?.applicationDeadline,
               eligibleBatches,
               batchLabel: j.batchLabel || getBatchLabel(eligibleBatches),
-              opportunityType: j.jobType || j.opportunity_type || fallback?.opportunityType,
+              opportunityType: fallback?.opportunityType || j.jobType || j.opportunity_type,
               workArrangement: j.workMode || j.work_arrangement || fallback?.workArrangement,
               stipendAmount: j.stipendText || j.stipend_amount || fallback?.stipendAmount,
               opportunity: j.opportunity_data || fallback?.opportunity,
@@ -388,44 +411,92 @@ export const decodeService = {
               isFeatured: j.is_featured || fallback?.isFeatured,
             };
           });
-
-          const activeList = mappedDbJobs.filter((j) => !j.isExpired);
-          const computedStats = json.stats || {
-            totalActive: activeList.length,
-            batch2026Count: activeList.filter((j) => (j.eligibleBatches || []).includes(2026)).length,
-            batch2027Count: activeList.filter((j) => (j.eligibleBatches || []).includes(2027)).length,
-            internshipsCount: activeList.filter((j) => (j.opportunityType || j.opportunity?.jobType || '').toLowerCase().includes('intern')).length,
-          };
-
-          return {
-            data: mappedDbJobs,
-            total: json.total || mappedDbJobs.length,
-            stats: computedStats,
-            isLiveDb: true,
-            error: null,
-          };
         }
       }
     } catch (err) {
-      console.warn('Backend API /api/jobs fetch error, continuing to database/fallback source:', err.message);
+      console.warn('Backend API /api/jobs fetch error or timeout, merging with curated fallback resources:', err.message);
     }
 
-    // 2. BACKUP SOURCE: Direct Supabase database query + Curated records
-    const res = await this.getResources({
-      categorySlug: 'jobs',
-      batch,
-      opportunityType: type,
-      workArrangement: mode,
-      stipend,
-      query,
-      includeExpired,
-      limit: 100,
-      skipApi: true,
+    // 2. MERGE WITH ALL CURATED FALLBACK RESOURCES:
+    // Ensures all jobs in decodeData.js (including Recruit CRM, IBM, Salesforce, Honeywell, PwC, HSBC, Standard Chartered, etc.) are always present
+    const apiJobSlugs = new Set(apiJobs.map((j) => j.slug));
+    const missingCuratedJobs = fallbackResources
+      .filter((fb) => fb.category === 'jobs' && !apiJobSlugs.has(fb.slug))
+      .map((fb) => {
+        const expired = isJobExpired(fb);
+        return {
+          ...fb,
+          category: 'jobs',
+          status: fb.status || (expired ? 'expired' : 'active'),
+          isExpired: expired,
+          batchLabel: fb.batchLabel || getBatchLabel(fb.eligibleBatches || []),
+        };
+      });
+
+    let allJobs = [...apiJobs, ...missingCuratedJobs];
+
+    // 3. APPLY CLIENT-SIDE FILTERS
+    if (!includeExpired) {
+      allJobs = allJobs.filter((j) => !j.isExpired && j.status !== 'expired' && j.status !== 'closed');
+    }
+
+    if (batch && batch !== 'all') {
+      const bYear = parseInt(batch, 10);
+      allJobs = allJobs.filter((j) => Array.isArray(j.eligibleBatches) && j.eligibleBatches.includes(bYear));
+    }
+
+    if (type && type !== 'all') {
+      const targetType = type.toLowerCase();
+      allJobs = allJobs.filter((j) => {
+        const oppType = `${j.opportunityType || ''} ${j.opportunity?.jobType || ''}`.toLowerCase();
+        if (targetType === 'internship') {
+          return oppType.includes('intern') || oppType.includes('apprentice') || oppType.includes('trainee');
+        }
+        if (targetType === 'full-time') {
+          return oppType.includes('full-time') || oppType.includes('full time') || oppType.includes('fte');
+        }
+        if (targetType === 'trainee') {
+          return oppType.includes('trainee') || oppType.includes('apprentice');
+        }
+        return oppType.includes(targetType);
+      });
+    }
+
+    if (mode && mode !== 'all') {
+      const targetMode = mode.toLowerCase();
+      allJobs = allJobs.filter((j) => {
+        const workMode = (j.workArrangement || j.opportunity?.workMode || '').toLowerCase();
+        return workMode.includes(targetMode);
+      });
+    }
+
+    if (stipend === 'paid') {
+      allJobs = allJobs.filter((j) => {
+        const st = (j.stipendAmount || j.opportunity?.stipend || '').toLowerCase();
+        return !st.includes('unpaid') && !st.includes('voluntary');
+      });
+    }
+
+    if (query && query.trim()) {
+      const cleanQ = query.trim().toLowerCase();
+      allJobs = allJobs.filter((j) => {
+        const inTitle = j.title?.toLowerCase().includes(cleanQ);
+        const inSummary = j.summary?.toLowerCase().includes(cleanQ);
+        const inTags = Array.isArray(j.tags) && j.tags.some((t) => t.toLowerCase().includes(cleanQ));
+        const inOrg = (j.sourceName || j.opportunity?.organization || '')?.toLowerCase().includes(cleanQ);
+        return inTitle || inSummary || inTags || inOrg;
+      });
+    }
+
+    // 4. SORT BY MOST RECENT PUBLISHED / UPDATED DATE
+    allJobs.sort((a, b) => {
+      const dateA = new Date(a.publishedDate || a.updatedDate || 0);
+      const dateB = new Date(b.publishedDate || b.updatedDate || 0);
+      return dateB - dateA;
     });
 
-    const activeList = (res.data || []).filter((j) => !j.isExpired);
-
-    const stats = {
+    const activeList = allJobs.filter((j) => !j.isExpired);
+    const computedStats = {
       totalActive: activeList.length,
       batch2026Count: activeList.filter((j) => (j.eligibleBatches || []).includes(2026)).length,
       batch2027Count: activeList.filter((j) => (j.eligibleBatches || []).includes(2027)).length,
@@ -433,11 +504,11 @@ export const decodeService = {
     };
 
     return {
-      data: res.data || [],
-      total: res.total,
-      stats,
-      isLiveDb: res.isLiveDb,
-      error: res.error,
+      data: allJobs,
+      total: allJobs.length,
+      stats: computedStats,
+      isLiveDb: isLiveDb || apiJobs.length > 0,
+      error: null,
     };
   },
 
@@ -446,8 +517,9 @@ export const decodeService = {
    */
   async getResourceBySlug(categorySlug, resourceSlug) {
     try {
+      const effectiveCategory = (categorySlug === 'internships' ? 'jobs' : categorySlug) || null;
       const targetSlug = resourceSlug || categorySlug;
-      const targetCategory = resourceSlug ? categorySlug : null;
+      const targetCategory = resourceSlug ? effectiveCategory : null;
 
       if (!targetSlug) {
         return { data: null, isLiveDb: false, error: 'Missing slug' };

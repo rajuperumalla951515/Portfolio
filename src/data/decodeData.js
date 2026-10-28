@@ -420,6 +420,122 @@ Today software teams ship updates multiple times a day. To do so reliably, engin
   // 3. JOBS & INTERNSHIPS (VERIFIED 2026 & 2027 FRESHER ROLES)
   // ==========================================
   {
+    id: 'job-recruit-crm-customer-success-associate-2027',
+    slug: 'recruit-crm-customer-success-associate-2027',
+    category: 'jobs',
+    title: 'Customer Success Associate - Recruit CRM (2027 Graduates)',
+    summary: 'Official Recruit CRM hiring for 2027 graduates. Fully remote Customer Success Associate role with 6-month traineeship at ₹20,000/month followed by full-time conversion at ₹8 LPA CTC (₹6 LPA base + ₹2 LPA performance pay).',
+    difficulty: 'Online MCQ & Virtual Assessment',
+    readTime: '5 min read',
+    publishedDate: '2026-10-20',
+    updatedDate: '2026-10-20',
+    author: 'Raju Perumalla',
+    logoKey: null,
+    sourceName: 'Recruit CRM',
+    sourceLocation: 'Fully Remote (Work From Home, India)',
+    actionText: 'Apply at Recruit CRM Careers →',
+    deadlineText: 'Immediate Joining (Batch 2027)',
+    tags: ['Recruit CRM', 'Customer Success', 'SaaS', 'Remote', '2027 Batch', 'Fresher', 'Paid', 'High CTC', 'Internship', 'Full-time', 'Traineeship'],
+    status: 'active',
+    published: true,
+    isFeatured: true,
+    applicationDeadline: '2026-11-18T23:59:59.999Z',
+    eligibleBatches: [2027],
+    opportunityType: 'Internship / Full-time',
+    experienceLevel: 'Fresher (2027 Batch)',
+    workArrangement: 'Remote',
+    stipendAmount: '₹20,000 / Month (Training) → ₹8,00,000 / Year (FTE CTC)',
+    isStipendPaid: true,
+    opportunity: {
+      organization: 'Recruit CRM',
+      role: 'Customer Success Associate - 2027 Graduates (Req: 17915624986970157266mLh)',
+      eligibility: 'Freshers completing graduation/post-graduation in 2027 (Any stream/specialization)',
+      deadline: 'November 18, 2026 (Immediate Joining)',
+      location: 'Fully Remote (Work From Home)',
+      workMode: 'Remote',
+      jobType: 'Traineeship / Internship + Full-Time',
+      stipend: '₹20,000/month (6-mo Training) → ₹8,00,000 CTC Full-Time',
+      officialUrl: 'https://careers.recruitcrm.io/17915624986970157266mLh?utm_source=internal+hiring+&utm_medium=job+candidate+&utm_campaign=hiring+',
+      eligibleBatches: [2027],
+      isVerified: true,
+    },
+    content: `## Company Overview
+
+**Recruit CRM** is one of the few fully bootstrapped, remote-first SaaS companies to surpass **$11.6M in Annual Recurring Revenue (ARR)** while remaining profitable every year since inception. Growing at **40%+ YoY** with a **30% annual profit margin**, Recruit CRM powers executive search and recruitment firms across 100+ countries with corporate entities in the US, Ireland, India, and Dubai. Ranked **#1 in its category by Gartner** and rated **4.9/5 on Capterra & G2**.
+
+Discover more about the company at [www.recruitcrm.io](https://recruitcrm.io/).
+
+---
+
+## Position Overview
+
+Recruit CRM is hiring passionate **2027 Graduates** for the **Customer Success Associate** program (Requisition ID: **17915624986970157266mLh**). This opportunity allows upcoming graduates to gain hands-on customer success experience, master enterprise B2B SaaS workflows, and earn a direct transition into a full-time Associate Customer Success role with high-growth compensation.
+
+- **Total Open Positions:** 10
+- **Location:** Fully Remote (Work From Home)
+- **Joining Timeline:** Immediate
+
+---
+
+## Training Journey & Compensation
+
+- **Traineeship Program (First 6 Months):**
+  - **Duration & Hours:** 6 months; 8.5 hours per day (Monday to Friday).
+  - **Stipend:** **₹20,000 per month**.
+  - **Initial Shift:** Primary Europe shift (12:00 PM / Noon – 10:00 PM IST).
+- **Full-Time Opportunity (FTE Conversion):**
+  - Upon successful completion of the training program and performance evaluation, you will be offered a full-time position as **Customer Success — Associate**.
+  - **CTC:** **₹8,00,000 per annum** (**₹6,00,000 fixed base salary + ₹2,00,000 yearly performance pay**).
+  - **Post-Training Shift Options:** Europe, Asia Pacific, North America, or Middle East (aligned to business requirements).
+
+---
+
+## Why Join Recruit CRM?
+
+- **100% Fully Remote:** Freedom to work anywhere across India.
+- **ARR-Linked Performance Bonus:** After 1 year as a full-time employee, you become eligible for our ARR-Linked Performance Bonus, announced every January 1st.
+- **Sponsored L&D Programs:** Full sponsorship for continuous professional growth and skill building.
+- **Company-Paid Team Outbounds:** Regular funded company meetups and retreats.
+- **Full Insurance Coverage:** Health benefits and competitive total rewards.
+
+---
+
+## What You Will Do
+
+- Learn the Recruit CRM platform inside and out and master global recruitment operations.
+- Handle inbound customer queries and platform troubleshooting via chat, email, and video calls.
+- Empathize with users, resolve complex challenges, and offer creative workarounds.
+- Advocate for user needs by channeling customer feedback directly to Product and Engineering teams.
+- Build and nurture long-term client relationships across 100+ countries.
+
+---
+
+## Who Can Apply?
+
+- **Eligible Batches:** Exclusively open to freshers completing **Graduation / Post-Graduation in 2027**.
+- **Specialization:** All degrees and specializations welcome (B.Tech / B.E., B.Sc, BCA, MCA, BBA, B.Com, M.Tech, etc.).
+- **Skills Required:**
+  - Exceptional verbal and written English communication skills.
+  - Quick learner with natural curiosity for software and technology.
+  - Proactive problem-solving attitude with strong client empathy.
+
+---
+
+## Selection Process (100% Virtual)
+
+1. **Online Assessment (MCQ):** Testing analytical aptitude, situational problem-solving, and logic.
+2. **Practical Case Assignment:** Hands-on scenario exercise to evaluate communication and solutioning.
+3. **Virtual Interviews:** In-depth evaluation with the Customer Success and talent leadership.
+
+---
+
+## Official Links & Documents
+
+- **Official Job Description Document:** [CSA India - JD (Google Drive)](https://drive.google.com/file/d/1BwUJOYtAq8I3Fm25_ZmqzgFqryhHYMux/view?usp=sharing)
+- **Application Deadline:** November 18, 2026 (Apply early for immediate batch processing)
+- **Direct Application:** [Apply on Recruit CRM Careers Portal](https://careers.recruitcrm.io/17915624986970157266mLh?utm_source=internal+hiring+&utm_medium=job+candidate+&utm_campaign=hiring+)`,
+  },
+  {
     id: 'job-ibm-intern-associate-engineer-137023',
     slug: 'ibm-intern-associate-engineer-bangalore-137023',
     category: 'jobs',
@@ -746,7 +862,7 @@ Submit your application directly through PwC's Global Careers portal or authoriz
     status: 'active',
     applicationDeadline: '2027-04-07T23:59:59.999Z',
     eligibleBatches: [2026, 2027],
-    opportunityType: 'Apprenticeship',
+    opportunityType: 'Internship / Apprenticeship',
     experienceLevel: 'Fresher Apprentice',
     workArrangement: 'Hybrid',
     stipendAmount: 'NATS Government & HSBC Banking Stipend',
@@ -758,7 +874,7 @@ Submit your application directly through PwC's Global Careers portal or authoriz
       deadline: '2027-04-07',
       location: 'Gurugram, Haryana, India',
       workMode: 'Hybrid',
-      jobType: 'Apprenticeship',
+      jobType: 'Apprenticeship / Internship',
       stipend: 'Official NATS Apprentice Stipend',
       officialUrl: 'https://portal.careers.hsbc.com/careers/job/563774612428195-intern-apprentice-12-months--gurugram-haryana-india?domain=hsbc.com&utm_source=chatgpt.com',
       eligibleBatches: [2026, 2027],
@@ -830,7 +946,7 @@ Apply on the HSBC Careers portal (Requisition: 563774612428195).`,
     status: 'active',
     applicationDeadline: null,
     eligibleBatches: [2026],
-    opportunityType: 'Apprenticeship',
+    opportunityType: 'Internship / Apprenticeship',
     experienceLevel: 'Fresher Apprentice',
     workArrangement: 'Hybrid',
     stipendAmount: 'Standard Chartered Monthly Banking Stipend',
@@ -842,7 +958,7 @@ Apply on the HSBC Careers portal (Requisition: 563774612428195).`,
       deadline: 'Rolling Admissions (2026 Batch)',
       location: 'Chennai, Tamil Nadu, India',
       workMode: 'Hybrid',
-      jobType: 'Apprenticeship',
+      jobType: 'Apprenticeship / Internship',
       stipend: 'Official Bank Apprentice Stipend',
       officialUrl: 'https://jobs.standardchartered.com/job/Apprentice-Operations-GBS-India-2026/58757-en_GB?utm_source=lilimitedlistings&feedid=363857',
       eligibleBatches: [2026],
@@ -2624,8 +2740,21 @@ export const filterActiveJobs = (resources, filters = {}) => {
 
       // Type filter (Internship / Full-time / Graduate Trainee)
       if (type && type !== 'all') {
-        const oppType = (res.opportunityType || res.opportunity?.jobType || '').toLowerCase();
-        if (!oppType.includes(type.toLowerCase())) {
+        const oppType = `${res.opportunityType || ''} ${res.opportunity?.jobType || ''}`.toLowerCase();
+        const targetType = type.toLowerCase();
+        if (targetType === 'internship') {
+          if (!oppType.includes('intern') && !oppType.includes('apprentice') && !oppType.includes('trainee')) {
+            return false;
+          }
+        } else if (targetType === 'full-time') {
+          if (!oppType.includes('full-time') && !oppType.includes('full time') && !oppType.includes('fte')) {
+            return false;
+          }
+        } else if (targetType === 'trainee') {
+          if (!oppType.includes('trainee') && !oppType.includes('apprentice')) {
+            return false;
+          }
+        } else if (!oppType.includes(targetType)) {
           return false;
         }
       }

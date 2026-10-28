@@ -793,6 +793,7 @@ app.get('/go/:slug', redirectLimiter, async (req, res) => {
         'pwc-business-ai-engineer-intern-2027': 'https://thejobcompany.co.in/frontend/job_details.php?job_id=6501&utm_source=chatgpt.com',
         'hsbc-intern-apprentice-12-months-gurugram': 'https://portal.careers.hsbc.com/careers/job/563774612428195-intern-apprentice-12-months--gurugram-haryana-india?domain=hsbc.com&utm_source=chatgpt.com',
         'standard-chartered-apprentice-operations-gbs-india-2026': 'https://jobs.standardchartered.com/job/Apprentice-Operations-GBS-India-2026/58757-en_GB?utm_source=lilimitedlistings&feedid=363857',
+        'recruit-crm-customer-success-associate-2027': 'https://careers.recruitcrm.io/17915624986970157266mLh?utm_source=internal+hiring+&utm_medium=job+candidate+&utm_campaign=hiring+',
       };
       destinationUrl = fallbackDestinations[slug];
     }

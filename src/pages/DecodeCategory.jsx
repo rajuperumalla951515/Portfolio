@@ -15,7 +15,8 @@ const CategoryIcon = ({ name, size = 16, className = 'text-zinc-600' }) => {
 };
 
 export const DecodeCategory = () => {
-  const { category: categorySlug } = useParams();
+  const { category: rawCategorySlug } = useParams();
+  const categorySlug = rawCategorySlug === 'internships' ? 'jobs' : rawCategorySlug;
   const isJobsSection = categorySlug === 'jobs';
 
   const [category, setCategory] = useState(null);
@@ -135,7 +136,10 @@ export const DecodeCategory = () => {
     const active = resources.filter((r) => !r.isExpired);
     const b2026 = active.filter((r) => (r.eligibleBatches || []).includes(2026)).length;
     const b2027 = active.filter((r) => (r.eligibleBatches || []).includes(2027)).length;
-    const intern = active.filter((r) => (r.opportunityType || r.opportunity?.jobType || '').toLowerCase().includes('intern')).length;
+    const intern = active.filter((r) => {
+      const opp = (r.opportunityType || r.opportunity?.jobType || '').toLowerCase();
+      return opp.includes('intern') || opp.includes('apprentice') || opp.includes('trainee');
+    }).length;
     return { total: active.length, b2026, b2027, intern };
   }, [resources, isJobsSection]);
 

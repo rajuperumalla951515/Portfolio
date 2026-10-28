@@ -100,3 +100,4 @@ WHERE table_name = 'decode_resources'
     'experience_level', 'opportunity_type', 'work_arrangement', 
     'stipend_amount', 'canonical_url', 'last_verified_at'
   );
+  

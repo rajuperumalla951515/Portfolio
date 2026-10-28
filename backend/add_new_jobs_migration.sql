@@ -1,5 +1,5 @@
 -- =========================================================================
--- DECODE PLATFORM - ADD 6 NEW VERIFIED JOBS & INTERNSHIPS MIGRATION
+-- DECODE PLATFORM - ADD 7 NEW VERIFIED JOBS & INTERNSHIPS MIGRATION
 -- =========================================================================
 -- Project: Raju Perumalla Portfolio & Student Hub (Decode)
 -- Run this script in your Supabase SQL Editor:
@@ -11,7 +11,7 @@ INSERT INTO decode_resources (
   category_slug,
   title,
   summary,
-  content,
+  content,4244121121
   difficulty,
   read_time,
   author,
@@ -207,6 +207,35 @@ INSERT INTO decode_resources (
   'Active for 2026 Batch',
   'https://jobs.standardchartered.com/job/Apprentice-Operations-GBS-India-2026/58757-en_GB',
   '{"organization": "Standard Chartered", "role": "Apprentice Operations GBS India 2026 (Req: 58757)", "eligibility": "Undergraduate Degree (B.Com, BBA, BBM, BMS, BSc) - 2024, 2025, 2026 Batches", "deadline": "Rolling Admissions (2026 Batch)", "location": "Chennai, Tamil Nadu, India", "workMode": "Hybrid", "jobType": "Apprenticeship", "stipend": "Official Bank Apprentice Stipend", "officialUrl": "https://jobs.standardchartered.com/job/Apprentice-Operations-GBS-India-2026/58757-en_GB?utm_source=lilimitedlistings&feedid=363857", "isVerified": true}'::jsonb
+),
+-- 7. Recruit CRM - Customer Success Associate (2027 Graduates)
+(
+  'recruit-crm-customer-success-associate-2027',
+  'jobs',
+  'Customer Success Associate - Recruit CRM (2027 Graduates)',
+  'Official Recruit CRM hiring for 2027 graduates. Fully remote Customer Success Associate role with 6-month traineeship at ₹20,000/month followed by full-time conversion at ₹8 LPA CTC (₹6 LPA base + ₹2 LPA performance pay).',
+  '## Company Overview\n\n**Recruit CRM** is one of the few fully bootstrapped, remote-first SaaS companies to surpass **$11.6M in Annual Recurring Revenue (ARR)** while remaining profitable every year since inception. Growing at **40%+ YoY** with a **30% annual profit margin**, Recruit CRM powers executive search and recruitment firms across 100+ countries with corporate entities in the US, Ireland, India, and Dubai. Ranked **#1 in its category by Gartner** and rated **4.9/5 on Capterra & G2**.\n\nDiscover more about the company at [www.recruitcrm.io](https://recruitcrm.io/).\n\n---\n\n## Position Overview\n\nRecruit CRM is hiring passionate **2027 Graduates** for the **Customer Success Associate** program (Requisition ID: **17915624986970157266mLh**). This opportunity allows upcoming graduates to gain hands-on customer success experience, master enterprise B2B SaaS workflows, and earn a direct transition into a full-time Associate Customer Success role with high-growth compensation.\n\n- **Total Open Positions:** 10\n- **Location:** Fully Remote (Work From Home)\n- **Joining Timeline:** Immediate\n\n---\n\n## Training Journey & Compensation\n\n- **Traineeship Program (First 6 Months):**\n  - **Duration & Hours:** 6 months; 8.5 hours per day (Monday to Friday).\n  - **Stipend:** **₹20,000 per month**.\n  - **Initial Shift:** Primary Europe shift (12:00 PM / Noon – 10:00 PM IST).\n- **Full-Time Opportunity (FTE Conversion):**\n  - Upon successful completion of the training program and performance evaluation, you will be offered a full-time position as **Customer Success — Associate**.\n  - **CTC:** **₹8,00,000 per annum** (**₹6,00,000 fixed base salary + ₹2,00,000 yearly performance pay**).\n  - **Post-Training Shift Options:** Europe, Asia Pacific, North America, or Middle East (aligned to business requirements).\n\n---\n\n## Why Join Recruit CRM?\n\n- **100% Fully Remote:** Freedom to work anywhere across India.\n- **ARR-Linked Performance Bonus:** After 1 year as a full-time employee, you become eligible for our ARR-Linked Performance Bonus, announced every January 1st.\n- **Sponsored L&D Programs:** Full sponsorship for continuous professional growth and skill building.\n- **Company-Paid Team Outbounds:** Regular funded company meetups and retreats.\n- **Full Insurance Coverage:** Health benefits and competitive total rewards.\n\n---\n\n## What You Will Do\n\n- Learn the Recruit CRM platform inside and out and master global recruitment operations.\n- Handle inbound customer queries and platform troubleshooting via chat, email, and video calls.\n- Empathize with users, resolve complex challenges, and offer creative workarounds.\n- Advocate for user needs by channeling customer feedback directly to Product and Engineering teams.\n- Build and nurture long-term client relationships across 100+ countries.\n\n---\n\n## Who Can Apply?\n\n- **Eligible Batches:** Exclusively open to freshers completing **Graduation / Post-Graduation in 2027**.\n- **Specialization:** All degrees and specializations welcome (B.Tech / B.E., B.Sc, BCA, MCA, BBA, B.Com, M.Tech, etc.).\n- **Skills Required:**\n  - Exceptional verbal and written English communication skills.\n  - Quick learner with natural curiosity for software and technology.\n  - Proactive problem-solving attitude with strong client empathy.\n\n---\n\n## Selection Process (100% Virtual)\n\n1. **Online Assessment (MCQ):** Testing analytical aptitude, situational problem-solving, and logic.\n2. **Practical Case Assignment:** Hands-on scenario exercise to evaluate communication and solutioning.\n3. **Virtual Interviews:** In-depth evaluation with the Customer Success and talent leadership.\n\n---\n\n## Official Links & Documents\n\n- **Official Job Description Document:** [CSA India - JD (Google Drive)](https://drive.google.com/file/d/1BwUJOYtAq8I3Fm25_ZmqzgFqryhHYMux/view?usp=sharing)\n- **Application Deadline:** November 18, 2026 (Apply early for immediate batch processing)\n- **Direct Application:** [Apply on Recruit CRM Careers Portal](https://careers.recruitcrm.io/17915624986970157266mLh?utm_source=internal+hiring+&utm_medium=job+candidate+&utm_campaign=hiring+)\n---\n',
+  'Online MCQ & Virtual Assessment',
+  '5 min read',
+  'Raju Perumalla',
+  '2026-10-20',
+  ARRAY['Recruit CRM', 'Customer Success', 'SaaS', 'Remote', '2027 Batch', 'Fresher', 'Paid', 'High CTC'],
+  true,
+  true,
+  'active',
+  '2026-11-18T23:59:59.999Z',
+  ARRAY[2027],
+  'Fresher (2027 Batch)',
+  'Internship / Full-time',
+  'Remote',
+  '₹20,000 / Month (Training) → ₹8,00,000 / Year (FTE CTC)',
+  true,
+  'Recruit CRM',
+  'Fully Remote (Work From Home, India)',
+  'Apply at Recruit CRM Careers →',
+  'Immediate Joining (Batch 2027)',
+  'https://careers.recruitcrm.io/17915624986970157266mLh',
+  '{"organization": "Recruit CRM", "role": "Customer Success Associate - 2027 Graduates (Req: 17915624986970157266mLh)", "eligibility": "Freshers completing graduation/post-graduation in 2027 (Any stream/specialization)", "deadline": "November 18, 2026 (Immediate Joining)", "location": "Fully Remote (Work From Home)", "workMode": "Remote", "jobType": "Traineeship / Internship + Full-Time", "stipend": "₹20,000/month (6-mo Training) → ₹8,00,000 CTC Full-Time", "officialUrl": "https://careers.recruitcrm.io/17915624986970157266mLh?utm_source=internal+hiring+&utm_medium=job+candidate+&utm_campaign=hiring+", "eligibleBatches": [2027], "isVerified": true}'::jsonb
 )
 ON CONFLICT (slug) DO UPDATE SET
   title = EXCLUDED.title,

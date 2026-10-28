@@ -1495,7 +1495,7 @@ const App = () => {
                 <div className='movie_desc'>
                   <p className='text'>Accident Prevention | Risk Prediction | Driver Monitoring | Speed Control | Danger Alerts | Crash Detection | Severity Analysis | GPS Tracking | Emergency Alerts | Golden Rescue</p>
                 </div>
-                <div className='movie_social'>
+                <div className='movie_social flex items-center justify-between pr-4'>
                   <ul className='flex gap-3 items-center'>
                     <li className='w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center p-1.5 hover:border-blue-500/50 hover:bg-white/10 transition-all duration-300'>
                       <img src={flutterLogo} className='w-full h-full object-contain' alt='Flutter' />
@@ -1507,6 +1507,12 @@ const App = () => {
                       <img src={googleMapsLogo} className='w-full h-full object-contain' alt='Google Maps' />
                     </li>
                   </ul>
+                  <Link
+                    to="/blog/building-smartguardian-iot-accident-detection-system"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 text-blue-400 hover:text-blue-300 text-xs font-semibold transition-all pointer-events-auto"
+                  >
+                    Case Study <IconWrapper name="ArrowRight" size={12} />
+                  </Link>
                 </div>
               </div>
               <div className='blur_back overflow-hidden relative'>
@@ -1542,7 +1548,7 @@ const App = () => {
                 <div className='movie_desc'>
                   <p className='text'>Secure Exam Papers with Encryption | Role-Based Access | RSA Key Pair Authentication</p>
                 </div>
-                <div className='movie_social'>
+                <div className='movie_social flex items-center justify-between pr-4'>
                   <ul className='flex gap-3 items-center'>
                     <li className='w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center p-1.5 hover:border-blue-500/50 hover:bg-white/10 transition-all duration-300'>
                       <img src={pythonLogo} className='w-full h-full object-contain' alt='Python' />
@@ -1560,6 +1566,12 @@ const App = () => {
                       <img src={jsLogo} className='w-full h-full object-contain' alt='JavaScript' />
                     </li>
                   </ul>
+                  <Link
+                    to="/blog/securing-academic-data-cipherdoc-rsa-encryption"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-purple-400 hover:text-purple-300 text-xs font-semibold transition-all pointer-events-auto"
+                  >
+                    Case Study <IconWrapper name="ArrowRight" size={12} />
+                  </Link>
                 </div>
               </div>
               <div className='blur_back overflow-hidden relative'>
@@ -1603,7 +1615,7 @@ const App = () => {
                 <div className='movie_desc'>
                   <p className='text'>Tripzy is a responsive travel booking website using HTML, CSS, JavaScript, and Firebase that enables OTP login, destination search, hotel deals, and seamless booking with a mobile-friendly UI.</p>
                 </div>
-                <div className='movie_social'>
+                <div className='movie_social flex items-center justify-between pr-4'>
                   <ul className='flex gap-3 items-center'>
                     <li className='w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center p-1.5 hover:border-blue-500/50 hover:bg-white/10 transition-all duration-300'>
                       <img src={htmlLogo} className='w-full h-full object-contain' alt='HTML' />
@@ -1615,6 +1627,12 @@ const App = () => {
                       <img src={jsLogo} className='w-full h-full object-contain' alt='JS' />
                     </li>
                   </ul>
+                  <Link
+                    to="/blog/tripzy-ai-travel-companion-architecture"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 hover:text-emerald-300 text-xs font-semibold transition-all pointer-events-auto"
+                  >
+                    Case Study <IconWrapper name="ArrowRight" size={12} />
+                  </Link>
                 </div>
               </div>
               <div className='blur_back overflow-hidden relative'>
@@ -1652,7 +1670,7 @@ const App = () => {
                 <div className='movie_desc'>
                   <p className='text'>Nutrixa is a smart health companion that helps you make better lifestyle choices and stay consistent every day.</p>
                 </div>
-                <div className='movie_social'>
+                <div className='movie_social flex items-center justify-between pr-4'>
                   <ul className='flex gap-3 items-center'>
                     <li className='w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center p-1.5 hover:border-blue-500/50 hover:bg-white/10 transition-all duration-300'>
                       <img src={streamlitLogo} className='w-full h-full object-contain' alt='Streamlit' />
@@ -1664,7 +1682,14 @@ const App = () => {
                       <img src={htmlLogo} className='w-full h-full object-contain' alt='HTML' />
                     </li>
                   </ul>
+                  <Link
+                    to="/blog/nutrixa-diet-engine-ai-nutrition-architecture"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-400 hover:text-amber-300 text-xs font-semibold transition-all pointer-events-auto"
+                  >
+                    Case Study <IconWrapper name="ArrowRight" size={12} />
+                  </Link>
                 </div>
+
               </div>
               <div className='blur_back overflow-hidden relative'>
                 <video
@@ -2022,18 +2047,30 @@ const App = () => {
           </div>
 
           {/* Right: Links */}
-          <div className='flex items-center gap-4 sm:gap-5'>
+          <div className='flex flex-wrap items-center justify-center md:justify-end gap-3 sm:gap-4'>
+            <Link to="/about"
+              className='text-white/30 hover:text-white text-xs tracking-wide transition-colors duration-200'>About</Link>
+            <span className='text-white/10'>|</span>
             <a href='https://github.com/rajuperumalla951515' target='_blank' rel='noopener noreferrer'
               className='text-white/30 hover:text-white text-xs tracking-wide transition-colors duration-200'>GitHub</a>
             <span className='text-white/10'>|</span>
             <a href='https://www.instagram.com/impressive_dev_34' target='_blank' rel='noopener noreferrer'
               className='text-white/30 hover:text-white text-xs tracking-wide transition-colors duration-200'>Instagram</a>
             <span className='text-white/10'>|</span>
+            <Link to="/blog"
+              className='text-white/30 hover:text-white text-xs tracking-wide transition-colors duration-200'>Articles</Link>
+            <span className='text-white/10'>|</span>
             <a href='#contact'
               className='text-white/30 hover:text-white text-xs tracking-wide transition-colors duration-200'>Contact</a>
             <span className='text-white/10'>|</span>
             <Link to="/decode" onClick={handleDecodeNav}
               className='text-white/30 hover:text-white text-xs tracking-wide transition-colors duration-200'>Decode</Link>
+            <span className='text-white/10'>|</span>
+            <Link to="/privacy-policy"
+              className='text-white/30 hover:text-white text-xs tracking-wide transition-colors duration-200'>Privacy Policy</Link>
+            <span className='text-white/10'>|</span>
+            <Link to="/terms"
+              className='text-white/30 hover:text-white text-xs tracking-wide transition-colors duration-200'>Terms</Link>
           </div>
 
         </div>

@@ -68,6 +68,7 @@ export const getCompanyLogoFromWebsite = (urlOrDomain, companyName = '') => {
     else if (nameLower.includes('capgemini')) domain = 'capgemini.com';
     else if (nameLower.includes('amazon')) domain = 'amazon.com';
     else if (nameLower.includes('ibm')) domain = 'ibm.com';
+    else if (nameLower.includes('recruit crm') || nameLower.includes('recruitcrm')) domain = 'recruitcrm.io';
     else if (nameLower.includes('salesforce')) domain = 'salesforce.com';
     else if (nameLower.includes('honeywell')) domain = 'honeywell.com';
     else if (nameLower.includes('pwc') || nameLower.includes('pricewaterhouse')) domain = 'pwc.com';
