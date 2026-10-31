@@ -55,9 +55,9 @@ export const getDomainFromUrl = (url) => {
  * Gets the company's real brand logo directly from their official domain.
  */
 export const getCompanyLogoFromWebsite = (urlOrDomain, companyName = '') => {
-  let domain = getDomainFromUrl(urlOrDomain);
+  let domain = null;
 
-  if (!domain && companyName) {
+  if (companyName) {
     const nameLower = companyName.toLowerCase();
     if (nameLower.includes('clearview')) domain = 'clearviewhcp.com';
     else if (nameLower.includes('google')) domain = 'google.com';
@@ -77,6 +77,27 @@ export const getCompanyLogoFromWebsite = (urlOrDomain, companyName = '') => {
     else if (nameLower.includes('meta')) domain = 'meta.com';
     else if (nameLower.includes('apple')) domain = 'apple.com';
     else if (nameLower.includes('netflix')) domain = 'netflix.com';
+    else if (nameLower.includes('heizen')) domain = 'heizen.work';
+    else if (nameLower.includes('hubble')) domain = 'hubble.work';
+    else if (nameLower.includes('predikt')) domain = 'predikt.in';
+    else if (nameLower.includes('hindutone')) domain = 'hindutone.com';
+    else if (nameLower.includes('smartdocs')) domain = 'smartdocs.com';
+    else if (nameLower.includes('trendwick')) domain = 'trendwick.co';
+    else if (nameLower.includes('sd wot') || nameLower.includes('sdwot')) domain = 'sdwot.ai';
+    else if (nameLower.includes('digital back office')) domain = 'digitalbackoffice.com';
+    else if (nameLower.includes('botcadence')) domain = 'botcadence.com';
+    else if (nameLower.includes('infergent')) domain = 'infergent.com';
+    else if (nameLower.includes('isocode')) domain = 'isocodelabs.com';
+    else if (nameLower.includes('broadcastwell')) domain = 'broadcastwell.com';
+    else if (nameLower.includes('urbanizer')) domain = 'urbanizer.in';
+    else if (nameLower.includes('perceptive')) domain = 'perceptive.com';
+    else if (nameLower.includes('amgen')) domain = 'amgen.com';
+    else if (nameLower.includes('trinet')) domain = 'trinet.com';
+    else if (nameLower.includes('foundation ai')) domain = 'foundationai.com';
+  }
+
+  if (!domain) {
+    domain = getDomainFromUrl(urlOrDomain);
   }
 
   if (!domain) return null;
