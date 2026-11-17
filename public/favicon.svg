@@ -1,7 +1,40 @@
+
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <rect width="100" height="100" rx="20" fill="#000000" />
-  <g transform="translate(-5, 0)">
-    <path d="M 25 15 L 85 15 L 40 60 L 25 60 Z M 40 30 L 40 45 L 55 30 Z" fill="#ffffff" fill-rule="evenodd" />
-    <path d="M 25 65 L 55 65 L 75 85 L 60 85 L 40 65 L 40 85 L 25 85 Z" fill="#ffffff" />
+  <rect width="100" height="100" rx="20" fill="#000000"/>
+
+  <g fill="#FFFFFF">
+
+    <!-- Upper geometric structure -->
+    <path d="
+      M20 15
+      H81
+      Q84 15 82 18
+      L43 52
+      Q41 54 38 54
+      H20
+      Z
+
+      M37 28
+      V41
+      L52 28
+      Z
+    " fill-rule="evenodd"/>
+
+    <!-- Refined middle connection and leg -->
+    <path d="
+      M20 58
+      H52
+      Q54 58 56 60
+      L77 83
+      Q80 87 75 87
+      H62
+      Q60 87 58 85
+      L41 68
+      V84
+      Q41 87 38 87
+      H20
+      Z
+    "/>
+
   </g>
 </svg>
