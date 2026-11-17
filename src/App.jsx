@@ -31,6 +31,8 @@ import youtubeLogo from './assets/youtube (1).png';
 import googleLogo from './assets/google-logo.png';
 import sapLogo from './assets/sap-logo.png';
 import capgeminiLogo from './assets/Capgemini Logo.jpeg';
+import capgeminiPrizePhoto from './assets/capgemini-prize.jpg';
+import sapPrizePhoto from './assets/sap-innovation-prize.jpg';
 import gmailLogo from './assets/gmail.png';
 import instaProfile from './assets/insta profile.png';
 import smartGuardianVideo from './videos/smartguardian_preview.mp4';
@@ -300,6 +302,33 @@ const aboutTabs = [
   }
 ];
 
+const achievementsData = [
+  {
+    id: 'capgemini-synchrony',
+    title: 'Capgemini × Synchrony T4PF Hackathon',
+    recognition: '2nd Runner-Up',
+    badgeColor: 'from-amber-500/20 to-orange-500/20 text-amber-300 border-amber-500/30',
+    organizer: 'Capgemini & Synchrony',
+    subtitle: 'National T4PF Hackathon',
+    logo: capgeminiLogo,
+    image: capgeminiPrizePhoto,
+    description: 'Awarded 2nd Runner-Up with cash prize and trophy for architecting an intelligent accessibility and assistive technology platform during the national Tech for Positive Futures Hackathon.',
+    highlights: ['2nd Runner-Up Nationwide', 'Cash Prize & Trophy', 'Synchrony & Capgemini Jury']
+  },
+  {
+    id: 'innovation-marathon',
+    title: 'Innovation Marathon',
+    recognition: 'Finalist',
+    badgeColor: 'from-blue-500/20 to-indigo-500/20 text-blue-300 border-blue-500/30',
+    organizer: 'SAP Labs India',
+    subtitle: 'SAP Innovation Marathon',
+    logo: sapLogo,
+    image: sapPrizePhoto,
+    description: 'Selected as top Finalist team nationwide in the SAP Innovation Marathon for building high-impact enterprise AI workflows powered by SAP Business Technology Platform (BTP).',
+    highlights: ['Top Finalist Team', 'Enterprise AI on SAP BTP', 'SAP Labs India Showcase']
+  }
+];
+
 const App = () => {
   usePageSEO({
     title: 'Raju Perumalla | Full-Stack, AI & Cloud Developer Portfolio',
@@ -374,6 +403,11 @@ const App = () => {
   const [activeSkillTab, setActiveSkillTab] = useState(0);
   const [skillAnimDir, setSkillAnimDir] = useState(1);
   const [showMobileStats, setShowMobileStats] = useState(false);
+  const [hoveredAchievement, setHoveredAchievement] = useState(null);
+  const [selectedAchievement, setSelectedAchievement] = useState(null);
+
+  const activeAchievementIndex = hoveredAchievement !== null ? hoveredAchievement : selectedAchievement;
+  const activeAchievementItem = activeAchievementIndex !== null ? achievementsData[activeAchievementIndex] : null;
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText('23ra1a05b0@kpritech.ac.in');
@@ -1714,63 +1748,186 @@ const App = () => {
           </div>
         </section>
 
-        {/* Indian Names List */}
+        {/* Recognitions & Achievements Section */}
         <section id='community' ref={communitySectionRef} className='py-16'>
           <div className='mb-8'>
             <h3 className='text-blue-500 font-medium mb-2 flex items-center gap-2'>
-              <div className='h-px w-8 bg-blue-500' /> Community
+              <div className='h-px w-8 bg-blue-500' /> Honors & Recognition
             </h3>
-            <h2 className='text-2xl font-bold'>Local Contributors</h2>
+            <h2 className='text-2xl md:text-3xl font-bold tracking-tight text-white'>
+              Recognitions & Achievements
+            </h2>
           </div>
 
-          {/* Indian Names List */}
-          <div className='indian-list mt-12 flex justify-center md:justify-start'>
-            <ul>
-              <li style={{ '--i': 1 }}>
-                <div style={{ width: 64, height: 64, borderRadius: 8, background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="rgba(255,255,255,0.92)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="8" r="4" /><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-                  </svg>
-                </div>
-                <div className='content'>
-                  <h3>Rajesh</h3>
-                  <p>Hyderabad</p>
-                </div>
-              </li>
-              <li style={{ '--i': 2 }}>
-                <div style={{ width: 64, height: 64, borderRadius: 8, background: 'linear-gradient(135deg, #a855f7 0%, #7c3aed 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="rgba(255,255,255,0.92)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="8" r="4" /><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-                  </svg>
-                </div>
-                <div className='content'>
-                  <h3>Dev Raj</h3>
-                  <p>Gachibowli</p>
-                </div>
-              </li>
-              <li style={{ '--i': 3 }}>
-                <div style={{ width: 64, height: 64, borderRadius: 8, background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="rgba(255,255,255,0.92)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="8" r="4" /><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-                  </svg>
-                </div>
-                <div className='content'>
-                  <h3>Niketh</h3>
-                  <p>Kamareddy</p>
-                </div>
-              </li>
-              <li style={{ '--i': 4 }}>
-                <div style={{ width: 64, height: 64, borderRadius: 8, background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="rgba(255,255,255,0.92)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="12" cy="8" r="4" /><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-                  </svg>
-                </div>
-                <div className='content'>
-                  <h3>Manikanta</h3>
-                  <p>Kukatpally</p>
-                </div>
-              </li>
-            </ul>
+          {/* Interactive Two-Column Showcase */}
+          <div className='grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-stretch mt-8'>
+            {/* Left Column: Achievement Cards */}
+            <div className='md:col-span-5 flex flex-col gap-4'>
+              {achievementsData.map((item, idx) => {
+                const isActive = activeAchievementIndex === idx;
+                const isSelected = selectedAchievement === idx;
+                return (
+                  <div
+                    key={item.id}
+                    onMouseEnter={() => setHoveredAchievement(idx)}
+                    onMouseLeave={() => setHoveredAchievement(null)}
+                    onClick={() => setSelectedAchievement(prev => prev === idx ? null : idx)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setSelectedAchievement(prev => prev === idx ? null : idx);
+                      }
+                    }}
+                    tabIndex={0}
+                    role="button"
+                    aria-pressed={isActive}
+                    aria-label={`${item.title} - ${item.recognition}`}
+                    className={`relative group cursor-pointer p-5 sm:p-6 rounded-2xl border transition-all duration-300 outline-none text-left flex flex-col justify-between ${
+                      isActive
+                        ? 'bg-white/[0.06] border-blue-500/40 shadow-[0_0_25px_rgba(59,130,246,0.15)] ring-1 ring-blue-500/30'
+                        : 'bg-white/[0.02] border-white/10 hover:border-white/20 hover:bg-white/[0.04]'
+                    }`}
+                  >
+                    {/* Active Accent Indicator */}
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeAchievementIndicator"
+                        className="absolute left-0 top-3 bottom-3 w-1 bg-gradient-to-b from-blue-500 to-indigo-500 rounded-r-full"
+                        transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                      />
+                    )}
+
+                    {/* Top: Logo + Organizer + Recognition Tag */}
+                    <div className="flex items-center justify-between gap-3 mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl p-1 bg-white/[0.06] border border-white/10 flex items-center justify-center shrink-0 overflow-hidden">
+                          <img src={item.logo} alt={item.organizer} className="w-full h-full object-contain rounded-lg" />
+                        </div>
+                        <div>
+                          <span className="text-[11px] font-semibold uppercase tracking-wider text-white/50 block">
+                            {item.organizer}
+                          </span>
+                          <span className="text-[11px] text-white/30">
+                            {item.subtitle}
+                          </span>
+                        </div>
+                      </div>
+
+                      <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border bg-gradient-to-r ${item.badgeColor} shrink-0`}>
+                        {item.recognition}
+                      </span>
+                    </div>
+
+                    {/* Title & Description */}
+                    <div className="mb-4">
+                      <h3 className={`text-lg sm:text-xl font-bold mb-1.5 transition-colors duration-200 ${
+                        isActive ? 'text-white' : 'text-white/90 group-hover:text-white'
+                      }`}>
+                        {item.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-white/60 leading-relaxed">
+                        {item.description}
+                      </p>
+                    </div>
+
+                    {/* Highlights + Action Hint */}
+                    <div className="flex items-center justify-between pt-3 border-t border-white/5 text-xs">
+                      <div className="flex flex-wrap gap-1.5">
+                        {item.highlights.map((hl, hIdx) => (
+                          <span key={hIdx} className="px-2 py-0.5 rounded-md bg-white/[0.04] text-white/50 text-[11px]">
+                            {hl}
+                          </span>
+                        ))}
+                      </div>
+
+                      <div className={`flex items-center gap-1 text-xs font-medium transition-colors ${
+                        isActive ? 'text-blue-400' : 'text-white/40 group-hover:text-white/70'
+                      }`}>
+                        <span>{isActive ? (isSelected ? 'Pinned' : 'Viewing') : 'Preview photo'}</span>
+                        <IconWrapper
+                          name="ChevronRight"
+                          size={14}
+                          className={`transition-transform duration-200 ${isActive ? 'translate-x-1' : 'group-hover:translate-x-0.5'}`}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Right Column: Interactive Photo Showcase */}
+            <div className='md:col-span-7 flex flex-col'>
+              <div className='min-h-[340px] sm:min-h-[380px] md:min-h-[440px] h-full rounded-2xl md:rounded-3xl border border-white/10 bg-[#090a0d]/80 backdrop-blur-xl p-4 sm:p-6 relative overflow-hidden flex flex-col items-center justify-center shadow-[0_10px_35px_-10px_rgba(0,0,0,0.6)]'>
+                {/* Subtle Ambient Radial Glow */}
+                <div className='absolute -inset-1 bg-gradient-to-tr from-blue-500/10 via-purple-500/5 to-emerald-500/10 rounded-3xl blur-2xl opacity-60 pointer-events-none' />
+
+                <AnimatePresence mode="wait">
+                  {activeAchievementItem ? (
+                    <motion.div
+                      key={activeAchievementItem.id}
+                      initial={{ opacity: 0, scale: 0.95, x: 20 }}
+                      animate={{ opacity: 1, scale: 1, x: 0 }}
+                      exit={{ opacity: 0, scale: 0.95, x: -20 }}
+                      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                      className='relative w-full h-full flex flex-col items-center justify-center'
+                    >
+                      {/* Photo Frame with object-fit: contain */}
+                      <div className='relative w-full flex-1 flex items-center justify-center overflow-hidden rounded-xl bg-black/40 border border-white/5 p-2 sm:p-3'>
+                        <img
+                          src={activeAchievementItem.image}
+                          alt={`${activeAchievementItem.title} - ${activeAchievementItem.recognition}`}
+                          className='w-full h-auto max-h-[280px] sm:max-h-[320px] md:max-h-[350px] lg:max-h-[380px] object-contain rounded-lg drop-shadow-[0_15px_30px_rgba(0,0,0,0.8)] select-none'
+                          loading='lazy'
+                        />
+                      </div>
+
+                      {/* Photo Caption Badge */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.1, duration: 0.25 }}
+                        className='mt-3 sm:mt-4 w-full flex flex-wrap items-center justify-between gap-2 px-3.5 py-2 rounded-xl bg-white/[0.03] border border-white/10 backdrop-blur-md text-xs'
+                      >
+                        <div className='flex items-center gap-2 min-w-0'>
+                          <span className='w-2 h-2 rounded-full bg-emerald-400 shrink-0 animate-pulse' />
+                          <span className='text-white/90 font-medium truncate'>
+                            {activeAchievementItem.title}
+                          </span>
+                        </div>
+                        <div className='flex items-center gap-2'>
+                          <span className='text-white/40 text-[11px] hidden sm:inline'>
+                            Ceremony Photograph
+                          </span>
+                          <span className='text-emerald-400 font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20'>
+                            {activeAchievementItem.recognition}
+                          </span>
+                        </div>
+                      </motion.div>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="placeholder"
+                      initial={{ opacity: 0, scale: 0.97 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.97 }}
+                      transition={{ duration: 0.25 }}
+                      className='flex flex-col items-center justify-center text-center p-8 text-white/50 my-auto'
+                    >
+                      <div className='w-16 h-16 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center mb-4 text-white/40 shadow-inner'>
+                        <IconWrapper name="Award" size={32} className='text-blue-400/70' />
+                      </div>
+                      <p className='text-sm font-medium text-white/80 mb-1'>
+                        Ceremony & Award Photograph Preview
+                      </p>
+                      <p className='text-xs text-white/40 max-w-[280px] leading-relaxed'>
+                        Hover over an achievement card or tap on mobile to display the official photograph.
+                      </p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
           </div>
         </section>
 
