@@ -840,7 +840,7 @@ const App = () => {
                     variants={cinematicItem}
                     className='text-white/70 text-sm md:text-base lg:text-lg mb-8 leading-relaxed'
                   >
-                    CSE’27 | GSA’26 | Python, Java, C/C++ | SAP ABAP & BTP | System Design & API Integration | 2nd Runner-Up @Capgemini T4PF | YouTube Creator (2.5K+)
+                    CSE’27 | AI Engineer & Full-Stack Developer | Python, Java, JS | SAP ABAP & BTP | GSA ’26 | 2nd Runner-Up @ Capgemini T4PF | SAP Innovation Marathon Finalist | Tech Creator (2.5K+)
                   </motion.p>
                   <motion.div
                     variants={cinematicItem}
