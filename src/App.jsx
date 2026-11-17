@@ -1776,42 +1776,45 @@ const App = () => {
           </div>
         </section>
 
-        {/* Achievements Section — White Cutting Edge Cutout (Borderless + Side-to-Side Slide Animation) */}
+        {/* Achievements Section — Matches Skills Section Architecture */}
         <section
           id='community'
           ref={communitySectionRef}
           className='py-10 md:py-14 px-6 md:px-12 my-8 relative overflow-hidden'
         >
-          {/* True Transparent Background with Smooth Left-Side Cutout in White */}
+          {/* Luminous White Tab behind Title (Matching Skills Cutout Aesthetic) */}
+          <div className="absolute top-0 left-0 w-[271px] sm:w-[311px] md:w-[361px] h-[68px] md:h-[88px] bg-white rounded-tl-[2rem] md:rounded-tl-[2.5rem] -z-20 transition-all duration-300" />
+
+          {/* Deep Matte Section Blocks in #0a0a0a (Matching Skills Section) */}
           {/* Right Block */}
-          <div className="absolute top-0 bottom-0 left-[279px] sm:left-[339px] md:left-[449px] right-0 bg-white rounded-r-[2rem] md:rounded-r-[2.5rem] rounded-tl-[1.5rem] md:rounded-tl-[2rem] -z-10 shadow-2xl transition-all duration-300" />
+          <div className="absolute top-0 bottom-0 left-[269px] sm:left-[309px] md:left-[359px] right-0 bg-[#0a0a0a] rounded-r-[2rem] md:rounded-r-[2.5rem] rounded-tl-[1.5rem] md:rounded-tl-[2rem] -z-10 shadow-2xl transition-all duration-300" />
 
           {/* Bottom-Left Block */}
-          <div className="absolute top-[68px] md:top-[88px] bottom-0 left-0 w-[281px] sm:w-[341px] md:w-[451px] bg-white rounded-bl-[2rem] md:rounded-bl-[2.5rem] rounded-tr-none -z-10 shadow-2xl transition-all duration-300" />
+          <div className="absolute top-[68px] md:top-[88px] bottom-0 left-0 w-[271px] sm:w-[311px] md:w-[361px] bg-[#0a0a0a] rounded-bl-[2rem] md:rounded-bl-[2.5rem] rounded-tl-[1.5rem] md:rounded-tl-[2rem] rounded-tr-none -z-10 shadow-2xl transition-all duration-300" />
 
-          {/* Inward Curve Smoother */}
-          <svg width="32" height="32" viewBox="0 0 32 32" className="absolute top-[36px] md:top-[56px] left-[248px] sm:left-[308px] md:left-[418px] text-white fill-current -z-10 transition-all duration-300">
+          {/* Inward Curve Smoother Fillet in #0a0a0a */}
+          <svg width="32" height="32" viewBox="0 0 32 32" className="absolute top-[36px] md:top-[56px] left-[238px] sm:left-[278px] md:left-[328px] text-[#0a0a0a] fill-current -z-10 transition-all duration-300">
             <path d="M 0 32 C 17.7 32 32 17.7 32 0 V 32 H 0 Z" />
           </svg>
 
-          {/* Left-Side Cutting Edge Cutout Title */}
+          {/* Cutout Title: Bold Black Text on White Tab (Identical to SKILLS) */}
           <motion.div
-            initial={{ opacity: 0, x: -24 }}
+            initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="absolute top-4 left-4 sm:left-6 md:top-8 md:left-8 z-20"
           >
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-wider uppercase text-white drop-shadow-md">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-wider uppercase text-black">
               ACHIEVEMENTS
             </h2>
           </motion.div>
 
-          {/* Content Container positioned cleanly below the cutout */}
-          <div className="mt-20 md:mt-24 relative z-10 w-full">
+          {/* Content Container positioned right below the shelf */}
+          <div className="mt-12 md:mt-14 relative z-10 w-full">
             <div className='grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch'>
-              {/* Left Column: Clean Borderless Single-Title Cards */}
-              <div className='lg:col-span-5 flex flex-col gap-4 justify-center'>
+              {/* Left Column: Sleek Borderless Dark Cards Matching Skills Theme */}
+              <div className='lg:col-span-5 flex flex-col gap-4'>
                 {achievementsData.map((item, idx) => {
                   const isActive = activeAchievement === idx;
                   return (
@@ -1844,34 +1847,34 @@ const App = () => {
                       aria-label={`${item.number} ${item.title} - ${item.recognition}`}
                       className={`flex items-center justify-between gap-4 p-5 sm:p-6 rounded-2xl transition-all duration-300 relative overflow-hidden cursor-pointer text-left ${
                         isActive
-                          ? 'bg-white shadow-[0_10px_30px_rgba(0,0,0,0.08)] scale-[1.01]'
-                          : 'bg-neutral-50/90 hover:bg-neutral-100/90 hover:scale-[1.005]'
+                          ? 'bg-[#151515] border border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.6)] scale-[1.01]'
+                          : 'bg-[#0e0e0e]/90 border border-white/5 hover:border-white/10 hover:bg-[#141414] hover:scale-[1.005]'
                       }`}
                     >
-                      {/* Top Accent Color Line (Borderless) */}
+                      {/* Top Accent Color Glow */}
                       {isActive && (
                         <div
-                          className="absolute top-0 left-0 w-full h-[3px] transition-all duration-300"
-                          style={{ background: item.color }}
+                          className="absolute top-0 left-0 w-full h-[2px] transition-all duration-300"
+                          style={{ background: `linear-gradient(90deg, transparent, ${item.color}, transparent)` }}
                         />
                       )}
 
                       {/* Left: Number + Logo Box + Single Title + Recognition */}
                       <div className="flex items-center gap-4 min-w-0">
-                        <span className="text-sm font-black tracking-widest uppercase text-neutral-400 shrink-0">
+                        <span className="text-xs font-mono font-bold tracking-widest text-neutral-500 shrink-0">
                           {item.number}
                         </span>
 
-                        <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-xl bg-neutral-100 transition-all duration-300 shadow-sm">
+                        <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-xl bg-white/[0.04] border border-white/10 transition-all duration-300 shadow-inner">
                           <img
                             src={item.logo}
                             alt=""
-                            className="w-7 h-7 object-contain transition-all duration-300 group-hover:scale-110"
+                            className="w-7 h-7 object-contain transition-all duration-300 group-hover:scale-110 drop-shadow-md"
                           />
                         </div>
 
                         <div className="flex flex-col text-left min-w-0">
-                          <h3 className="text-neutral-900 font-bold text-base sm:text-lg tracking-wide truncate">
+                          <h3 className="text-white font-bold text-base sm:text-lg tracking-wide truncate">
                             {item.title}
                           </h3>
                           <span
@@ -1886,16 +1889,17 @@ const App = () => {
                       {/* Right: Recognition Badge & Arrow Indicator */}
                       <div className="flex items-center gap-2 shrink-0 pl-2">
                         <span
-                          className="text-xs font-bold px-3 py-1.5 rounded-lg transition-all duration-300 hidden sm:inline-block"
+                          className="text-xs font-bold px-3 py-1.5 rounded-lg border hidden sm:inline-block transition-all duration-300"
                           style={{
                             color: item.color,
-                            backgroundColor: `${item.color}18`
+                            backgroundColor: `${item.color}15`,
+                            borderColor: `${item.color}30`
                           }}
                         >
                           {item.recognition}
                         </span>
                         <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
-                          isActive ? 'bg-neutral-900 text-white shadow-sm' : 'bg-neutral-200/60 text-neutral-600'
+                          isActive ? 'bg-white text-black shadow-md' : 'bg-white/5 text-neutral-400'
                         }`}>
                           <IconWrapper
                             name="ChevronRight"
@@ -1909,17 +1913,17 @@ const App = () => {
                 })}
               </div>
 
-              {/* Right Column: Borderless Image Showcase with Side-to-Side Slide Animation */}
+              {/* Right Column: Dark Glass Showcase Frame with Side-to-Side Slide Animation */}
               <div className='lg:col-span-7 flex flex-col'>
-                <div className='h-full min-h-[360px] sm:min-h-[400px] md:min-h-[440px] rounded-2xl bg-neutral-50/80 p-4 sm:p-6 relative overflow-hidden flex flex-col items-center justify-between shadow-sm'>
-                  {/* Dynamic Top Accent Color Line */}
+                <div className='h-full min-h-[360px] sm:min-h-[400px] md:min-h-[440px] rounded-2xl bg-[#0c0c0c] border border-white/5 p-4 sm:p-6 relative overflow-hidden flex flex-col items-center justify-between shadow-2xl'>
+                  {/* Dynamic Top Accent Glow */}
                   <div
-                    className="absolute top-0 left-0 w-full h-[3px] transition-all duration-500"
-                    style={{ background: activeAchievementItem.color }}
+                    className="absolute top-0 left-0 w-full h-[2px] transition-all duration-500"
+                    style={{ background: `linear-gradient(90deg, transparent, ${activeAchievementItem.color}, transparent)` }}
                   />
 
                   {/* Photo Display Frame with Side-to-Side Slide Animation */}
-                  <div className="w-full flex-1 flex items-center justify-center relative overflow-hidden rounded-xl bg-white p-3 sm:p-5 shadow-inner">
+                  <div className="w-full flex-1 flex items-center justify-center relative overflow-hidden rounded-xl bg-black/60 border border-white/5 p-3 sm:p-5 shadow-inner">
                     <AnimatePresence mode="wait" custom={slideDir}>
                       <motion.img
                         key={activeAchievementItem.id}
@@ -1930,7 +1934,7 @@ const App = () => {
                         initial="enter"
                         animate="center"
                         exit="exit"
-                        className="w-full h-auto max-h-[260px] sm:max-h-[300px] md:max-h-[340px] lg:max-h-[380px] object-contain rounded-lg shadow-md select-none"
+                        className="w-full h-auto max-h-[260px] sm:max-h-[300px] md:max-h-[340px] lg:max-h-[380px] object-contain rounded-lg shadow-2xl select-none"
                         loading="lazy"
                       />
                     </AnimatePresence>
@@ -1943,7 +1947,7 @@ const App = () => {
                         setActiveAchievement(prev => (prev === 0 ? achievementsData.length - 1 : prev - 1));
                       }}
                       aria-label="Previous achievement photo"
-                      className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-neutral-800 shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 z-20 cursor-pointer"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/60 hover:bg-black/90 text-white/80 hover:text-white border border-white/10 shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 z-20 cursor-pointer backdrop-blur-md"
                     >
                       <IconWrapper name="ChevronLeft" size={18} />
                     </button>
@@ -1955,29 +1959,30 @@ const App = () => {
                         setActiveAchievement(prev => (prev === achievementsData.length - 1 ? 0 : prev + 1));
                       }}
                       aria-label="Next achievement photo"
-                      className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-neutral-800 shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 z-20 cursor-pointer"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/60 hover:bg-black/90 text-white/80 hover:text-white border border-white/10 shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 z-20 cursor-pointer backdrop-blur-md"
                     >
                       <IconWrapper name="ChevronRight" size={18} />
                     </button>
                   </div>
 
-                  {/* Clean Caption Bar */}
-                  <div className="mt-4 w-full flex items-center justify-between px-4 py-2.5 rounded-xl bg-white shadow-sm text-xs">
+                  {/* Clean Caption Bar in Dark Aesthetic */}
+                  <div className="mt-4 w-full flex items-center justify-between px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/5 shadow-sm text-xs">
                     <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="w-6 h-6 rounded-lg bg-neutral-100 flex items-center justify-center p-0.5 shrink-0">
+                      <div className="w-6 h-6 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center p-0.5 shrink-0">
                         <img src={activeAchievementItem.logo} alt="" className="w-full h-full object-contain" />
                       </div>
-                      <span className="text-neutral-900 font-bold tracking-wide truncate">
+                      <span className="text-white font-bold tracking-wide truncate">
                         {activeAchievementItem.title}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <span className="text-neutral-400 text-[11px] hidden sm:inline">Ceremony Photo</span>
                       <span
-                        className="font-bold px-2.5 py-1 rounded-lg text-[11px]"
+                        className="font-bold px-2.5 py-1 rounded-lg text-[11px] border"
                         style={{
                           color: activeAchievementItem.color,
-                          backgroundColor: `${activeAchievementItem.color}18`
+                          backgroundColor: `${activeAchievementItem.color}15`,
+                          borderColor: `${activeAchievementItem.color}30`
                         }}
                       >
                         {activeAchievementItem.recognition}
