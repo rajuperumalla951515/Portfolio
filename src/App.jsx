@@ -1747,186 +1747,175 @@ const App = () => {
           </div>
         </section>
 
-        {/* Recognitions & Achievements Section — Matching Skills Section Design Language */}
+        {/* Achievements Section — with Left-Side Cutting Edge Cutout Tab */}
         <section
           id='community'
           ref={communitySectionRef}
-          className='py-10 md:py-14 px-6 md:px-12 my-8 relative overflow-hidden rounded-[2rem] md:rounded-[2.5rem] bg-[#0a0a0a] border border-white/5'
+          className='py-10 md:py-14 px-6 md:px-12 my-8 relative overflow-hidden'
         >
-          {/* Section Heading — Matching Skills Section Typography */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 md:mb-12 relative z-10">
-            <div className="flex flex-col text-left">
-              <span className="text-[11px] font-black tracking-widest uppercase text-white/40 mb-1">
-                HONORS & AWARDS
-              </span>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-wider uppercase text-white">
-                RECOGNITIONS & ACHIEVEMENTS
-              </h2>
-            </div>
-            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.03] border border-white/10 w-fit">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="text-[11px] font-bold text-white/60 tracking-wider uppercase">
-                National Competitions
-              </span>
-            </div>
-          </div>
+          {/* True Transparent Background with Smooth Left-Side Cutout */}
+          {/* Right Block */}
+          <div className="absolute top-0 bottom-0 left-[259px] md:left-[339px] right-0 bg-[#0a0a0a] rounded-r-[2rem] md:rounded-r-[2.5rem] rounded-tl-[1.5rem] md:rounded-tl-[2rem] -z-10 transition-all duration-300" />
 
-          {/* Interactive Two-Column Showcase */}
-          <div className='grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch relative z-10'>
-            {/* Left Column: Two Interactive Achievement Cards (Skills Card Anatomy) */}
-            <div className='lg:col-span-5 flex flex-col gap-4 justify-between'>
-              {achievementsData.map((item, idx) => {
-                const isActive = activeAchievement === idx;
-                return (
-                  <div
-                    key={item.id}
-                    onMouseEnter={() => setActiveAchievement(idx)}
-                    onClick={() => setActiveAchievement(idx)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        setActiveAchievement(idx);
-                      }
-                    }}
-                    tabIndex={0}
-                    role="button"
-                    aria-pressed={isActive}
-                    aria-label={`${item.number} ${item.title} - ${item.recognition}`}
-                    className={`flex flex-col justify-between p-6 rounded-2xl border transition-all duration-300 relative overflow-hidden group cursor-pointer text-left ${
-                      isActive
-                        ? 'border-white/20 bg-[#0f0f0f] shadow-[0_0_30px_rgba(0,0,0,0.8)]'
-                        : 'border-white/5 bg-black hover:border-white/16 hover:bg-[#0f0f0f]'
-                    }`}
-                  >
-                    {/* Skills Signature Gradient Top Glow Line */}
+          {/* Bottom-Left Block */}
+          <div className="absolute top-[68px] md:top-[88px] bottom-0 left-0 w-[261px] md:w-[341px] bg-[#0a0a0a] rounded-bl-[2rem] md:rounded-bl-[2.5rem] rounded-tr-[1.5rem] md:rounded-tr-[2rem] -z-10 transition-all duration-300" />
+
+          {/* Inward Curve Smoother */}
+          <svg width="32" height="32" viewBox="0 0 32 32" className="absolute top-[37px] md:top-[57px] left-[228px] md:left-[308px] text-[#0a0a0a] fill-current -z-10 rotate-90 transition-all duration-300">
+            <path d="M 0 0 H 32 V 32 C 32 14.3 17.7 0 0 0 Z" />
+          </svg>
+
+          {/* Left-Side Cutting Edge Cutout Title */}
+          <motion.div
+            initial={{ opacity: 0, x: -24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="absolute top-4 left-6 md:top-8 md:left-8 z-20"
+          >
+            <h2 className="text-3xl md:text-4xl font-black tracking-widest uppercase text-white">
+              ACHIEVEMENTS
+            </h2>
+          </motion.div>
+
+          {/* Content Container positioned cleanly below the cutout */}
+          <div className="mt-20 md:mt-24 relative z-10 w-full">
+            <div className='grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch'>
+              {/* Left Column: Clean, Single-Title Interactive Cards */}
+              <div className='lg:col-span-5 flex flex-col gap-4 justify-center'>
+                {achievementsData.map((item, idx) => {
+                  const isActive = activeAchievement === idx;
+                  return (
                     <div
-                      className="absolute top-0 left-0 w-full h-[1px] transition-all duration-300"
-                      style={{
-                        background: isActive
-                          ? `linear-gradient(90deg, transparent, ${item.color}ee, transparent)`
-                          : `linear-gradient(90deg, transparent, ${item.color}44, transparent)`
+                      key={item.id}
+                      onMouseEnter={() => setActiveAchievement(idx)}
+                      onClick={() => setActiveAchievement(idx)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          setActiveAchievement(idx);
+                        }
                       }}
-                    />
+                      tabIndex={0}
+                      role="button"
+                      aria-pressed={isActive}
+                      aria-label={`${item.number} ${item.title} - ${item.recognition}`}
+                      className={`flex items-center justify-between gap-4 p-5 sm:p-6 rounded-2xl border transition-all duration-300 relative overflow-hidden group cursor-pointer text-left ${
+                        isActive
+                          ? 'border-white/25 bg-[#0f0f0f] shadow-[0_0_30px_rgba(0,0,0,0.8)] scale-[1.01]'
+                          : 'border-white/5 bg-black hover:border-white/16 hover:bg-[#0f0f0f] hover:scale-[1.005]'
+                      }`}
+                    >
+                      {/* Skills Signature Gradient Top Glow Line */}
+                      <div
+                        className="absolute top-0 left-0 w-full h-[1px] transition-all duration-300"
+                        style={{
+                          background: isActive
+                            ? `linear-gradient(90deg, transparent, ${item.color}ee, transparent)`
+                            : `linear-gradient(90deg, transparent, ${item.color}44, transparent)`
+                        }}
+                      />
 
-                    {/* Skills Signature Hover Shine */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent to-transparent group-hover:from-white/[0.02] pointer-events-none" />
+                      {/* Skills Signature Hover Shine */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent to-transparent group-hover:from-white/[0.02] pointer-events-none" />
 
-                    {/* Card Top: Number + Logo Box + Recognition Pill */}
-                    <div className="flex items-center justify-between gap-3 mb-4">
-                      <div className="flex items-center gap-3.5">
-                        {/* Skills Signature Icon/Logo Container */}
-                        <div className="w-11 h-11 flex-shrink-0 flex items-center justify-center rounded-xl bg-white/[0.03] border border-white/10 group-hover:border-white/20 transition-all duration-300">
+                      {/* Left: Number + Logo Box + Single Title + Recognition */}
+                      <div className="flex items-center gap-4 min-w-0">
+                        <span className="text-sm font-black tracking-widest uppercase text-white/30 group-hover:text-white/60 transition-colors shrink-0">
+                          {item.number}
+                        </span>
+
+                        <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-xl bg-white/[0.03] border border-white/10 group-hover:border-white/20 transition-all duration-300">
                           <img
                             src={item.logo}
-                            alt={item.organizer}
-                            className="w-6 h-6 object-contain transition-all duration-300 group-hover:scale-110 drop-shadow-md"
+                            alt=""
+                            className="w-7 h-7 object-contain transition-all duration-300 group-hover:scale-110 drop-shadow-md"
                           />
                         </div>
-                        <div className="flex flex-col text-left">
-                          <span className="text-[11px] font-black tracking-widest uppercase text-white/40 group-hover:text-white/70 transition-colors">
-                            {item.number} — {item.organizer}
-                          </span>
-                          <span className="text-[10px] text-white/30 font-semibold uppercase tracking-wider mt-0.5">
-                            {item.subtitle}
+
+                        <div className="flex flex-col text-left min-w-0">
+                          <h3 className="text-white font-bold text-base sm:text-lg tracking-wide truncate group-hover:text-white transition-colors">
+                            {item.title}
+                          </h3>
+                          <span
+                            className="text-xs font-bold mt-1 tracking-wider uppercase"
+                            style={{ color: item.color }}
+                          >
+                            {item.recognition}
                           </span>
                         </div>
                       </div>
 
-                      {/* Recognition Pill */}
-                      <span
-                        className="text-xs font-bold px-3 py-1 rounded-lg border transition-all duration-300 shrink-0"
-                        style={{
-                          color: item.color,
-                          borderColor: `${item.color}40`,
-                          backgroundColor: `${item.color}15`
-                        }}
-                      >
-                        {item.recognition}
+                      {/* Right: Recognition Badge & Arrow Indicator */}
+                      <div className="flex items-center gap-2 shrink-0 pl-2">
+                        <span
+                          className="text-xs font-bold px-3 py-1 rounded-lg border transition-all duration-300 hidden sm:inline-block"
+                          style={{
+                            color: item.color,
+                            borderColor: `${item.color}40`,
+                            backgroundColor: `${item.color}15`
+                          }}
+                        >
+                          {item.recognition}
+                        </span>
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
+                          isActive ? 'bg-white/10 text-white' : 'text-white/40 group-hover:text-white/70'
+                        }`}>
+                          <IconWrapper
+                            name="ChevronRight"
+                            size={16}
+                            className={`transition-transform duration-200 ${isActive ? 'translate-x-0.5' : 'group-hover:translate-x-0.5'}`}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Right Column: Interactive Photograph Showcase */}
+              <div className='lg:col-span-7 flex flex-col'>
+                <div className='h-full min-h-[340px] sm:min-h-[380px] md:min-h-[420px] rounded-2xl border border-white/5 bg-black p-4 sm:p-6 relative overflow-hidden flex flex-col items-center justify-between'>
+                  {/* Skills Gradient Top Glow Line matching active achievement */}
+                  <div
+                    className="absolute top-0 left-0 w-full h-[1px] transition-all duration-500"
+                    style={{
+                      background: `linear-gradient(90deg, transparent, ${activeAchievementItem.color}cc, transparent)`
+                    }}
+                  />
+
+                  {/* Skills Gradient Hover Shine */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent to-transparent group-hover:from-white/[0.02] pointer-events-none" />
+
+                  {/* Photo Display Frame with smooth Framer Motion animation */}
+                  <div className="w-full flex-1 flex items-center justify-center relative overflow-hidden rounded-xl bg-[#050505] border border-white/5 p-2 sm:p-4">
+                    <AnimatePresence mode="wait">
+                      <motion.img
+                        key={activeAchievementItem.id}
+                        src={activeAchievementItem.image}
+                        alt={`${activeAchievementItem.title} - ${activeAchievementItem.recognition}`}
+                        initial={{ opacity: 0, scale: 0.96, x: 20 }}
+                        animate={{ opacity: 1, scale: 1, x: 0 }}
+                        exit={{ opacity: 0, scale: 0.96, x: -20 }}
+                        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                        className="w-full h-auto max-h-[260px] sm:max-h-[300px] md:max-h-[340px] lg:max-h-[380px] object-contain rounded-lg drop-shadow-2xl select-none"
+                        loading="lazy"
+                      />
+                    </AnimatePresence>
+                  </div>
+
+                  {/* Skills Style Caption Bar */}
+                  <div className="mt-4 w-full flex items-center justify-between px-4 py-2.5 rounded-xl bg-white/[0.02] border border-white/5 text-xs">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="w-6 h-6 rounded-lg bg-white/[0.03] border border-white/10 flex items-center justify-center p-0.5 shrink-0">
+                        <img src={activeAchievementItem.logo} alt="" className="w-full h-full object-contain" />
+                      </div>
+                      <span className="text-white font-bold tracking-wide truncate">
+                        {activeAchievementItem.title}
                       </span>
                     </div>
-
-                    {/* Card Middle: Title + Description */}
-                    <div className="mb-4">
-                      <h3 className="text-white font-bold text-base md:text-lg tracking-wide group-hover:text-white transition-colors">
-                        {item.title}
-                      </h3>
-                      <p className="text-xs md:text-sm text-white/45 group-hover:text-white/70 transition-colors mt-1.5 leading-relaxed">
-                        {item.description}
-                      </p>
-                    </div>
-
-                    {/* Card Bottom: Highlight Tags + Active Indicator */}
-                    <div className="flex items-center justify-between pt-3 border-t border-white/5 text-xs">
-                      <div className="flex flex-wrap gap-1.5">
-                        {item.highlights.map((hl, hIdx) => (
-                          <span
-                            key={hIdx}
-                            className="px-2.5 py-1 rounded-lg border border-white/5 bg-white/[0.02] text-[10px] font-semibold text-white/40 group-hover:text-white/60 transition-colors"
-                          >
-                            {hl}
-                          </span>
-                        ))}
-                      </div>
-
-                      <div className="flex items-center gap-1 text-[11px] font-bold text-white/40 group-hover:text-white/80 transition-colors">
-                        <span className={isActive ? 'text-white' : ''}>{isActive ? 'Viewing' : 'Hover to view'}</span>
-                        <IconWrapper
-                          name="ChevronRight"
-                          size={13}
-                          className={`transition-transform duration-200 ${isActive ? 'translate-x-1 text-white' : 'group-hover:translate-x-0.5'}`}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Right Column: Interactive Photograph Showcase (Skills Container Styling) */}
-            <div className='lg:col-span-7 flex flex-col'>
-              <div className='h-full min-h-[360px] sm:min-h-[400px] md:min-h-[440px] rounded-2xl border border-white/5 bg-black p-4 sm:p-6 relative overflow-hidden flex flex-col items-center justify-between'>
-                {/* Skills Gradient Top Glow Line matching active achievement */}
-                <div
-                  className="absolute top-0 left-0 w-full h-[1px] transition-all duration-500"
-                  style={{
-                    background: `linear-gradient(90deg, transparent, ${activeAchievementItem.color}cc, transparent)`
-                  }}
-                />
-
-                {/* Skills Gradient Hover Shine */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent to-transparent group-hover:from-white/[0.02] pointer-events-none" />
-
-                {/* Photo Display Frame with smooth transitions */}
-                <div className="w-full flex-1 flex items-center justify-center relative overflow-hidden rounded-xl bg-[#050505] border border-white/5 p-2 sm:p-4">
-                  <AnimatePresence mode="wait">
-                    <motion.img
-                      key={activeAchievementItem.id}
-                      src={activeAchievementItem.image}
-                      alt={`${activeAchievementItem.title} - ${activeAchievementItem.recognition}`}
-                      initial={{ opacity: 0, scale: 0.97, x: 16 }}
-                      animate={{ opacity: 1, scale: 1, x: 0 }}
-                      exit={{ opacity: 0, scale: 0.97, x: -16 }}
-                      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-                      className="w-full h-auto max-h-[260px] sm:max-h-[300px] md:max-h-[340px] lg:max-h-[380px] object-contain rounded-lg drop-shadow-2xl select-none"
-                      loading="lazy"
-                    />
-                  </AnimatePresence>
-                </div>
-
-                {/* Skills Style Caption Bar */}
-                <div className="mt-4 w-full flex items-center justify-between px-4 py-2.5 rounded-xl bg-white/[0.02] border border-white/5 text-xs">
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="w-6 h-6 rounded-lg bg-white/[0.03] border border-white/10 flex items-center justify-center p-0.5 shrink-0">
-                      <img src={activeAchievementItem.logo} alt="" className="w-full h-full object-contain" />
-                    </div>
-                    <span className="text-white font-bold tracking-wide truncate">
-                      {activeAchievementItem.title}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <span className="text-white/40 text-[11px] hidden sm:inline">Ceremony Photo</span>
                     <span
-                      className="font-bold px-2.5 py-1 rounded-lg border text-[11px]"
+                      className="font-bold px-2.5 py-1 rounded-lg border text-[11px] shrink-0"
                       style={{
                         color: activeAchievementItem.color,
                         borderColor: `${activeAchievementItem.color}40`,
