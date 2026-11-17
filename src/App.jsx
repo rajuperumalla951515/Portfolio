@@ -31,8 +31,6 @@ import youtubeLogo from './assets/youtube (1).png';
 import googleLogo from './assets/google-logo.png';
 import sapLogo from './assets/sap-logo.png';
 import capgeminiLogo from './assets/Capgemini Logo.jpeg';
-import capgeminiPrizePhoto from './assets/capgemini-prize.jpg';
-import sapPrizePhoto from './assets/sap-innovation-prize.jpg';
 import gmailLogo from './assets/gmail.png';
 import instaProfile from './assets/insta profile.png';
 import smartGuardianVideo from './videos/smartguardian_preview.mp4';
@@ -302,63 +300,6 @@ const aboutTabs = [
   }
 ];
 
-const achievementsData = [
-  {
-    id: 'capgemini-synchrony',
-    number: '01',
-    title: 'Capgemini × Synchrony T4PF Hackathon',
-    recognition: '2nd Runner-Up',
-    color: '#f59e0b',
-    organizer: 'Capgemini × Synchrony',
-    subtitle: 'National Tech for Positive Futures',
-    logo: capgeminiLogo,
-    image: capgeminiPrizePhoto,
-    description: 'Secured 2nd Runner-Up with cash award and trophy for architecting an intelligent accessibility and assistive technology platform during the national Tech for Positive Futures Hackathon.',
-    highlights: ['2nd Runner-Up Nationwide', 'Cash Prize & Trophy', 'Synchrony & Capgemini Jury']
-  },
-  {
-    id: 'innovation-marathon',
-    number: '02',
-    title: 'Innovation Marathon',
-    recognition: 'Finalist',
-    color: '#0ea5e9',
-    organizer: 'SAP Labs India',
-    subtitle: 'SAP Innovation Marathon',
-    logo: sapLogo,
-    image: sapPrizePhoto,
-    description: 'Selected as top Finalist team nationwide in the SAP Innovation Marathon for building high-impact enterprise AI workflows powered by SAP Business Technology Platform (BTP).',
-    highlights: ['Top Finalist Team', 'Enterprise AI on SAP BTP', 'SAP Labs India Showcase']
-  }
-];
-
-const achievementSlideVariants = {
-  enter: (direction) => ({
-    x: direction > 0 ? 140 : -140,
-    opacity: 0,
-    scale: 0.96,
-  }),
-  center: {
-    x: 0,
-    opacity: 1,
-    scale: 1,
-    transition: {
-      x: { type: "spring", stiffness: 280, damping: 26 },
-      opacity: { duration: 0.35 },
-      scale: { duration: 0.35 }
-    }
-  },
-  exit: (direction) => ({
-    x: direction > 0 ? -140 : 140,
-    opacity: 0,
-    scale: 0.96,
-    transition: {
-      x: { type: "spring", stiffness: 280, damping: 26 },
-      opacity: { duration: 0.25 },
-      scale: { duration: 0.25 }
-    }
-  })
-};
-
 const App = () => {
   usePageSEO({
     title: 'Raju Perumalla | Full-Stack, AI & Cloud Developer Portfolio',
@@ -417,7 +358,6 @@ const App = () => {
   const aboutSectionRef = useRef(null);
   const skillsSectionRef = useRef(null);
   const projectsSectionRef = useRef(null);
-  const communitySectionRef = useRef(null);
   const contactSectionRef = useRef(null);
   const lastScrollYRef = useRef(0);
 
@@ -433,9 +373,6 @@ const App = () => {
   const [activeSkillTab, setActiveSkillTab] = useState(0);
   const [skillAnimDir, setSkillAnimDir] = useState(1);
   const [showMobileStats, setShowMobileStats] = useState(false);
-  const [activeAchievement, setActiveAchievement] = useState(0);
-  const [slideDir, setSlideDir] = useState(1);
-  const activeAchievementItem = achievementsData[activeAchievement] || achievementsData[0];
 
   const handleCopyEmail = () => {
     navigator.clipboard.writeText('23ra1a05b0@kpritech.ac.in');
@@ -513,7 +450,6 @@ const App = () => {
       { id: 'about', ref: aboutSectionRef },
       { id: 'skills', ref: skillsSectionRef },
       { id: 'projects', ref: projectsSectionRef },
-      { id: 'community', ref: communitySectionRef },
       { id: 'contact', ref: contactSectionRef }
     ];
 
@@ -559,7 +495,6 @@ const App = () => {
       <div className={`bg-black-gradient ${activeSection === 'about' ? 'bg-fade-in' : ''}`} />
       <div className={`bg-white-gradient ${activeSection === 'skills' ? 'bg-fade-in' : ''}`} />
       <div className={`bg-yellow-gradient ${activeSection === 'projects' ? 'bg-fade-in' : ''}`} />
-      <div className={`bg-darkgreen-gradient ${activeSection === 'community' ? 'bg-fade-in' : ''}`} />
       <div className={`bg-orange-gradient ${activeSection === 'contact' ? 'bg-fade-in' : ''}`} />
 
       <div className='bg-grid' />
@@ -1771,223 +1706,6 @@ const App = () => {
                   }}
                   className='absolute inset-0 w-full h-full object-cover transition-opacity duration-500 opacity-100'
                 />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Achievements Section — White Abstract Organic Panel with Outlined Heading (Matches Reference Image) */}
-        <section
-          id='community'
-          ref={communitySectionRef}
-          className='py-12 md:py-20 px-4 sm:px-6 md:px-10 lg:px-12 my-8 relative overflow-hidden'
-        >
-          {/* Upper-Left Outlined Heading matching Reference Image */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="absolute top-4 sm:top-6 md:top-8 left-6 sm:left-10 md:left-14 z-20 pointer-events-none"
-          >
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-widest uppercase text-transparent [-webkit-text-stroke:1.5px_#ffffff] md:[-webkit-text-stroke:2px_#ffffff] select-none drop-shadow-[0_4px_16px_rgba(255,255,255,0.12)]">
-              ACHIEVEMENTS
-            </h2>
-          </motion.div>
-
-          {/* White Abstract Content Panel: Unconventional Organic Silhouette with Oversized Curves & Flat Lower Edge */}
-          {/* Right Block with Oversized Upper-Right Curve */}
-          <div className="absolute top-0 bottom-0 left-[259px] sm:left-[339px] lg:left-[419px] right-0 bg-white rounded-tr-[5rem] sm:rounded-tr-[6.5rem] md:rounded-tr-[8rem] lg:rounded-tr-[9.5rem] rounded-tl-[1.5rem] md:rounded-tl-[2rem] -z-10 shadow-[0_25px_60px_rgba(0,0,0,0.35)] transition-all duration-300" />
-
-          {/* Bottom-Left Block forming the Horizontal Shelf */}
-          <div className="absolute top-[68px] sm:top-[80px] md:top-[96px] bottom-0 left-0 w-[261px] sm:w-[341px] lg:w-[421px] bg-white -z-10 shadow-[0_25px_60px_rgba(0,0,0,0.35)] transition-all duration-300" />
-
-          {/* Inward Concave Fillet Curve Smoother */}
-          <svg width="32" height="32" viewBox="0 0 32 32" className="absolute top-[36px] sm:top-[48px] md:top-[64px] left-[228px] sm:left-[308px] lg:left-[388px] text-white fill-current -z-10 transition-all duration-300">
-            <path d="M 0 32 C 17.7 32 32 17.7 32 0 V 32 H 0 Z" />
-          </svg>
-
-          {/* Achievement Content Container: Sophisticated Editorial Layout inside the White Panel */}
-          <div className="mt-24 sm:mt-28 md:mt-32 px-4 sm:px-8 md:px-12 lg:px-16 pb-12 sm:pb-16 relative z-10 w-full">
-            {/* Top Interactive Switcher & Gallery Navigation Bar */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-200/90 pb-6 mb-8 md:mb-10">
-              {/* Tab Selector Buttons */}
-              <div className="flex items-center gap-2 sm:gap-3 p-1.5 bg-neutral-100 rounded-2xl border border-neutral-200/80 w-fit shadow-inner">
-                {achievementsData.map((item, idx) => {
-                  const isActive = activeAchievement === idx;
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => {
-                        if (activeAchievement !== idx) {
-                          setSlideDir(idx > activeAchievement ? 1 : -1);
-                          setActiveAchievement(idx);
-                        }
-                      }}
-                      className={`flex items-center gap-2.5 px-4 sm:px-6 py-2.5 rounded-xl font-bold text-xs sm:text-sm tracking-wide transition-all duration-300 cursor-pointer ${
-                        isActive
-                          ? 'bg-neutral-900 text-white shadow-md scale-[1.01]'
-                          : 'text-neutral-600 hover:text-black hover:bg-white/80'
-                      }`}
-                    >
-                      <span className={`text-[11px] font-mono font-bold ${isActive ? 'text-neutral-400' : 'text-neutral-400'}`}>
-                        {item.number}
-                      </span>
-                      <span className="truncate max-w-[130px] sm:max-w-none">{item.title}</span>
-                      <span
-                        className="hidden md:inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ml-1"
-                        style={{
-                          color: isActive ? item.color : '#4b5563',
-                          backgroundColor: isActive ? `${item.color}25` : 'transparent'
-                        }}
-                      >
-                        {item.recognition}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Gallery Controls & Counter */}
-              <div className="flex items-center gap-3 self-end sm:self-auto">
-                <div className="flex items-center gap-2 text-xs font-mono font-bold text-neutral-400 uppercase tracking-widest mr-2">
-                  <span className="text-neutral-900 text-sm font-black">0{activeAchievement + 1}</span>
-                  <span>/</span>
-                  <span>0{achievementsData.length}</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSlideDir(-1);
-                      setActiveAchievement(prev => (prev === 0 ? achievementsData.length - 1 : prev - 1));
-                    }}
-                    aria-label="Previous achievement"
-                    className="w-10 h-10 rounded-xl bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-800 flex items-center justify-center transition-all duration-200 active:scale-95 cursor-pointer shadow-xs border border-neutral-200/80"
-                  >
-                    <IconWrapper name="ChevronLeft" size={18} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSlideDir(1);
-                      setActiveAchievement(prev => (prev === achievementsData.length - 1 ? 0 : prev + 1));
-                    }}
-                    aria-label="Next achievement"
-                    className="w-10 h-10 rounded-xl bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-800 flex items-center justify-center transition-all duration-200 active:scale-95 cursor-pointer shadow-xs border border-neutral-200/80"
-                  >
-                    <IconWrapper name="ChevronRight" size={18} />
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Main Editorial Content Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-              {/* Left Column: Dark Typography Narrative & Award Details */}
-              <div className="lg:col-span-5 flex flex-col items-start text-left">
-                {/* Meta: Organizer Logo & Subtitle */}
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-neutral-100 border border-neutral-200/80 flex items-center justify-center p-1.5 shrink-0 shadow-xs">
-                    <img src={activeAchievementItem.logo} alt="" className="w-full h-full object-contain" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-[11px] font-mono font-bold tracking-widest uppercase text-neutral-500">
-                      {activeAchievementItem.organizer}
-                    </span>
-                    <span className="text-xs font-semibold text-neutral-700">
-                      {activeAchievementItem.subtitle}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Main Award Title */}
-                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-neutral-900 tracking-tight leading-tight mb-3">
-                  {activeAchievementItem.title}
-                </h3>
-
-                {/* Prominent Recognition Badge */}
-                <div
-                  className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold tracking-wider uppercase mb-5 shadow-xs"
-                  style={{
-                    color: activeAchievementItem.color,
-                    backgroundColor: `${activeAchievementItem.color}15`,
-                    border: `1px solid ${activeAchievementItem.color}35`
-                  }}
-                >
-                  <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: activeAchievementItem.color }} />
-                  <span>{activeAchievementItem.recognition}</span>
-                </div>
-
-                {/* Detailed Narrative Description */}
-                <p className="text-neutral-700 text-sm sm:text-base leading-relaxed font-normal mb-6">
-                  {activeAchievementItem.description}
-                </p>
-
-                {/* Key Highlights Tags */}
-                <div className="flex flex-wrap gap-2 pt-1">
-                  {activeAchievementItem.highlights.map((h, i) => (
-                    <span
-                      key={i}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-neutral-100 border border-neutral-200/80 text-neutral-800 text-xs font-semibold shadow-2xs"
-                    >
-                      <span className="text-amber-500 text-xs">✦</span>
-                      <span>{h}</span>
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Right Column: Naturally Integrated Ceremonial Image Showcase */}
-              <div className="lg:col-span-7 flex flex-col">
-                <div className="relative group overflow-hidden rounded-2xl sm:rounded-3xl bg-neutral-100/90 border border-neutral-200/80 shadow-[0_20px_50px_rgba(0,0,0,0.08)] flex items-center justify-center p-3 sm:p-5">
-                  <AnimatePresence mode="wait" custom={slideDir}>
-                    <motion.img
-                      key={activeAchievementItem.id}
-                      custom={slideDir}
-                      src={activeAchievementItem.image}
-                      alt={`${activeAchievementItem.title} - ${activeAchievementItem.recognition}`}
-                      variants={achievementSlideVariants}
-                      initial="enter"
-                      animate="center"
-                      exit="exit"
-                      className="w-full h-auto max-h-[320px] sm:max-h-[380px] md:max-h-[440px] lg:max-h-[480px] object-contain rounded-xl select-none"
-                      loading="lazy"
-                    />
-                  </AnimatePresence>
-
-                  {/* Floating Direct Photo Navigation Controls */}
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSlideDir(-1);
-                      setActiveAchievement(prev => (prev === 0 ? achievementsData.length - 1 : prev - 1));
-                    }}
-                    aria-label="Previous achievement photo"
-                    className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/95 hover:bg-white text-neutral-900 shadow-xl flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer backdrop-blur-md opacity-0 group-hover:opacity-100 sm:opacity-90"
-                  >
-                    <IconWrapper name="ChevronLeft" size={20} />
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSlideDir(1);
-                      setActiveAchievement(prev => (prev === achievementsData.length - 1 ? 0 : prev + 1));
-                    }}
-                    aria-label="Next achievement photo"
-                    className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/95 hover:bg-white text-neutral-900 shadow-xl flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer backdrop-blur-md opacity-0 group-hover:opacity-100 sm:opacity-90"
-                  >
-                    <IconWrapper name="ChevronRight" size={20} />
-                  </button>
-                </div>
-
-                {/* Editorial Caption Bar */}
-                <div className="flex items-center justify-between text-xs text-neutral-500 mt-3 px-2">
-                  <span className="font-medium">Official Award & Ceremony Photograph</span>
-                  <span className="font-mono text-[11px] text-neutral-400">Verified Achievement</span>
-                </div>
               </div>
             </div>
           </div>
