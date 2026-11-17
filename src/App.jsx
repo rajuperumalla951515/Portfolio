@@ -1776,219 +1776,217 @@ const App = () => {
           </div>
         </section>
 
-        {/* Achievements Section — Matches Skills Section Architecture */}
+        {/* Achievements Section — White Abstract Organic Panel with Outlined Heading (Matches Reference Image) */}
         <section
           id='community'
           ref={communitySectionRef}
-          className='py-10 md:py-14 px-6 md:px-12 my-8 relative overflow-hidden'
+          className='py-12 md:py-20 px-4 sm:px-6 md:px-10 lg:px-12 my-8 relative overflow-hidden'
         >
-          {/* Luminous White Tab behind Title (Matching Skills Cutout Aesthetic) */}
-          <div className="absolute top-0 left-0 w-[271px] sm:w-[311px] md:w-[361px] h-[68px] md:h-[88px] bg-white rounded-tl-[2rem] md:rounded-tl-[2.5rem] -z-20 transition-all duration-300" />
-
-          {/* Deep Matte Section Blocks in #0a0a0a (Matching Skills Section) */}
-          {/* Right Block */}
-          <div className="absolute top-0 bottom-0 left-[269px] sm:left-[309px] md:left-[359px] right-0 bg-[#0a0a0a] rounded-r-[2rem] md:rounded-r-[2.5rem] rounded-tl-[1.5rem] md:rounded-tl-[2rem] -z-10 shadow-2xl transition-all duration-300" />
-
-          {/* Bottom-Left Block */}
-          <div className="absolute top-[68px] md:top-[88px] bottom-0 left-0 w-[271px] sm:w-[311px] md:w-[361px] bg-[#0a0a0a] rounded-bl-[2rem] md:rounded-bl-[2.5rem] rounded-tl-[1.5rem] md:rounded-tl-[2rem] rounded-tr-none -z-10 shadow-2xl transition-all duration-300" />
-
-          {/* Inward Curve Smoother Fillet in #0a0a0a */}
-          <svg width="32" height="32" viewBox="0 0 32 32" className="absolute top-[36px] md:top-[56px] left-[238px] sm:left-[278px] md:left-[328px] text-[#0a0a0a] fill-current -z-10 transition-all duration-300">
-            <path d="M 0 32 C 17.7 32 32 17.7 32 0 V 32 H 0 Z" />
-          </svg>
-
-          {/* Cutout Title: Bold Black Text on White Tab (Identical to SKILLS) */}
+          {/* Upper-Left Outlined Heading matching Reference Image */}
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="absolute top-4 left-4 sm:left-6 md:top-8 md:left-8 z-20"
+            className="absolute top-4 sm:top-6 md:top-8 left-6 sm:left-10 md:left-14 z-20 pointer-events-none"
           >
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-wider uppercase text-black">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-widest uppercase text-transparent [-webkit-text-stroke:1.5px_#ffffff] md:[-webkit-text-stroke:2px_#ffffff] select-none drop-shadow-[0_4px_16px_rgba(255,255,255,0.12)]">
               ACHIEVEMENTS
             </h2>
           </motion.div>
 
-          {/* Content Container positioned right below the shelf */}
-          <div className="mt-12 md:mt-14 relative z-10 w-full">
-            <div className='grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-stretch'>
-              {/* Left Column: Sleek Borderless Dark Cards Matching Skills Theme */}
-              <div className='lg:col-span-5 flex flex-col gap-4'>
+          {/* White Abstract Content Panel: Unconventional Organic Silhouette with Oversized Curves & Flat Lower Edge */}
+          {/* Right Block with Oversized Upper-Right Curve */}
+          <div className="absolute top-0 bottom-0 left-[259px] sm:left-[339px] lg:left-[419px] right-0 bg-white rounded-tr-[5rem] sm:rounded-tr-[6.5rem] md:rounded-tr-[8rem] lg:rounded-tr-[9.5rem] rounded-tl-[1.5rem] md:rounded-tl-[2rem] -z-10 shadow-[0_25px_60px_rgba(0,0,0,0.35)] transition-all duration-300" />
+
+          {/* Bottom-Left Block forming the Horizontal Shelf */}
+          <div className="absolute top-[68px] sm:top-[80px] md:top-[96px] bottom-0 left-0 w-[261px] sm:w-[341px] lg:w-[421px] bg-white -z-10 shadow-[0_25px_60px_rgba(0,0,0,0.35)] transition-all duration-300" />
+
+          {/* Inward Concave Fillet Curve Smoother */}
+          <svg width="32" height="32" viewBox="0 0 32 32" className="absolute top-[36px] sm:top-[48px] md:top-[64px] left-[228px] sm:left-[308px] lg:left-[388px] text-white fill-current -z-10 transition-all duration-300">
+            <path d="M 0 32 C 17.7 32 32 17.7 32 0 V 32 H 0 Z" />
+          </svg>
+
+          {/* Achievement Content Container: Sophisticated Editorial Layout inside the White Panel */}
+          <div className="mt-24 sm:mt-28 md:mt-32 px-4 sm:px-8 md:px-12 lg:px-16 pb-12 sm:pb-16 relative z-10 w-full">
+            {/* Top Interactive Switcher & Gallery Navigation Bar */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-200/90 pb-6 mb-8 md:mb-10">
+              {/* Tab Selector Buttons */}
+              <div className="flex items-center gap-2 sm:gap-3 p-1.5 bg-neutral-100 rounded-2xl border border-neutral-200/80 w-fit shadow-inner">
                 {achievementsData.map((item, idx) => {
                   const isActive = activeAchievement === idx;
                   return (
-                    <div
+                    <button
                       key={item.id}
-                      onMouseEnter={() => {
-                        if (activeAchievement !== idx) {
-                          setSlideDir(idx > activeAchievement ? 1 : -1);
-                          setActiveAchievement(idx);
-                        }
-                      }}
+                      type="button"
                       onClick={() => {
                         if (activeAchievement !== idx) {
                           setSlideDir(idx > activeAchievement ? 1 : -1);
                           setActiveAchievement(idx);
                         }
                       }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          if (activeAchievement !== idx) {
-                            setSlideDir(idx > activeAchievement ? 1 : -1);
-                            setActiveAchievement(idx);
-                          }
-                        }
-                      }}
-                      tabIndex={0}
-                      role="button"
-                      aria-pressed={isActive}
-                      aria-label={`${item.number} ${item.title} - ${item.recognition}`}
-                      className={`flex items-center justify-between gap-4 p-5 sm:p-6 rounded-2xl transition-all duration-300 relative overflow-hidden cursor-pointer text-left ${
+                      className={`flex items-center gap-2.5 px-4 sm:px-6 py-2.5 rounded-xl font-bold text-xs sm:text-sm tracking-wide transition-all duration-300 cursor-pointer ${
                         isActive
-                          ? 'bg-[#151515] border border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.6)] scale-[1.01]'
-                          : 'bg-[#0e0e0e]/90 border border-white/5 hover:border-white/10 hover:bg-[#141414] hover:scale-[1.005]'
+                          ? 'bg-neutral-900 text-white shadow-md scale-[1.01]'
+                          : 'text-neutral-600 hover:text-black hover:bg-white/80'
                       }`}
                     >
-                      {/* Top Accent Color Glow */}
-                      {isActive && (
-                        <div
-                          className="absolute top-0 left-0 w-full h-[2px] transition-all duration-300"
-                          style={{ background: `linear-gradient(90deg, transparent, ${item.color}, transparent)` }}
-                        />
-                      )}
-
-                      {/* Left: Number + Logo Box + Single Title + Recognition */}
-                      <div className="flex items-center gap-4 min-w-0">
-                        <span className="text-xs font-mono font-bold tracking-widest text-neutral-500 shrink-0">
-                          {item.number}
-                        </span>
-
-                        <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-xl bg-white/[0.04] border border-white/10 transition-all duration-300 shadow-inner">
-                          <img
-                            src={item.logo}
-                            alt=""
-                            className="w-7 h-7 object-contain transition-all duration-300 group-hover:scale-110 drop-shadow-md"
-                          />
-                        </div>
-
-                        <div className="flex flex-col text-left min-w-0">
-                          <h3 className="text-white font-bold text-base sm:text-lg tracking-wide truncate">
-                            {item.title}
-                          </h3>
-                          <span
-                            className="text-xs font-bold mt-0.5 tracking-wider uppercase"
-                            style={{ color: item.color }}
-                          >
-                            {item.recognition}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Right: Recognition Badge & Arrow Indicator */}
-                      <div className="flex items-center gap-2 shrink-0 pl-2">
-                        <span
-                          className="text-xs font-bold px-3 py-1.5 rounded-lg border hidden sm:inline-block transition-all duration-300"
-                          style={{
-                            color: item.color,
-                            backgroundColor: `${item.color}15`,
-                            borderColor: `${item.color}30`
-                          }}
-                        >
-                          {item.recognition}
-                        </span>
-                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
-                          isActive ? 'bg-white text-black shadow-md' : 'bg-white/5 text-neutral-400'
-                        }`}>
-                          <IconWrapper
-                            name="ChevronRight"
-                            size={16}
-                            className={`transition-transform duration-200 ${isActive ? 'translate-x-0.5' : ''}`}
-                          />
-                        </div>
-                      </div>
-                    </div>
+                      <span className={`text-[11px] font-mono font-bold ${isActive ? 'text-neutral-400' : 'text-neutral-400'}`}>
+                        {item.number}
+                      </span>
+                      <span className="truncate max-w-[130px] sm:max-w-none">{item.title}</span>
+                      <span
+                        className="hidden md:inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ml-1"
+                        style={{
+                          color: isActive ? item.color : '#4b5563',
+                          backgroundColor: isActive ? `${item.color}25` : 'transparent'
+                        }}
+                      >
+                        {item.recognition}
+                      </span>
+                    </button>
                   );
                 })}
               </div>
 
-              {/* Right Column: Dark Glass Showcase Frame with Side-to-Side Slide Animation */}
-              <div className='lg:col-span-7 flex flex-col'>
-                <div className='h-full min-h-[360px] sm:min-h-[400px] md:min-h-[440px] rounded-2xl bg-[#0c0c0c] border border-white/5 p-4 sm:p-6 relative overflow-hidden flex flex-col items-center justify-between shadow-2xl'>
-                  {/* Dynamic Top Accent Glow */}
-                  <div
-                    className="absolute top-0 left-0 w-full h-[2px] transition-all duration-500"
-                    style={{ background: `linear-gradient(90deg, transparent, ${activeAchievementItem.color}, transparent)` }}
-                  />
+              {/* Gallery Controls & Counter */}
+              <div className="flex items-center gap-3 self-end sm:self-auto">
+                <div className="flex items-center gap-2 text-xs font-mono font-bold text-neutral-400 uppercase tracking-widest mr-2">
+                  <span className="text-neutral-900 text-sm font-black">0{activeAchievement + 1}</span>
+                  <span>/</span>
+                  <span>0{achievementsData.length}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSlideDir(-1);
+                      setActiveAchievement(prev => (prev === 0 ? achievementsData.length - 1 : prev - 1));
+                    }}
+                    aria-label="Previous achievement"
+                    className="w-10 h-10 rounded-xl bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-800 flex items-center justify-center transition-all duration-200 active:scale-95 cursor-pointer shadow-xs border border-neutral-200/80"
+                  >
+                    <IconWrapper name="ChevronLeft" size={18} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSlideDir(1);
+                      setActiveAchievement(prev => (prev === achievementsData.length - 1 ? 0 : prev + 1));
+                    }}
+                    aria-label="Next achievement"
+                    className="w-10 h-10 rounded-xl bg-neutral-100 hover:bg-neutral-900 hover:text-white text-neutral-800 flex items-center justify-center transition-all duration-200 active:scale-95 cursor-pointer shadow-xs border border-neutral-200/80"
+                  >
+                    <IconWrapper name="ChevronRight" size={18} />
+                  </button>
+                </div>
+              </div>
+            </div>
 
-                  {/* Photo Display Frame with Side-to-Side Slide Animation */}
-                  <div className="w-full flex-1 flex items-center justify-center relative overflow-hidden rounded-xl bg-black/60 border border-white/5 p-3 sm:p-5 shadow-inner">
-                    <AnimatePresence mode="wait" custom={slideDir}>
-                      <motion.img
-                        key={activeAchievementItem.id}
-                        custom={slideDir}
-                        src={activeAchievementItem.image}
-                        alt={`${activeAchievementItem.title} - ${activeAchievementItem.recognition}`}
-                        variants={achievementSlideVariants}
-                        initial="enter"
-                        animate="center"
-                        exit="exit"
-                        className="w-full h-auto max-h-[260px] sm:max-h-[300px] md:max-h-[340px] lg:max-h-[380px] object-contain rounded-lg shadow-2xl select-none"
-                        loading="lazy"
-                      />
-                    </AnimatePresence>
-
-                    {/* Side-to-Side Navigation Arrows */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSlideDir(-1);
-                        setActiveAchievement(prev => (prev === 0 ? achievementsData.length - 1 : prev - 1));
-                      }}
-                      aria-label="Previous achievement photo"
-                      className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/60 hover:bg-black/90 text-white/80 hover:text-white border border-white/10 shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 z-20 cursor-pointer backdrop-blur-md"
-                    >
-                      <IconWrapper name="ChevronLeft" size={18} />
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSlideDir(1);
-                        setActiveAchievement(prev => (prev === achievementsData.length - 1 ? 0 : prev + 1));
-                      }}
-                      aria-label="Next achievement photo"
-                      className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/60 hover:bg-black/90 text-white/80 hover:text-white border border-white/10 shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 z-20 cursor-pointer backdrop-blur-md"
-                    >
-                      <IconWrapper name="ChevronRight" size={18} />
-                    </button>
+            {/* Main Editorial Content Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+              {/* Left Column: Dark Typography Narrative & Award Details */}
+              <div className="lg:col-span-5 flex flex-col items-start text-left">
+                {/* Meta: Organizer Logo & Subtitle */}
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-xl bg-neutral-100 border border-neutral-200/80 flex items-center justify-center p-1.5 shrink-0 shadow-xs">
+                    <img src={activeAchievementItem.logo} alt="" className="w-full h-full object-contain" />
                   </div>
-
-                  {/* Clean Caption Bar in Dark Aesthetic */}
-                  <div className="mt-4 w-full flex items-center justify-between px-4 py-2.5 rounded-xl bg-white/[0.03] border border-white/5 shadow-sm text-xs">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="w-6 h-6 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center p-0.5 shrink-0">
-                        <img src={activeAchievementItem.logo} alt="" className="w-full h-full object-contain" />
-                      </div>
-                      <span className="text-white font-bold tracking-wide truncate">
-                        {activeAchievementItem.title}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-neutral-400 text-[11px] hidden sm:inline">Ceremony Photo</span>
-                      <span
-                        className="font-bold px-2.5 py-1 rounded-lg text-[11px] border"
-                        style={{
-                          color: activeAchievementItem.color,
-                          backgroundColor: `${activeAchievementItem.color}15`,
-                          borderColor: `${activeAchievementItem.color}30`
-                        }}
-                      >
-                        {activeAchievementItem.recognition}
-                      </span>
-                    </div>
+                  <div className="flex flex-col">
+                    <span className="text-[11px] font-mono font-bold tracking-widest uppercase text-neutral-500">
+                      {activeAchievementItem.organizer}
+                    </span>
+                    <span className="text-xs font-semibold text-neutral-700">
+                      {activeAchievementItem.subtitle}
+                    </span>
                   </div>
+                </div>
+
+                {/* Main Award Title */}
+                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-neutral-900 tracking-tight leading-tight mb-3">
+                  {activeAchievementItem.title}
+                </h3>
+
+                {/* Prominent Recognition Badge */}
+                <div
+                  className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold tracking-wider uppercase mb-5 shadow-xs"
+                  style={{
+                    color: activeAchievementItem.color,
+                    backgroundColor: `${activeAchievementItem.color}15`,
+                    border: `1px solid ${activeAchievementItem.color}35`
+                  }}
+                >
+                  <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: activeAchievementItem.color }} />
+                  <span>{activeAchievementItem.recognition}</span>
+                </div>
+
+                {/* Detailed Narrative Description */}
+                <p className="text-neutral-700 text-sm sm:text-base leading-relaxed font-normal mb-6">
+                  {activeAchievementItem.description}
+                </p>
+
+                {/* Key Highlights Tags */}
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {activeAchievementItem.highlights.map((h, i) => (
+                    <span
+                      key={i}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-neutral-100 border border-neutral-200/80 text-neutral-800 text-xs font-semibold shadow-2xs"
+                    >
+                      <span className="text-amber-500 text-xs">✦</span>
+                      <span>{h}</span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Right Column: Naturally Integrated Ceremonial Image Showcase */}
+              <div className="lg:col-span-7 flex flex-col">
+                <div className="relative group overflow-hidden rounded-2xl sm:rounded-3xl bg-neutral-100/90 border border-neutral-200/80 shadow-[0_20px_50px_rgba(0,0,0,0.08)] flex items-center justify-center p-3 sm:p-5">
+                  <AnimatePresence mode="wait" custom={slideDir}>
+                    <motion.img
+                      key={activeAchievementItem.id}
+                      custom={slideDir}
+                      src={activeAchievementItem.image}
+                      alt={`${activeAchievementItem.title} - ${activeAchievementItem.recognition}`}
+                      variants={achievementSlideVariants}
+                      initial="enter"
+                      animate="center"
+                      exit="exit"
+                      className="w-full h-auto max-h-[320px] sm:max-h-[380px] md:max-h-[440px] lg:max-h-[480px] object-contain rounded-xl select-none"
+                      loading="lazy"
+                    />
+                  </AnimatePresence>
+
+                  {/* Floating Direct Photo Navigation Controls */}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSlideDir(-1);
+                      setActiveAchievement(prev => (prev === 0 ? achievementsData.length - 1 : prev - 1));
+                    }}
+                    aria-label="Previous achievement photo"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/95 hover:bg-white text-neutral-900 shadow-xl flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer backdrop-blur-md opacity-0 group-hover:opacity-100 sm:opacity-90"
+                  >
+                    <IconWrapper name="ChevronLeft" size={20} />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSlideDir(1);
+                      setActiveAchievement(prev => (prev === achievementsData.length - 1 ? 0 : prev + 1));
+                    }}
+                    aria-label="Next achievement photo"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/95 hover:bg-white text-neutral-900 shadow-xl flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer backdrop-blur-md opacity-0 group-hover:opacity-100 sm:opacity-90"
+                  >
+                    <IconWrapper name="ChevronRight" size={20} />
+                  </button>
+                </div>
+
+                {/* Editorial Caption Bar */}
+                <div className="flex items-center justify-between text-xs text-neutral-500 mt-3 px-2">
+                  <span className="font-medium">Official Award & Ceremony Photograph</span>
+                  <span className="font-mono text-[11px] text-neutral-400">Verified Achievement</span>
                 </div>
               </div>
             </div>
