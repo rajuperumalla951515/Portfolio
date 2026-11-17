@@ -1784,14 +1784,14 @@ const App = () => {
         >
           {/* True Transparent Background with Smooth Left-Side Cutout in White */}
           {/* Right Block */}
-          <div className="absolute top-0 bottom-0 left-[259px] md:left-[339px] right-0 bg-white rounded-r-[2rem] md:rounded-r-[2.5rem] rounded-tl-[1.5rem] md:rounded-tl-[2rem] -z-10 shadow-2xl transition-all duration-300" />
+          <div className="absolute top-0 bottom-0 left-[279px] sm:left-[339px] md:left-[449px] right-0 bg-white rounded-r-[2rem] md:rounded-r-[2.5rem] rounded-tl-[1.5rem] md:rounded-tl-[2rem] -z-10 shadow-2xl transition-all duration-300" />
 
           {/* Bottom-Left Block */}
-          <div className="absolute top-[68px] md:top-[88px] bottom-0 left-0 w-[261px] md:w-[341px] bg-white rounded-bl-[2rem] md:rounded-bl-[2.5rem] rounded-tr-[1.5rem] md:rounded-tr-[2rem] -z-10 shadow-2xl transition-all duration-300" />
+          <div className="absolute top-[68px] md:top-[88px] bottom-0 left-0 w-[281px] sm:w-[341px] md:w-[451px] bg-white rounded-bl-[2rem] md:rounded-bl-[2.5rem] rounded-tr-none -z-10 shadow-2xl transition-all duration-300" />
 
           {/* Inward Curve Smoother */}
-          <svg width="32" height="32" viewBox="0 0 32 32" className="absolute top-[37px] md:top-[57px] left-[228px] md:left-[308px] text-white fill-current -z-10 rotate-90 transition-all duration-300">
-            <path d="M 0 0 H 32 V 32 C 32 14.3 17.7 0 0 0 Z" />
+          <svg width="32" height="32" viewBox="0 0 32 32" className="absolute top-[36px] md:top-[56px] left-[248px] sm:left-[308px] md:left-[418px] text-white fill-current -z-10 transition-all duration-300">
+            <path d="M 0 32 C 17.7 32 32 17.7 32 0 V 32 H 0 Z" />
           </svg>
 
           {/* Left-Side Cutting Edge Cutout Title */}
@@ -1800,9 +1800,9 @@ const App = () => {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="absolute top-4 left-6 md:top-8 md:left-8 z-20"
+            className="absolute top-4 left-4 sm:left-6 md:top-8 md:left-8 z-20"
           >
-            <h2 className="text-3xl md:text-4xl font-black tracking-widest uppercase text-white drop-shadow-md">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-wider uppercase text-white drop-shadow-md">
               ACHIEVEMENTS
             </h2>
           </motion.div>
