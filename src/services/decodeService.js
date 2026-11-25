@@ -10,6 +10,13 @@ import {
   getBatchLabel,
   filterActiveJobs,
 } from '../data/decodeData.js';
+import {
+  filterJobs,
+  getJobRoleCategory,
+  getPrimaryJobCategory,
+  getVerifiedEmploymentType,
+  getVerifiedWorkMode,
+} from '../data/jobTaxonomy.js';
 
 export const getApiUrl = () => {
   const envUrl = typeof import.meta !== 'undefined' && import.meta.env ? import.meta.env.VITE_API_URL : null;
@@ -117,6 +124,7 @@ export const decodeService = {
     limit = 20,
     includeExpired = false,
     skipApi = false,
+    excludeJobs = false,
   } = {}) {
     const effectiveCategory = categorySlug === 'internships' ? 'jobs' : categorySlug;
 
@@ -228,6 +236,9 @@ export const decodeService = {
       });
 
       let allItems = [...mappedDb, ...missingFallbacks];
+      if (excludeJobs) {
+        allItems = allItems.filter((item) => item.category !== 'jobs');
+      }
 
       // 3. Search query filter
       if (query && query.trim()) {
@@ -332,12 +343,17 @@ export const decodeService = {
       stipend = 'all',
       query = '',
       includeExpired = false,
+      category = 'all',
+      role = 'all',
+      sort = 'recent',
     } = filters;
 
     // 1. PRIMARY SOURCE: Attempt to fetch live from backend API server (/api/jobs) with fast timeout
     let apiJobs = [];
     let isLiveDb = false;
+    let apiError = null;
     const apiUrl = getApiUrl();
+    let timeoutId = null;
 
     try {
       const qParams = new URLSearchParams({
@@ -346,17 +362,37 @@ export const decodeService = {
         mode,
         stipend,
         search: query,
+        category,
+        role,
+        location: filters.location || '',
+        workMode: filters.workMode || '',
+        experience: filters.experience || '',
+        company: filters.company || '',
+        postedWithin: filters.postedWithin || '',
+        deadline: filters.deadline || '',
+        compensation: filters.compensation || '',
+        duration: filters.duration || '',
+        domain: filters.domain || '',
+        graduationYear: filters.graduationYear || '',
+        degree: filters.degree || '',
+        branch: filters.branch || '',
+        trainingProgram: filters.trainingProgram || '',
+        apprenticeshipProgram: filters.apprenticeshipProgram || '',
+        remoteEligibility: filters.remoteEligibility || '',
+        timezone: filters.timezone || '',
+        employmentType: filters.employmentType || '',
+        skills: filters.skills || '',
+        sort,
         includeExpired: String(includeExpired),
         limit: '100',
       });
 
       const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
-      const timeoutId = controller ? setTimeout(() => controller.abort(), 3500) : null;
+      timeoutId = controller ? setTimeout(() => controller.abort(), 3500) : null;
 
       const response = await fetch(`${apiUrl}/api/jobs?${qParams.toString()}`, {
         signal: controller?.signal,
       });
-      if (timeoutId) clearTimeout(timeoutId);
 
       if (response.ok) {
         const json = await response.json();
@@ -393,28 +429,47 @@ export const decodeService = {
               publishedDate: j.published_date || fallback?.publishedDate,
               updatedDate: j.updated_date || fallback?.updatedDate,
               logoKey: j.logo_key || fallback?.logoKey || null,
-              sourceName: j.source_name || fallback?.sourceName || j.opportunity_data?.organization || null,
-              sourceLocation: j.source_location || fallback?.sourceLocation || j.opportunity_data?.location || null,
+              sourceName: fallback?.sourceName || j.source_name || j.opportunity_data?.organization || null,
+              sourceLocation: fallback?.sourceLocation || j.opportunity_data?.location || j.source_location || null,
               actionText: j.action_text || fallback?.actionText || 'Apply now →',
-              deadlineText: j.deadlineText || j.deadline_text || fallback?.deadlineText || null,
+              deadlineText: fallback?.deadlineText || j.deadlineText || j.deadline_text || null,
               status: j.computedStatus || j.status || (expired ? 'expired' : 'active'),
               isExpired: expired,
               applicationDeadline: j.application_deadline || fallback?.applicationDeadline,
               eligibleBatches,
               batchLabel: j.batchLabel || getBatchLabel(eligibleBatches),
-              opportunityType: fallback?.opportunityType || j.jobType || j.opportunity_type,
-              workArrangement: j.workMode || j.work_arrangement || fallback?.workArrangement,
-              stipendAmount: j.stipendText || j.stipend_amount || fallback?.stipendAmount,
-              opportunity: j.opportunity_data || fallback?.opportunity,
+              opportunityType: fallback?.opportunityType || getVerifiedEmploymentType(j),
+              workArrangement: fallback?.workArrangement || getVerifiedWorkMode(j),
+              stipendAmount: fallback?.stipendAmount || j.stipend_amount || j.opportunity_data?.stipend || null,
+              opportunity: fallback?.opportunity || j.opportunity_data || null,
+              primaryCategory: getPrimaryJobCategory(j) || getPrimaryJobCategory(fallback),
+              roleCategory: getJobRoleCategory(j) || getJobRoleCategory(fallback),
+              experienceLevel: fallback?.experienceLevel || (j.experience_level && j.experience_level !== 'Fresher' ? j.experience_level : null),
+              duration: j.duration || fallback?.opportunity?.duration || null,
+              internshipDomain: j.internship_domain || fallback?.opportunity?.internshipDomain || null,
+              degreeRequirements: j.degree_requirements || fallback?.opportunity?.degreeRequirements || null,
+              branchEligibility: j.branch_eligibility || fallback?.opportunity?.branchEligibility || null,
+              trainingProgram: j.training_program || fallback?.opportunity?.trainingProgram || null,
+              apprenticeshipProgram: j.apprenticeship_program || fallback?.opportunity?.apprenticeshipProgram || null,
+              remoteLocationEligibility: j.remote_location_eligibility || fallback?.opportunity?.remoteLocationEligibility || null,
+              timezone: j.timezone || fallback?.opportunity?.timezone || null,
+              officialUrl: j.official_url || j.opportunity_data?.officialUrl || fallback?.opportunity?.officialUrl || null,
               projectSpec: j.project_spec || fallback?.projectSpec,
               referenceInfo: j.reference_data || fallback?.referenceInfo,
               isFeatured: j.is_featured || fallback?.isFeatured,
             };
           });
+        } else {
+          apiError = json.message || 'The job service returned an invalid response.';
         }
+      } else {
+        apiError = `The job service returned HTTP ${response.status}.`;
       }
     } catch (err) {
       console.warn('Backend API /api/jobs fetch error or timeout, merging with curated fallback resources:', err.message);
+      apiError = 'The live job service is unavailable.';
+    } finally {
+      if (timeoutId) clearTimeout(timeoutId);
     }
 
     // 2. MERGE WITH ALL CURATED FALLBACK RESOURCES:
@@ -427,6 +482,8 @@ export const decodeService = {
         return {
           ...fb,
           category: 'jobs',
+          primaryCategory: getPrimaryJobCategory(fb),
+          roleCategory: getJobRoleCategory(fb),
           status: fb.status || (expired ? 'expired' : 'active'),
           isExpired: expired,
           batchLabel: fb.batchLabel || getBatchLabel(fb.eligibleBatches || []),
@@ -434,6 +491,8 @@ export const decodeService = {
       });
 
     let allJobs = [...apiJobs, ...missingCuratedJobs];
+
+    allJobs = allJobs.filter((job) => getPrimaryJobCategory(job) && getJobRoleCategory(job));
 
     // 3. APPLY CLIENT-SIDE FILTERS
     if (!includeExpired) {
@@ -484,16 +543,30 @@ export const decodeService = {
         const inSummary = j.summary?.toLowerCase().includes(cleanQ);
         const inTags = Array.isArray(j.tags) && j.tags.some((t) => t.toLowerCase().includes(cleanQ));
         const inOrg = (j.sourceName || j.opportunity?.organization || '')?.toLowerCase().includes(cleanQ);
-        return inTitle || inSummary || inTags || inOrg;
+        const inRole = (j.opportunity?.role || j.opportunity_data?.role || '')?.toLowerCase().includes(cleanQ);
+        const inEligibility = (j.opportunity?.eligibility || j.opportunity_data?.eligibility || '')?.toLowerCase().includes(cleanQ);
+        return inTitle || inSummary || inTags || inOrg || inRole || inEligibility;
       });
     }
 
-    // 4. SORT BY MOST RECENT PUBLISHED / UPDATED DATE
-    allJobs.sort((a, b) => {
-      const dateA = new Date(a.publishedDate || a.updatedDate || 0);
-      const dateB = new Date(b.publishedDate || b.updatedDate || 0);
-      return dateB - dateA;
+    allJobs = filterJobs(allJobs, {
+      ...filters,
+      category,
+      role,
+      query,
+      sort,
     });
+
+    // 4. SORT BY MOST RECENT PUBLISHED / UPDATED DATE
+    if (sort === 'closing_soon') {
+      allJobs.sort((a, b) => {
+        const dateA = a.applicationDeadline || a.application_deadline || a.opportunity?.deadline;
+        const dateB = b.applicationDeadline || b.application_deadline || b.opportunity?.deadline;
+        if (!dateA) return 1;
+        if (!dateB) return -1;
+        return new Date(dateA) - new Date(dateB);
+      });
+    }
 
     const activeList = allJobs.filter((j) => !j.isExpired);
     const computedStats = {
@@ -508,7 +581,7 @@ export const decodeService = {
       total: allJobs.length,
       stats: computedStats,
       isLiveDb: isLiveDb || apiJobs.length > 0,
-      error: null,
+      error: apiError,
     };
   },
 
@@ -535,6 +608,12 @@ export const decodeService = {
             if (json.success && json.data) {
               const data = json.data;
               const fallback = getFallbackResource('jobs', data.slug);
+              if (!getPrimaryJobCategory(data) && !getPrimaryJobCategory(fallback)) {
+                return { data: null, isLiveDb: false, error: 'Job opportunity has no verified category.' };
+              }
+              if (!getJobRoleCategory(data) && !getJobRoleCategory(fallback)) {
+                return { data: null, isLiveDb: false, error: 'Job opportunity has no verified role category.' };
+              }
               const rawContent = data.content || fallback?.content || null;
               const cleanContent = rawContent
                 ? String(rawContent).replace(/\\r\\n/g, '\n').replace(/\\n/g, '\n').replace(/\\t/g, '  ')
@@ -563,8 +642,8 @@ export const decodeService = {
                   publishedDate: data.published_date || fallback?.publishedDate,
                   updatedDate: data.updated_date || fallback?.updatedDate,
                   logoKey: data.logo_key || fallback?.logoKey || null,
-                  sourceName: data.source_name || fallback?.sourceName || data.opportunity_data?.organization || null,
-                  sourceLocation: data.source_location || fallback?.sourceLocation || data.opportunity_data?.location || null,
+                  sourceName: fallback?.sourceName || data.source_name || data.opportunity_data?.organization || null,
+                  sourceLocation: fallback?.sourceLocation || data.opportunity_data?.location || data.source_location || null,
                   actionText: data.action_text || fallback?.actionText || 'Apply now →',
                   deadlineText: data.deadlineText || data.deadline_text || fallback?.deadlineText || null,
                   status: data.computedStatus || data.status || (expired ? 'expired' : 'active'),
@@ -572,10 +651,21 @@ export const decodeService = {
                   applicationDeadline: data.application_deadline || fallback?.applicationDeadline,
                   eligibleBatches,
                   batchLabel: data.batchLabel || getBatchLabel(eligibleBatches),
-                  opportunityType: data.jobType || data.opportunity_type || fallback?.opportunityType,
-                  workArrangement: data.workMode || data.work_arrangement || fallback?.workArrangement,
-                  stipendAmount: data.stipendText || data.stipend_amount || fallback?.stipendAmount,
-                  opportunity: data.opportunity_data || fallback?.opportunity || null,
+                  opportunityType: fallback?.opportunityType || getVerifiedEmploymentType(data),
+                  workArrangement: fallback?.workArrangement || getVerifiedWorkMode(data),
+                  stipendAmount: fallback?.stipendAmount || data.stipend_amount || data.opportunity_data?.stipend || null,
+                  experienceLevel: fallback?.experienceLevel || (data.experience_level && data.experience_level !== 'Fresher' ? data.experience_level : null),
+                  primaryCategory: getPrimaryJobCategory(data) || getPrimaryJobCategory(fallback),
+                  roleCategory: getJobRoleCategory(data) || getJobRoleCategory(fallback),
+                  duration: data.duration || fallback?.opportunity?.duration || null,
+                  internshipDomain: data.internship_domain || fallback?.opportunity?.internshipDomain || null,
+                  degreeRequirements: data.degree_requirements || fallback?.opportunity?.degreeRequirements || null,
+                  branchEligibility: data.branch_eligibility || fallback?.opportunity?.branchEligibility || null,
+                  trainingProgram: data.training_program || fallback?.opportunity?.trainingProgram || null,
+                  apprenticeshipProgram: data.apprenticeship_program || fallback?.opportunity?.apprenticeshipProgram || null,
+                  remoteLocationEligibility: data.remote_location_eligibility || fallback?.opportunity?.remoteLocationEligibility || null,
+                  timezone: data.timezone || fallback?.opportunity?.timezone || null,
+                  opportunity: fallback?.opportunity || data.opportunity_data || null,
                   projectSpec: data.project_spec || fallback?.projectSpec || null,
                   referenceInfo: data.reference_data || fallback?.referenceInfo || null,
                   officialUrl: data.official_url || data.canonical_url || fallback?.opportunity?.officialUrl || null,
@@ -604,6 +694,12 @@ export const decodeService = {
 
       if (!error && data) {
         const fallback = getFallbackResource(data.category_slug, data.slug);
+        if (data.category_slug === 'jobs' && (
+          (!getPrimaryJobCategory(data) && !getPrimaryJobCategory(fallback)) ||
+          (!getJobRoleCategory(data) && !getJobRoleCategory(fallback))
+        )) {
+          return { data: null, isLiveDb: false, error: 'Job opportunity has no verified category and role classification.' };
+        }
         const rawContent = (fallback?.content && (!data.content || data.content.length < fallback.content.length))
           ? fallback.content
           : (data.content || fallback?.content || null);
@@ -655,6 +751,9 @@ export const decodeService = {
 
       const fallback = getFallbackResource(targetCategory, targetSlug);
       if (fallback) {
+        if (targetCategory === 'jobs' && (!getPrimaryJobCategory(fallback) || !getJobRoleCategory(fallback))) {
+          return { data: null, isLiveDb: false, error: 'Job opportunity has no verified category and role classification.' };
+        }
         const expired = isJobExpired(fallback);
         return {
           data: {

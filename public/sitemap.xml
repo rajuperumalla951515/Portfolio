@@ -23,12 +23,17 @@
 
   <url>
     <loc>https://www.rajuperumalla.in/decode</loc>
-    <lastmod>2026-03-28</lastmod>
+    <lastmod>2026-11-25</lastmod>
     <image:image>
       <image:loc>https://www.rajuperumalla.in/images/profile.png</image:loc>
-      <image:title>Decode - Student Learning, Career &amp; Opportunity Hub | Raju Perumalla</image:title>
-      <image:caption>Curated study materials, capstones, internships, and roadmaps for students</image:caption>
+      <image:title>Decode Careers - Verified Student and Early-Career Opportunities | Raju Perumalla</image:title>
+      <image:caption>Browse internships, graduate programmes, entry-level roles, apprenticeships, and remote jobs</image:caption>
     </image:image>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/resources</loc>
+    <lastmod>2026-11-25</lastmod>
   </url>
 
   <url>
@@ -129,6 +134,31 @@
   <url>
     <loc>https://www.rajuperumalla.in/decode/developer-tools</loc>
     <lastmod>2026-03-24</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/jobs/internships</loc>
+    <lastmod>2026-11-25</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/jobs/graduate-trainee</loc>
+    <lastmod>2026-11-25</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/jobs/entry-level</loc>
+    <lastmod>2026-11-25</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/jobs/apprenticeships</loc>
+    <lastmod>2026-11-25</lastmod>
+  </url>
+
+  <url>
+    <loc>https://www.rajuperumalla.in/decode/jobs/remote</loc>
+    <lastmod>2026-11-25</lastmod>
   </url>
 
   <url>
@@ -292,11 +322,6 @@
   </url>
 
   <url>
-    <loc>https://www.rajuperumalla.in/decode/jobs/citi-sap-cte-fieldglass-senior-business-analyst</loc>
-    <lastmod>2026-10-15</lastmod>
-  </url>
-
-  <url>
     <loc>https://www.rajuperumalla.in/decode/hackathons/smart-india-hackathon-sih-strategy</loc>
     <lastmod>2026-03-20</lastmod>
   </url>
@@ -428,11 +453,6 @@
 
   <url>
     <loc>https://www.rajuperumalla.in/decode/jobs/amazon-sde-i-intern-2027</loc>
-    <lastmod>2026-11-22</lastmod>
-  </url>
-
-  <url>
-    <loc>https://www.rajuperumalla.in/decode/jobs/google-student-researcher-2027</loc>
     <lastmod>2026-11-22</lastmod>
   </url>
 </urlset>

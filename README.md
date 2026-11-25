@@ -1,5 +1,15 @@
 # React + Vite
 
+## Decode Careers
+
+The job portal lives at `/decode/jobs`. Category routes are `/decode/jobs/internships`, `/decode/jobs/graduate-trainee`, `/decode/jobs/entry-level`, `/decode/jobs/apprenticeships`, and `/decode/jobs/remote`; saved listings are at `/decode/jobs/saved`. Learning materials remain available at `/decode/resources`.
+
+The shared category and role taxonomy, along with verified classifications for curated listings, is maintained in `shared/job-taxonomy.json`. Listings without both a verified primary opportunity category and role classification are omitted instead of being assigned by guesswork. Remote listings belong only to the Remote Jobs category, with their employment type retained as listing metadata.
+
+Before deploying the portal changes, apply `backend/decode_job_portal_migration.sql` after the existing Decode migrations. New admin URL imports require explicit `primaryCategory`, `roleCategory`, `typeOverride`, `workModeOverride`, and `locationOverride` values; the source must also provide a title and description, or the admin request must provide verified overrides. Optional category-specific filter metadata can be set through the importer or protected job update endpoint.
+
+Run `npm run test:job-portal` to verify category exclusivity and role filtering.
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:

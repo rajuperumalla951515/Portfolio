@@ -418,20 +418,11 @@ async function parseJobPostingFromUrl(rawUrl) {
   const ogTitleMatch = html.match(/<meta\s+property=["']og:title["']\s+content=["']([^"']+)["']/i) ||
                        html.match(/<meta\s+name=["']twitter:title["']\s+content=["']([^"']+)["']/i) ||
                        html.match(/<title[^>]*>([^<]+)<\/title>/i);
-  let title = ogTitleMatch ? ogTitleMatch[1].trim() : 'Software Engineering Opportunity';
+  let title = ogTitleMatch ? ogTitleMatch[1].trim() : '';
 
   // Extract Company Name
   const ogSiteMatch = html.match(/<meta\s+property=["']og:site_name["']\s+content=["']([^"']+)["']/i);
   let company = ogSiteMatch ? ogSiteMatch[1].trim() : '';
-  if (!company) {
-    try {
-      const u = new URL(canonicalUrl);
-      company = u.hostname.replace(/^www\./, '').split('.')[0];
-      company = company.charAt(0).toUpperCase() + company.slice(1);
-    } catch {
-      company = 'Hiring Employer';
-    }
-  }
 
   // Extract Description
   const ogDescMatch = html.match(/<meta\s+property=["']og:description["']\s+content=["']([^"']+)["']/i) ||
@@ -443,21 +434,9 @@ async function parseJobPostingFromUrl(rawUrl) {
 
   // Extract Work Arrangement
   const lowerHtml = html.toLowerCase();
-  let workMode = 'Remote';
-  if (lowerHtml.includes('hybrid')) workMode = 'Hybrid';
-  else if (lowerHtml.includes('on-site') || lowerHtml.includes('onsite') || lowerHtml.includes('in-office')) workMode = 'On-site';
-
-  // Extract Opportunity Type
-  let oppType = 'Full-time';
-  if (lowerHtml.includes('internship') || lowerHtml.includes('intern')) oppType = 'Internship';
-  else if (lowerHtml.includes('trainee') || lowerHtml.includes('graduate trainee')) oppType = 'Graduate Trainee';
-
-  // Extract Stipend / Salary
-  let stipend = 'Competitive for Fresher / College Graduates';
-  const stipendMatch = html.match(/(?:₹|INR|\$)\s*[0-9,]+(?:\s*-\s*[0-9,]+)?(?:\s*(?:per month|\/mo|k\/month|LPA))?/i);
-  if (stipendMatch) {
-    stipend = stipendMatch[0].trim();
-  }
+  const workMode = null;
+  const oppType = null;
+  const stipend = null;
 
   // Extract Application Deadline
   let deadline = null;
@@ -485,7 +464,7 @@ async function parseJobPostingFromUrl(rawUrl) {
   return {
     title: sanitizeText(title, 200),
     company: sanitizeText(company, 100),
-    summary: sanitizeText(summary, 500) || `${title} position at ${company}. Open for entry-level candidates and college graduates.`,
+    summary: sanitizeText(summary, 500),
     slug,
     canonicalUrl,
     officialUrl: canonicalUrl,
