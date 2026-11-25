@@ -9,6 +9,8 @@ const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 const distDir = path.join(rootDir, 'dist');
 const templatePath = path.join(distDir, 'index.html');
+const jobTaxonomy = JSON.parse(fs.readFileSync(path.join(rootDir, 'shared', 'job-taxonomy.json'), 'utf-8'));
+const jobCategories = jobTaxonomy.categories;
 
 const BASE_URL = 'https://www.rajuperumalla.in';
 const DEFAULT_IMAGE = `${BASE_URL}/images/profile.png`;
@@ -22,9 +24,15 @@ const routes = [
   },
   {
     path: 'decode',
-    title: 'Decode – Student Learning, Projects & Career Resources | Raju Perumalla',
-    description: 'Explore study materials, coding roadmaps, internships, hackathons, final-year project guides, freelancing advice, and career resources for students.',
+    title: 'Decode Careers – Verified Student and Early-Career Jobs | Raju Perumalla',
+    description: 'Browse independently classified internships, graduate trainee programmes, entry-level jobs, apprenticeships, and remote roles.',
     canonical: `${BASE_URL}/decode`,
+  },
+  {
+    path: 'decode/resources',
+    title: 'Decode Learning Resources – Study Materials, Roadmaps & Projects | Raju Perumalla',
+    description: 'Browse study materials, learning roadmaps, projects, hackathons, and career resources for students.',
+    canonical: `${BASE_URL}/decode/resources`,
   },
   {
     path: 'decode/analytics',
@@ -75,12 +83,22 @@ for (const cat of decodeCategories) {
   routes.push({
     path: `decode/${cat.slug}`,
     title: cat.slug === 'jobs'
-      ? 'Jobs & Internships (2026 & 2027 Batches) – Decode | Raju Perumalla'
+      ? 'Decode Careers – Browse Opportunity Categories | Raju Perumalla'
       : `${cat.title} – Decode Student Hub | Raju Perumalla`,
     description: cat.slug === 'jobs'
-      ? 'Verified student internships, graduate trainee engineering roles, and fresher software opportunities for 2026 and 2027 graduating batches.'
+      ? 'Browse independently classified internships, graduate trainee programmes, entry-level jobs, apprenticeships, and remote roles.'
       : cat.metaDescription,
     canonical: `${BASE_URL}/decode/${cat.slug}`,
+    ogType: 'website',
+  });
+}
+
+for (const category of jobCategories) {
+  routes.push({
+    path: `decode/jobs/${category.slug}`,
+    title: `${category.label} | Decode Careers | Raju Perumalla`,
+    description: category.description,
+    canonical: `${BASE_URL}/decode/jobs/${category.slug}`,
     ogType: 'website',
   });
 }
@@ -88,6 +106,10 @@ for (const cat of decodeCategories) {
 // Add Decode detail resource routes
 for (const res of decodeResources) {
   if (res.draft === true || res.published === false) continue;
+  if (res.category === 'jobs' && (
+    !jobTaxonomy.bySlug[res.slug]?.primaryCategory ||
+    !jobTaxonomy.bySlug[res.slug]?.roleCategory
+  )) continue;
   const expired = res.category === 'jobs' && (res.status === 'expired' || res.status === 'closed' || isJobExpired(res));
   routes.push({
     path: `decode/${res.category}/${res.slug}`,

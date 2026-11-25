@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const jobTaxonomy = require('../shared/job-taxonomy.json');
 
 const Contact = require('./models/Contact');
 const Job = require('./models/Job');
@@ -19,6 +20,49 @@ const {
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const primaryCategorySlugs = new Set(jobTaxonomy.categories.map(({ slug }) => slug));
+const roleCategorySlugs = new Set(jobTaxonomy.roles.map(({ slug }) => slug));
+
+const getJobClassification = (job) => {
+  const curated = jobTaxonomy.bySlug[job.slug] || {};
+  const verifiedWorkMode = jobTaxonomy.verifiedWorkModes[job.slug] || null;
+  const requestedCategory = primaryCategorySlugs.has(job.primary_category) ? job.primary_category : curated.primaryCategory || null;
+  const primaryCategory = requestedCategory && (verifiedWorkMode || job.work_arrangement || job.opportunity_data?.workMode) === 'Remote'
+    ? 'remote'
+    : requestedCategory;
+  const roleCategory = roleCategorySlugs.has(job.role_category)
+    ? job.role_category
+    : curated.roleCategory || null;
+  return {
+    primaryCategory,
+    roleCategory,
+    verifiedWorkMode,
+    verifiedEmploymentType: jobTaxonomy.verifiedEmploymentTypes[job.slug] || null,
+  };
+};
+
+const matchesText = (value, query) => String(value || '').toLowerCase().includes(String(query).trim().toLowerCase());
+const hasDatedDeadline = (job) => {
+  const deadline = job.application_deadline || job.opportunity_data?.deadline;
+  return Boolean(deadline && !/rolling|open until filled/i.test(String(deadline)) && !Number.isNaN(new Date(deadline).getTime()));
+};
+const hasRollingDeadline = (job) => /rolling|open until filled/i.test(String(job.opportunity_data?.deadline || ''));
+const hasCompensationEvidence = (job) => {
+  const value = [
+    job.stipend_amount,
+    job.opportunity_data?.stipend,
+    ...(Array.isArray(job.tags) ? job.tags : []),
+  ].join(' ').toLowerCase();
+  return Boolean(value) && !value.includes('unpaid') && !value.includes('voluntary');
+};
+const hasUnpaidEvidence = (job) => {
+  const value = [
+    job.stipend_amount,
+    job.opportunity_data?.stipend,
+    ...(Array.isArray(job.tags) ? job.tags : []),
+  ].join(' ').toLowerCase();
+  return value.includes('unpaid') || value.includes('voluntary');
+};
 
 // -------------------------------------------------------------
 // 1. SECURITY & CORS CONFIGURATION
@@ -281,6 +325,26 @@ app.get('/api/jobs', async (req, res) => {
       type, // 'Internship', 'Full-time', 'Graduate Trainee'
       mode, // 'Remote', 'Hybrid', 'On-site'
       stipend, // 'paid', 'all'
+      category = 'all',
+      role = 'all',
+      location,
+      workMode,
+      experience,
+      company,
+      postedWithin,
+      deadline,
+      compensation,
+      duration,
+      domain,
+      graduationYear,
+      degree,
+      branch,
+      trainingProgram,
+      apprenticeshipProgram,
+      remoteEligibility,
+      timezone,
+      employmentType,
+      skills,
       search,
       sort = 'recent', // 'recent', 'closing_soon'
       page = 1,
@@ -324,6 +388,7 @@ app.get('/api/jobs', async (req, res) => {
     // In-memory filter with full lifecycle & freshness evaluation
     let processed = (rawJobs || []).map((job) => {
       const lifecycle = evaluateJobLifecycle(job, { referenceTime: now });
+      const classification = getJobClassification(job);
       const eligibility = extractBatchEligibility(
         `${job.title} ${job.summary} ${job.opportunity_data?.eligibility || ''}`,
         job.title
@@ -335,6 +400,7 @@ app.get('/api/jobs', async (req, res) => {
 
       return {
         ...job,
+        ...classification,
         computedStatus: lifecycle.status,
         isExpired: lifecycle.isExpired,
         lifecycleReason: lifecycle.reason,
@@ -347,14 +413,16 @@ app.get('/api/jobs', async (req, res) => {
             : batches.includes(2027)
             ? '2027 Batch'
             : 'Unknown (Check Source)',
-        workMode: job.work_arrangement || job.opportunity_data?.workMode || 'Remote',
-        jobType: job.opportunity_type || job.opportunity_data?.jobType || 'Internship',
-        stipendText: job.stipend_amount || job.opportunity_data?.stipend || 'Competitive Stipend',
+        workMode: classification.verifiedWorkMode || job.work_arrangement || job.opportunity_data?.workMode || null,
+        jobType: classification.verifiedEmploymentType || job.opportunity_type || job.opportunity_data?.jobType || null,
+        stipendText: job.stipend_amount || job.opportunity_data?.stipend || null,
         deadlineText: job.application_deadline
           ? new Date(job.application_deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-          : job.opportunity_data?.deadline || 'Rolling Admissions',
+          : job.opportunity_data?.deadline || null,
       };
     });
+
+    processed = processed.filter((job) => job.primaryCategory && job.roleCategory);
 
     // 1. Filter out expired jobs unless explicitly requested
     if (includeExpired !== 'true') {
@@ -372,36 +440,108 @@ app.get('/api/jobs', async (req, res) => {
     // 3. Filter by Opportunity Type (Internship / Full-time / Graduate Trainee)
     if (type && type !== 'all') {
       const cleanType = String(type).toLowerCase();
-      processed = processed.filter((j) => j.jobType.toLowerCase().includes(cleanType));
+      processed = processed.filter((j) => String(j.jobType || '').toLowerCase().includes(cleanType));
     }
 
     // 4. Filter by Work Mode (Remote / Hybrid / On-site)
     if (mode && mode !== 'all') {
       const cleanMode = String(mode).toLowerCase();
-      processed = processed.filter((j) => j.workMode.toLowerCase().includes(cleanMode));
+      processed = processed.filter((j) => String(j.workMode || '').toLowerCase().includes(cleanMode));
     }
 
     // 5. Filter by Stipend / Paid
     if (stipend === 'paid') {
-      processed = processed.filter((j) => {
-        const text = (j.stipendText || '').toLowerCase();
-        return !text.includes('unpaid') && !text.includes('voluntary');
+      processed = processed.filter(hasCompensationEvidence);
+    }
+
+    // 6. Category and role filters keep every listing in one assigned opportunity category.
+    if (category && category !== 'all') {
+      processed = processed.filter((job) => job.primaryCategory === category);
+    }
+    if (role && role !== 'all') {
+      processed = processed.filter((job) => job.roleCategory === role);
+    }
+    if (workMode) {
+      processed = processed.filter((job) => matchesText(job.workMode, workMode));
+    }
+    if (employmentType) {
+      processed = processed.filter((job) => matchesText(job.jobType, employmentType));
+    }
+    if (location) {
+      processed = processed.filter((job) => matchesText(`${job.opportunity_data?.location || ''} ${job.source_location || ''} ${(job.tags || []).join(' ')}`, location));
+    }
+    if (company) {
+      processed = processed.filter((job) => matchesText(`${job.source_name || ''} ${job.opportunity_data?.organization || ''}`, company));
+    }
+    if (experience) {
+      const verifiedExperience = (job) => job.opportunity_data?.experienceLevel || (job.experience_level !== 'Fresher' ? job.experience_level : '');
+      processed = processed.filter((job) => matchesText(verifiedExperience(job), experience));
+    }
+    if (duration) {
+      processed = processed.filter((job) => matchesText(job.duration || job.opportunity_data?.duration, duration));
+    }
+    if (domain) {
+      processed = processed.filter((job) => matchesText(`${job.internship_domain || ''} ${job.opportunity_data?.internshipDomain || ''} ${(job.tags || []).join(' ')}`, domain));
+    }
+    if (graduationYear) {
+      const year = parseInt(graduationYear, 10);
+      processed = processed.filter((job) => Number.isInteger(year) && job.effectiveBatches.includes(year));
+    }
+    if (degree) {
+      processed = processed.filter((job) => matchesText(`${job.degree_requirements || ''} ${job.opportunity_data?.degreeRequirements || ''} ${job.opportunity_data?.eligibility || ''}`, degree));
+    }
+    if (branch) {
+      processed = processed.filter((job) => matchesText(`${job.branch_eligibility || ''} ${job.opportunity_data?.branchEligibility || ''} ${job.opportunity_data?.eligibility || ''}`, branch));
+    }
+    if (trainingProgram) {
+      processed = processed.filter((job) => matchesText(`${job.training_program || ''} ${job.opportunity_data?.trainingProgram || ''}`, trainingProgram));
+    }
+    if (apprenticeshipProgram) {
+      processed = processed.filter((job) => matchesText(`${job.apprenticeship_program || ''} ${job.opportunity_data?.apprenticeshipProgram || ''} ${(job.tags || []).join(' ')}`, apprenticeshipProgram));
+    }
+    if (remoteEligibility) {
+      processed = processed.filter((job) => matchesText(`${job.remote_location_eligibility || ''} ${job.opportunity_data?.remoteLocationEligibility || ''}`, remoteEligibility));
+    }
+    if (timezone) {
+      processed = processed.filter((job) => matchesText(`${job.timezone || ''} ${job.opportunity_data?.timezone || ''}`, timezone));
+    }
+    if (skills) {
+      processed = processed.filter((job) => matchesText((job.tags || []).join(' '), skills));
+    }
+    if (compensation === 'paid') {
+      processed = processed.filter(hasCompensationEvidence);
+    } else if (compensation === 'unpaid') {
+      processed = processed.filter(hasUnpaidEvidence);
+    }
+    if (deadline === 'dated') {
+      processed = processed.filter(hasDatedDeadline);
+    } else if (deadline === 'rolling') {
+      processed = processed.filter(hasRollingDeadline);
+    }
+    if (postedWithin) {
+      const ageLimit = parseInt(postedWithin, 10) * 24 * 60 * 60 * 1000;
+      processed = processed.filter((job) => {
+        const published = new Date(job.published_at || job.published_date || job.created_at || 0).getTime();
+        const age = now.getTime() - published;
+        return Number.isFinite(ageLimit) && age >= 0 && age <= ageLimit;
       });
     }
 
-    // 6. Search query
+    // 7. Search query
     if (search && typeof search === 'string' && search.trim()) {
       const q = search.trim().toLowerCase();
       processed = processed.filter((j) => {
         const titleMatch = (j.title || '').toLowerCase().includes(q);
         const companyMatch = (j.source_name || j.opportunity_data?.organization || '').toLowerCase().includes(q);
+        const roleMatch = (j.opportunity_data?.role || '').toLowerCase().includes(q);
+        const eligibilityMatch = (j.opportunity_data?.eligibility || '').toLowerCase().includes(q);
         const tagsMatch = Array.isArray(j.tags) && j.tags.some((t) => t.toLowerCase().includes(q));
         const summaryMatch = (j.summary || '').toLowerCase().includes(q);
-        return titleMatch || companyMatch || tagsMatch || summaryMatch;
+        return titleMatch || companyMatch || roleMatch || eligibilityMatch || tagsMatch || summaryMatch;
       });
     }
 
-    // 7. Sort
+    // 8. Sort
     if (sort === 'closing_soon') {
       processed.sort((a, b) => {
         if (!a.application_deadline && !b.application_deadline) return 0;
@@ -423,7 +563,7 @@ app.get('/api/jobs', async (req, res) => {
       totalActive: processed.filter((j) => !j.isExpired).length,
       batch2026Count: processed.filter((j) => j.effectiveBatches.includes(2026) && !j.isExpired).length,
       batch2027Count: processed.filter((j) => j.effectiveBatches.includes(2027) && !j.isExpired).length,
-      internshipsCount: processed.filter((j) => j.jobType.toLowerCase().includes('intern') && !j.isExpired).length,
+      internshipsCount: processed.filter((j) => String(j.jobType || '').toLowerCase().includes('intern') && !j.isExpired).length,
     };
 
     // Pagination
@@ -469,6 +609,10 @@ app.get('/api/jobs/:slug', async (req, res) => {
     if (!job) {
       return res.status(404).json({ success: false, message: 'Job opportunity not found.' });
     }
+    const classification = getJobClassification(job);
+    if (!classification.primaryCategory || !classification.roleCategory) {
+      return res.status(404).json({ success: false, message: 'This job does not have a verified opportunity and role classification.' });
+    }
 
     const lifecycle = evaluateJobLifecycle(job);
     const eligibility = extractBatchEligibility(
@@ -480,6 +624,7 @@ app.get('/api/jobs/:slug', async (req, res) => {
       success: true,
       data: {
         ...job,
+        ...classification,
         computedStatus: lifecycle.status,
         isExpired: lifecycle.isExpired,
         lifecycleReason: lifecycle.reason,
@@ -517,9 +662,34 @@ app.post('/api/jobs/run-expiry', requireCronOrAdminAuth, async (req, res) => {
 // URL Importer: Ingests an opportunity from a URL with SSRF protection & deduplication
 app.post('/api/admin/jobs/import-url', requireAdminAuth, importLimiter, async (req, res) => {
   try {
-    const { url, batchOverride, typeOverride, deadlineOverride } = req.body || {};
+    const {
+      url,
+      batchOverride,
+      typeOverride,
+      deadlineOverride,
+      primaryCategory,
+      roleCategory,
+      titleOverride,
+      summaryOverride,
+      companyOverride,
+      locationOverride,
+      workModeOverride,
+      experienceLevelOverride,
+      stipendOverride,
+      duration,
+      internshipDomain,
+      degreeRequirements,
+      branchEligibility,
+      trainingProgram,
+      apprenticeshipProgram,
+      remoteLocationEligibility,
+      timezone,
+    } = req.body || {};
     if (!url || typeof url !== 'string') {
       return res.status(400).json({ success: false, message: 'Valid job URL is required.' });
+    }
+    if (!primaryCategorySlugs.has(primaryCategory) || !roleCategorySlugs.has(roleCategory)) {
+      return res.status(400).json({ success: false, message: 'A valid primaryCategory and roleCategory are required.' });
     }
 
     if (!isSafePublicUrl(url)) {
@@ -529,18 +699,54 @@ app.post('/api/admin/jobs/import-url', requireAdminAuth, importLimiter, async (r
       });
     }
 
-    // 1. Heuristic Extraction
+    // Extract source metadata; classification and employment facts require explicit admin input.
     const parsed = await parseJobPostingFromUrl(url);
 
-    // Apply manual overrides if admin specified them
     if (Array.isArray(batchOverride) && batchOverride.length > 0) {
       parsed.eligibleBatches = batchOverride.map(Number);
     }
-    if (typeOverride) parsed.opportunityType = sanitizeText(typeOverride, 50);
+    const title = sanitizeText(titleOverride || parsed.title, 200);
+    const summary = sanitizeText(summaryOverride || parsed.summary, 500);
+    const company = sanitizeText(companyOverride || parsed.company, 100);
+    const location = sanitizeText(locationOverride, 200);
+    const workMode = ['Remote', 'Hybrid', 'On-site'].find((modeValue) => modeValue.toLowerCase() === String(workModeOverride || '').toLowerCase());
+    const opportunityType = sanitizeText(typeOverride, 50);
+    const experienceLevel = sanitizeText(experienceLevelOverride, 200) || null;
+    const stipend = sanitizeText(stipendOverride, 100) || null;
+    if (!title || !summary || !company || !location || !workMode || !opportunityType) {
+      return res.status(400).json({
+        success: false,
+        message: 'The official source must provide a title and description; company, location, work mode, and employment type must be verified and supplied.',
+      });
+    }
+    if ((primaryCategory === 'remote') !== (workMode === 'Remote')) {
+      return res.status(400).json({
+        success: false,
+        message: 'Remote opportunities must use the Remote Jobs category; other categories require a non-remote work mode.',
+      });
+    }
     if (deadlineOverride) {
       const norm = normalizeDeadline(deadlineOverride);
       if (norm.deadlineDate) parsed.applicationDeadline = norm.isoString;
     }
+    const slug = `${company}-${title}`
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 100);
+    if (!slug) {
+      return res.status(400).json({ success: false, message: 'A valid job title and company are required to create a listing.' });
+    }
+    const optionalMetadata = {
+      duration: sanitizeText(duration, 100) || null,
+      internship_domain: sanitizeText(internshipDomain, 100) || null,
+      degree_requirements: sanitizeText(degreeRequirements, 300) || null,
+      branch_eligibility: sanitizeText(branchEligibility, 300) || null,
+      training_program: sanitizeText(trainingProgram, 200) || null,
+      apprenticeship_program: sanitizeText(apprenticeshipProgram, 100) || null,
+      remote_location_eligibility: sanitizeText(remoteLocationEligibility, 300) || null,
+      timezone: sanitizeText(timezone, 100) || null,
+    };
 
     // 2. Canonical Deduplication Check
     const { data: existingJob } = await supabase
@@ -549,22 +755,53 @@ app.post('/api/admin/jobs/import-url', requireAdminAuth, importLimiter, async (r
       .eq('canonical_url', parsed.canonicalUrl)
       .maybeSingle();
 
+    const { data: slugConflict } = await supabase
+      .from('decode_resources')
+      .select('id, canonical_url')
+      .eq('slug', slug)
+      .maybeSingle();
+    if (slugConflict && slugConflict.canonical_url !== parsed.canonicalUrl) {
+      return res.status(409).json({ success: false, message: 'A different job already uses this listing slug.' });
+    }
+
     if (existingJob) {
       // Update existing record rather than creating duplicate
       const { data: updated, error: updateErr } = await supabase
         .from('decode_resources')
         .update({
-          title: parsed.title,
-          summary: parsed.summary,
+          title,
+          summary,
+          content: summary,
+          source_name: company,
+          source_location: location,
+          primary_category: primaryCategory,
+          role_category: roleCategory,
+          experience_level: experienceLevel,
+          opportunity_type: opportunityType,
+          work_arrangement: workMode,
+          stipend_amount: stipend,
+          is_stipend_paid: stipend ? !/unpaid|voluntary/i.test(stipend) : null,
+          ...optionalMetadata,
           status: 'active',
           application_deadline: parsed.applicationDeadline,
           eligible_batches: parsed.eligibleBatches,
-          opportunity_type: parsed.opportunityType,
-          work_arrangement: parsed.workMode,
-          stipend_amount: parsed.stipend,
+          opportunity_data: {
+            organization: company,
+            role: title,
+            eligibility: parsed.batchLabel || null,
+            deadline: parsed.applicationDeadline,
+            location,
+            workMode,
+            jobType: opportunityType,
+            experienceLevel,
+            stipend,
+            officialUrl: parsed.officialUrl,
+            ...Object.fromEntries(Object.entries(optionalMetadata).map(([key, value]) => [key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase()), value])),
+            isVerified: true,
+          },
           last_verified_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
-          verification_notes: 'Re-verified via Admin URL Importer',
+          verification_notes: 'Re-verified and classified via Admin URL Importer',
         })
         .eq('id', existingJob.id)
         .select()
@@ -584,45 +821,55 @@ app.post('/api/admin/jobs/import-url', requireAdminAuth, importLimiter, async (r
 
     // 3. Insert New Job Listing
     const newJobRecord = {
-      slug: parsed.slug,
+      slug,
       category_slug: 'jobs',
-      title: parsed.title,
-      summary: parsed.summary,
-      content: `## Position Details\n\n${parsed.summary}\n\n---\n\n## Official Application\nApply directly at the [${parsed.company} Careers Portal](${parsed.officialUrl}).`,
-      difficulty: parsed.opportunityType,
-      readTime: '5 min read',
+      title,
+      summary,
+      content: summary,
       author: 'Raju Perumalla (Decode Bot)',
       published_date: new Date().toISOString().split('T')[0],
-      source_name: parsed.company,
-      source_location: parsed.workMode,
+      source_name: company,
+      source_location: location,
       action_text: 'Apply →',
       deadline_text: parsed.applicationDeadline
         ? `Deadline: ${new Date(parsed.applicationDeadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
-        : 'Rolling Applications',
+        : null,
       is_featured: false,
       published: true,
       status: 'active',
       application_deadline: parsed.applicationDeadline,
       eligible_batches: parsed.eligibleBatches,
-      experience_level: 'Fresher',
-      opportunity_type: parsed.opportunityType,
-      work_arrangement: parsed.workMode,
-      stipend_amount: parsed.stipend,
-      is_stipend_paid: true,
+      primary_category: primaryCategory,
+      role_category: roleCategory,
+      experience_level: experienceLevel,
+      opportunity_type: opportunityType,
+      work_arrangement: workMode,
+      stipend_amount: stipend,
+      is_stipend_paid: stipend ? !/unpaid|voluntary/i.test(stipend) : null,
+      ...optionalMetadata,
       source_platform: 'admin_importer',
       canonical_url: parsed.canonicalUrl,
       auto_imported: true,
       last_verified_at: new Date().toISOString(),
       opportunity_data: {
-        organization: parsed.company,
-        role: parsed.title,
-        eligibility: parsed.batchLabel,
-        deadline: parsed.applicationDeadline ? parsed.applicationDeadline.split('T')[0] : 'Rolling Admissions',
-        location: parsed.workMode,
-        workMode: parsed.workMode,
-        jobType: parsed.opportunityType,
-        stipend: parsed.stipend,
+        organization: company,
+        role: title,
+        eligibility: parsed.batchLabel || null,
+        deadline: parsed.applicationDeadline,
+        location,
+        workMode,
+        jobType: opportunityType,
+        experienceLevel,
+        stipend,
         officialUrl: parsed.officialUrl,
+        duration: optionalMetadata.duration,
+        internshipDomain: optionalMetadata.internship_domain,
+        degreeRequirements: optionalMetadata.degree_requirements,
+        branchEligibility: optionalMetadata.branch_eligibility,
+        trainingProgram: optionalMetadata.training_program,
+        apprenticeshipProgram: optionalMetadata.apprenticeship_program,
+        remoteLocationEligibility: optionalMetadata.remote_location_eligibility,
+        timezone: optionalMetadata.timezone,
         isVerified: true,
       },
     };
@@ -641,7 +888,7 @@ app.post('/api/admin/jobs/import-url', requireAdminAuth, importLimiter, async (r
     res.status(201).json({
       success: true,
       action: 'created',
-      message: `Job listing "${parsed.title}" successfully ingested and verified.`,
+      message: `Job listing "${title}" successfully ingested, classified, and verified.`,
       data: created,
     });
   } catch (err) {
@@ -654,7 +901,26 @@ app.post('/api/admin/jobs/import-url', requireAdminAuth, importLimiter, async (r
 app.put('/api/admin/jobs/:id', requireAdminAuth, async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, application_deadline, eligible_batches, verification_notes, is_featured } = req.body || {};
+    const {
+      status,
+      application_deadline,
+      eligible_batches,
+      verification_notes,
+      is_featured,
+      primaryCategory,
+      roleCategory,
+      experienceLevel,
+      opportunityType,
+      workArrangement,
+      duration,
+      internshipDomain,
+      degreeRequirements,
+      branchEligibility,
+      trainingProgram,
+      apprenticeshipProgram,
+      remoteLocationEligibility,
+      timezone,
+    } = req.body || {};
 
     const updates = {
       updated_at: new Date().toISOString(),
@@ -675,6 +941,47 @@ app.put('/api/admin/jobs/:id', requireAdminAuth, async (req, res) => {
     }
     if (is_featured !== undefined) {
       updates.is_featured = Boolean(is_featured);
+    }
+    if ((primaryCategory !== undefined) !== (workArrangement !== undefined)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Update primaryCategory and workArrangement together so remote opportunities remain in the Remote Jobs category.',
+      });
+    }
+    if (primaryCategory !== undefined) {
+      if (!primaryCategorySlugs.has(primaryCategory)) {
+        return res.status(400).json({ success: false, message: 'Invalid primaryCategory.' });
+      }
+      updates.primary_category = primaryCategory;
+    }
+    if (roleCategory !== undefined) {
+      if (!roleCategorySlugs.has(roleCategory)) {
+        return res.status(400).json({ success: false, message: 'Invalid roleCategory.' });
+      }
+      updates.role_category = roleCategory;
+    }
+    if (experienceLevel !== undefined) updates.experience_level = sanitizeText(experienceLevel, 200) || null;
+    if (opportunityType !== undefined) updates.opportunity_type = sanitizeText(opportunityType, 50) || null;
+    if (workArrangement !== undefined) {
+      const verifiedMode = ['Remote', 'Hybrid', 'On-site'].find((modeValue) => modeValue.toLowerCase() === String(workArrangement).toLowerCase());
+      if (!verifiedMode) return res.status(400).json({ success: false, message: 'Invalid workArrangement.' });
+      if ((primaryCategory === 'remote') !== (verifiedMode === 'Remote')) {
+        return res.status(400).json({ success: false, message: 'Remote opportunities must use the Remote Jobs category.' });
+      }
+      updates.work_arrangement = verifiedMode;
+    }
+    const metadataFields = {
+      duration: [duration, 100],
+      internship_domain: [internshipDomain, 100],
+      degree_requirements: [degreeRequirements, 300],
+      branch_eligibility: [branchEligibility, 300],
+      training_program: [trainingProgram, 200],
+      apprenticeship_program: [apprenticeshipProgram, 100],
+      remote_location_eligibility: [remoteLocationEligibility, 300],
+      timezone: [timezone, 100],
+    };
+    for (const [field, [value, maxLength]] of Object.entries(metadataFields)) {
+      if (value !== undefined) updates[field] = sanitizeText(value, maxLength) || null;
     }
 
     const { data, error } = await supabase

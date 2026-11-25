@@ -29,6 +29,7 @@ assert(fs.existsSync(sitemapPath), 'dist/sitemap.xml exists');
 
 import { blogPosts } from '../src/data/blogData.js';
 import { decodeCategories, decodeResources, isJobExpired } from '../src/data/decodeData.js';
+const jobTaxonomy = JSON.parse(fs.readFileSync(path.join(rootDir, 'shared', 'job-taxonomy.json'), 'utf-8'));
 
 const sitemapContent = fs.readFileSync(sitemapPath, 'utf-8');
 
@@ -41,6 +42,7 @@ assert(sitemapContent.endsWith('</urlset>\n') || sitemapContent.endsWith('</urls
 const expectedRoutes = [
   'about',
   'decode',
+  'decode/resources',
   'decode/analytics',
   'blog',
   'contact',
@@ -48,9 +50,11 @@ const expectedRoutes = [
   'terms',
   ...blogPosts.filter(p => !p.draft && p.published !== false).map(p => `blog/${p.slug}`),
   ...decodeCategories.map(c => `decode/${c.slug}`),
+  ...jobTaxonomy.categories.map(c => `decode/jobs/${c.slug}`),
   ...decodeResources
     .filter(r => !r.draft && r.published !== false)
     .filter(r => r.category !== 'jobs' || (!isJobExpired(r) && r.status !== 'expired' && r.status !== 'closed'))
+    .filter(r => r.category !== 'jobs' || (jobTaxonomy.bySlug[r.slug]?.primaryCategory && jobTaxonomy.bySlug[r.slug]?.roleCategory))
     .map(r => `decode/${r.category}/${r.slug}`),
 ];
 const expectedTotalUrls = 1 + expectedRoutes.length; // 1 root + sub-routes

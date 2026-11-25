@@ -5,6 +5,7 @@ import DecodeNav from '../components/DecodeNav';
 import DecodeFooter from '../components/DecodeFooter';
 import DecodePageWrapper from '../components/DecodePageWrapper';
 import { decodeService } from '../services/decodeService';
+import { getPrimaryJobCategory, jobRoles } from '../data/jobTaxonomy';
 import { getResourceLogo } from '../utils/resourceLogos';
 import profilePhoto from '../assets/profile.png';
 import { usePageSEO } from '../utils/usePageSEO';
@@ -96,8 +97,17 @@ const CodeSnippet = ({ lang, code }) => {
   );
 };
 
-export const DecodeDetail = () => {
-  const { category: categorySlug, slug } = useParams();
+const formatDate = (value) => {
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+};
+
+export const DecodeDetail = ({ jobMode = false }) => {
+  const routeParams = useParams();
+  const categorySlug = jobMode ? 'jobs' : routeParams.category;
+  const slug = jobMode ? routeParams.jobId : routeParams.slug;
+  const directoryPath = jobMode ? '/decode/jobs' : '/decode/resources';
 
   const [resource, setResource] = useState(null);
   const [category, setCategory] = useState(null);
@@ -105,6 +115,9 @@ export const DecodeDetail = () => {
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
   const [logoError, setLogoError] = useState(false);
+  const opportunity = resource?.opportunity || {};
+  const roleLabel = jobRoles.find(({ slug: roleSlug }) => roleSlug === resource?.roleCategory)?.label;
+  const applicationDeadline = opportunity.deadline || formatDate(resource?.applicationDeadline);
 
   const isExpired = Boolean(
     resource?.isExpired ||
@@ -127,7 +140,7 @@ export const DecodeDetail = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [categorySlug, slug]);
+  }, [categorySlug, slug, jobMode]);
 
   // Load resource details and category from database service
   useEffect(() => {
@@ -144,7 +157,11 @@ export const DecodeDetail = () => {
         setResource(resRes.data);
         setCategory(catRes.data);
         if (relRes.data) {
-          setRelatedResources(relRes.data.filter((r) => r.slug !== slug).slice(0, 2));
+          const currentCategory = getPrimaryJobCategory(resRes.data);
+          setRelatedResources(relRes.data
+            .filter((r) => r.slug !== slug)
+            .filter((r) => !jobMode || getPrimaryJobCategory(r) === currentCategory)
+            .slice(0, 2));
         }
         setLoading(false);
       }
@@ -152,7 +169,7 @@ export const DecodeDetail = () => {
 
     loadDetail();
     return () => { isMounted = false; };
-  }, [categorySlug, slug]);
+  }, [categorySlug, slug, jobMode]);
 
   const handleCopyLink = () => {
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
@@ -174,7 +191,7 @@ export const DecodeDetail = () => {
           </p>
           <div className="flex gap-2.5 mt-4">
             <Link
-              to="/decode"
+              to={directoryPath}
               className="px-4 py-2 rounded-lg bg-zinc-900 text-white font-medium text-xs hover:bg-zinc-800 transition-colors"
             >
               Decode Directory
@@ -466,7 +483,7 @@ export const DecodeDetail = () => {
             {/* TOP NAVIGATION & BREADCRUMB */}
             <div className="mb-6 flex items-center justify-between gap-3 text-xs">
               <nav aria-label="Breadcrumb" className="text-zinc-500 flex items-center gap-1.5 flex-wrap">
-                <Link to="/decode" className="hover:text-zinc-900 transition-colors">Decode</Link>
+                <Link to={directoryPath} className="hover:text-zinc-900 transition-colors">Decode</Link>
                 <span className="text-zinc-300">/</span>
                 {category && (
                   <>
@@ -504,11 +521,12 @@ export const DecodeDetail = () => {
                       {category.shortTitle}
                     </Link>
                   )}
-                  {resource.difficulty && (
+                  {!jobMode && resource.difficulty && (
                     <span className="text-[11px] text-zinc-500 font-medium px-2 py-0.5 rounded-full bg-zinc-100 border border-zinc-200/60">
                       {resource.difficulty}
                     </span>
                   )}
+                  {jobMode && roleLabel && <span className="text-[11px] text-zinc-600">{roleLabel}</span>}
                 </div>
 
                 <div className="flex items-center gap-3 text-zinc-500 text-xs">
@@ -521,7 +539,7 @@ export const DecodeDetail = () => {
                     <span>{copied ? 'Copied' : 'Share'}</span>
                   </button>
                   <span className="text-zinc-300">•</span>
-                  <span>{resource.readTime || '5 min read'}</span>
+                  {!jobMode && <span>{resource.readTime || '5 min read'}</span>}
                 </div>
               </div>
 
@@ -551,8 +569,8 @@ export const DecodeDetail = () => {
                   </h1>
                   {resource.sourceName && (
                     <p className="text-xs text-zinc-500 mt-1.5 font-medium">
-                      Published by <strong className="text-zinc-800 font-semibold">{resource.sourceName}</strong>
-                      {resource.sourceLocation ? ` · ${resource.sourceLocation}` : ''}
+                      {jobMode ? 'Company' : 'Published by'} <strong className="text-zinc-800 font-semibold">{resource.sourceName}</strong>
+                      {!jobMode && resource.sourceLocation ? ` · ${resource.sourceLocation}` : ''}
                     </p>
                   )}
                 </div>
@@ -566,11 +584,11 @@ export const DecodeDetail = () => {
                 <div className="flex items-center gap-2">
                   <span>Curated by <strong className="text-zinc-800 font-medium">{resource.author}</strong></span>
                   <span className="text-zinc-300">•</span>
-                  <span>Updated {resource.updatedDate || resource.publishedDate}</span>
+                  <span>Updated                   {jobMode ? (formatDate(resource.publishedDate) || 'Date not provided') : (resource.updatedDate || resource.publishedDate)}</span>
                 </div>
 
                 <div className="flex flex-wrap gap-1.5">
-                  {resource.tags.map((tag) => (
+                  {(resource.tags || []).map((tag) => (
                     <span
                       key={tag}
                       className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-zinc-50 border border-zinc-200/60 text-zinc-600"
@@ -583,20 +601,17 @@ export const DecodeDetail = () => {
             </header>
 
             {/* VERIFIED PROGRAM DETAILS (For Jobs & Hackathons) */}
-            {resource.opportunity && (
-              <section aria-label="Official Program Details" className="mb-8 p-5 sm:p-6 rounded-2xl bg-white border border-zinc-200 shadow-2xs space-y-4">
+            {(resource.opportunity || jobMode) && (
+              <section
+                aria-label={jobMode ? 'Job details' : 'Official Program Details'}
+                className={jobMode ? 'mb-8 border-y border-zinc-200 py-5' : 'mb-8 p-5 sm:p-6 rounded-2xl bg-white border border-zinc-200 shadow-2xs space-y-4'}
+              >
                 <div className="flex items-center justify-between">
                   <span className="text-xs uppercase font-bold tracking-wider text-zinc-900 flex items-center gap-1.5">
-                    <Lucide.ShieldCheck size={16} className={isExpired ? 'text-amber-600' : 'text-emerald-600'} /> Program Specifications
+                    {jobMode ? 'Job information' : 'Program Specifications'}
                   </span>
-                  <span
-                    className={`text-[10px] font-semibold border px-2.5 py-0.5 rounded-full ${
-                      isExpired
-                        ? 'text-amber-800 bg-amber-50 border-amber-200'
-                        : 'text-emerald-700 bg-emerald-50 border-emerald-200/80'
-                    }`}
-                  >
-                    {isExpired ? 'Opportunity Expired / Closed' : 'Verified Active Opportunity'}
+                  <span className={`text-[11px] font-medium ${isExpired ? 'text-amber-800' : 'text-zinc-600'}`}>
+                    {isExpired ? 'Closed or expired' : 'Active listing'}
                   </span>
                 </div>
 
@@ -609,46 +624,60 @@ export const DecodeDetail = () => {
                         Applications Closed
                       </h4>
                       <p className="text-xs text-amber-800 leading-relaxed">
-                        This opportunity's application window has expired ({resource.deadlineText || resource.opportunity.deadline || 'Deadline passed'}). This record is preserved as a verified historical reference for exam and interview preparation.
+                        This listing is marked closed or expired{resource.deadlineText || opportunity.deadline ? ` (${resource.deadlineText || opportunity.deadline})` : ''}. Check the employer’s official page for current availability.
                       </p>
                       <Link
                         to="/decode/jobs"
                         className="inline-flex items-center gap-1 text-xs font-semibold text-blue-700 hover:text-blue-900 pt-1 underline"
                       >
-                        Explore active 2026 & 2027 fresher opportunities →
+                        Browse current opportunities →
                       </Link>
                     </div>
                   </div>
                 )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">
-                  <div>
+                <dl className="grid grid-cols-1 gap-4 text-xs sm:grid-cols-2 sm:text-sm">
+                  {(opportunity.organization || resource.sourceName) && <div>
                     <span className="text-zinc-400 block text-[10px] uppercase font-semibold">Organization</span>
-                    <span className="font-semibold text-zinc-900 text-sm">{resource.opportunity.organization}</span>
-                  </div>
-                  <div>
+                    <dd className="font-semibold text-zinc-900 text-sm">{opportunity.organization || resource.sourceName}</dd>
+                  </div>}
+                  {(opportunity.role || resource.title) && <div>
                     <span className="text-zinc-400 block text-[10px] uppercase font-semibold">Role / Opportunity</span>
-                    <span className="font-semibold text-zinc-900 text-sm">{resource.opportunity.role}</span>
-                  </div>
-                  <div>
+                    <dd className="font-semibold text-zinc-900 text-sm">{opportunity.role || resource.title}</dd>
+                  </div>}
+                  {(opportunity.location || resource.sourceLocation) && <div>
+                    <dt className="text-zinc-400 block text-[10px] uppercase font-semibold">Location</dt>
+                    <dd className="font-medium text-zinc-700">{opportunity.location || resource.sourceLocation}</dd>
+                  </div>}
+                  {(opportunity.workMode || resource.workArrangement) && <div>
+                    <dt className="text-zinc-400 block text-[10px] uppercase font-semibold">Work mode</dt>
+                    <dd className="font-medium text-zinc-700">{opportunity.workMode || resource.workArrangement}</dd>
+                  </div>}
+                  {(opportunity.jobType || resource.opportunityType) && <div>
+                    <dt className="text-zinc-400 block text-[10px] uppercase font-semibold">Employment type</dt>
+                    <dd className="font-medium text-zinc-700">{opportunity.jobType || resource.opportunityType}</dd>
+                  </div>}
+                  {(resource.experienceLevel || opportunity.experienceLevel) && <div>
+                    <dt className="text-zinc-400 block text-[10px] uppercase font-semibold">Experience</dt>
+                    <dd className="font-medium text-zinc-700">{resource.experienceLevel || opportunity.experienceLevel}</dd>
+                  </div>}
+                  {opportunity.eligibility && <div>
                     <span className="text-zinc-400 block text-[10px] uppercase font-semibold">Target Eligibility</span>
-                    <span className="text-zinc-700 font-medium">{resource.opportunity.eligibility}</span>
-                  </div>
-                  <div>
+                    <dd className="text-zinc-700 font-medium">{opportunity.eligibility}</dd>
+                  </div>}
+                  {applicationDeadline && <div>
                     <span className="text-zinc-400 block text-[10px] uppercase font-semibold">Application Deadline</span>
                     <span className={`font-medium ${isExpired ? 'text-amber-800 line-through' : 'text-zinc-700'}`}>
-                      {resource.opportunity.deadline}
+                      {applicationDeadline}
                     </span>
-                  </div>
-                  {resource.opportunity.stipend && (
-                    <div className="sm:col-span-2 pt-1 border-t border-zinc-100">
-                      <span className="text-zinc-400 block text-[10px] uppercase font-semibold">Funding / Stipend / Compensation</span>
-                      <span className="text-emerald-700 font-bold">{resource.opportunity.stipend}</span>
-                    </div>
-                  )}
-                </div>
+                  </div>}
+                  {(opportunity.stipend || resource.stipendAmount) && <div className="sm:col-span-2">
+                    <dt className="text-zinc-400 block text-[10px] uppercase font-semibold">Salary / Stipend</dt>
+                    <dd className="font-semibold text-zinc-900">{opportunity.stipend || resource.stipendAmount}</dd>
+                  </div>}
+                </dl>
 
-                {resource.opportunity.officialUrl && (
+                {(opportunity.officialUrl || resource.officialUrl) && (
                   <div className="pt-2 flex items-center gap-3 flex-wrap">
                     {isExpired ? (
                       <>
@@ -670,7 +699,7 @@ export const DecodeDetail = () => {
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0a66c2] hover:bg-[#004182] text-white font-semibold text-xs tracking-wide transition-all shadow-2xs hover:shadow-xs"
-                        title="Open verified official portal via Decode redirect"
+                        title="Open the application page"
                       >
                         <span>Apply Officially</span>
                         <Lucide.ExternalLink size={13} />

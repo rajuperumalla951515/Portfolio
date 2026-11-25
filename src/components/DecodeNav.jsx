@@ -9,6 +9,7 @@ export const DecodeNav = () => {
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const isJobsArea = location.pathname === '/decode' || location.pathname.startsWith('/decode/jobs');
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
   const { startTransitionToPortfolio } = useTransitionContext();
@@ -44,6 +45,16 @@ export const DecodeNav = () => {
     { name: 'Hackathons', path: '/decode/hackathons' },
     { name: 'Final-Year Projects', path: '/decode/final-year-projects' },
   ];
+  const jobsNavShortcuts = [
+    { name: 'Internships', path: '/decode/jobs/internships' },
+    { name: 'Graduate Trainee', path: '/decode/jobs/graduate-trainee' },
+    { name: 'Entry-Level', path: '/decode/jobs/entry-level' },
+    { name: 'Apprenticeships', path: '/decode/jobs/apprenticeships' },
+    { name: 'Remote', path: '/decode/jobs/remote' },
+    { name: 'Saved', path: '/decode/jobs/saved' },
+    { name: 'Resources', path: '/decode/resources' },
+  ];
+  const activeShortcuts = isJobsArea ? jobsNavShortcuts : navShortcuts;
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur-md border-b border-zinc-200 shadow-sm">
@@ -75,7 +86,7 @@ export const DecodeNav = () => {
             <span className="text-zinc-300 select-none font-light">/</span>
 
             <Link
-              to="/decode"
+              to={isJobsArea ? '/decode/jobs' : '/decode/resources'}
               className="flex items-center gap-1.5 group"
             >
               <span className="text-base font-black tracking-wider text-zinc-900 group-hover:text-red-600 transition-colors">
@@ -87,18 +98,19 @@ export const DecodeNav = () => {
           {/* Center/Right: Desktop Navigation */}
           <nav aria-label="Decode Navigation" className="hidden lg:flex items-center gap-1 text-xs">
             <Link
-              to="/decode"
+              to={isJobsArea ? '/decode/jobs' : '/decode/resources'}
               onClick={closeMenus}
               className={`px-3 py-1.5 rounded-md transition-colors ${
-                location.pathname === '/decode'
+                (isJobsArea && (location.pathname === '/decode' || location.pathname === '/decode/jobs')) ||
+                (!isJobsArea && location.pathname === '/decode/resources')
                   ? 'bg-zinc-100 text-zinc-900 font-semibold'
                   : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50'
               }`}
             >
-              All Resources
+              {isJobsArea ? 'Jobs Overview' : 'All Resources'}
             </Link>
 
-            {navShortcuts.map((item) => {
+            {activeShortcuts.map((item) => {
               const isActive = location.pathname === item.path;
               return (
                 <Link
@@ -186,7 +198,7 @@ export const DecodeNav = () => {
           </div>
           <div className="grid grid-cols-1 gap-1">
             <Link
-              to="/decode"
+              to={isJobsArea ? '/decode/jobs' : '/decode/resources'}
               onClick={closeMenus}
               className={`px-3 py-2 rounded-md text-xs font-medium transition-colors ${
                 location.pathname === '/decode'
@@ -194,15 +206,15 @@ export const DecodeNav = () => {
                   : 'text-zinc-700 hover:bg-zinc-50'
               }`}
             >
-              All Resources & Search
+              {isJobsArea ? 'Jobs Overview' : 'All Resources & Search'}
             </Link>
-            {decodeCategories.map((cat) => (
+            {(isJobsArea ? jobsNavShortcuts.slice(0, 6).map((item) => ({ slug: item.path.replace('/decode/jobs/', ''), title: item.name, path: item.path })) : decodeCategories.map((cat) => ({ ...cat, path: cat.slug === 'jobs' ? '/decode/jobs' : `/decode/${cat.slug}` }))).map((cat) => (
               <Link
                 key={cat.slug}
-                to={`/decode/${cat.slug}`}
+                to={cat.path}
                 onClick={closeMenus}
                 className={`px-3 py-2 rounded-md text-xs flex items-center justify-between transition-colors ${
-                  location.pathname === `/decode/${cat.slug}`
+                  location.pathname === cat.path
                     ? 'bg-zinc-100 text-red-600 font-bold'
                     : 'text-zinc-700 hover:bg-zinc-50'
                 }`}
@@ -212,6 +224,11 @@ export const DecodeNav = () => {
               </Link>
             ))}
           </div>
+          {isJobsArea && (
+            <Link to="/decode/resources" onClick={closeMenus} className="mt-3 inline-block text-xs font-medium text-zinc-600 underline">
+              Browse all learning resources
+            </Link>
+          )}
           <div className="mt-4 pt-3 border-t border-zinc-100">
             <Link
               to="/"

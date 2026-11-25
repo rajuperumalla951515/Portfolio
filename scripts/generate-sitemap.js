@@ -8,6 +8,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, '..');
 const sitemapPath = path.join(rootDir, 'public', 'sitemap.xml');
+const jobTaxonomy = JSON.parse(fs.readFileSync(path.join(rootDir, 'shared', 'job-taxonomy.json'), 'utf-8'));
+const jobCategories = jobTaxonomy.categories;
+const currentDate = new Date().toISOString().split('T')[0];
 
 const BASE_URL = 'https://www.rajuperumalla.in';
 
@@ -78,12 +81,16 @@ const staticPages = [
   },
   {
     path: 'decode',
-    lastmod: '2026-03-28',
+    lastmod: currentDate,
     image: {
       loc: `${BASE_URL}/images/profile.png`,
-      title: 'Decode - Student Learning, Career &amp; Opportunity Hub | Raju Perumalla',
-      caption: 'Curated study materials, capstones, internships, and roadmaps for students',
+      title: 'Decode Careers - Verified Student and Early-Career Opportunities | Raju Perumalla',
+      caption: 'Browse internships, graduate programmes, entry-level roles, apprenticeships, and remote jobs',
     },
+  },
+  {
+    path: 'decode/resources',
+    lastmod: currentDate,
   },
   {
     path: 'decode/analytics',
@@ -174,13 +181,30 @@ export const generateSitemap = () => {
     urlEntries.push(entry);
   }
 
-  // 4. Process Decode Detail Resource Pages
+  // 4. Process independent job category routes.
+  for (const category of jobCategories) {
+    const loc = `${BASE_URL}/decode/jobs/${category.slug}`;
+    if (seenUrls.has(loc)) {
+      throw new Error(`Duplicate Decode job category URL in sitemap: ${loc}`);
+    }
+    seenUrls.add(loc);
+    urlEntries.push(`  <url>\n    <loc>${escapeXml(loc)}</loc>\n    <lastmod>${currentDate}</lastmod>\n  </url>`);
+  }
+
+  // 5. Process Decode Detail Resource Pages
   for (const res of decodeResources) {
     if (!res.slug || !res.category) {
       throw new Error(`Invalid slug or category for decode resource: "${res.title}"`);
     }
 
     if (res.draft === true || res.published === false) {
+      continue;
+    }
+
+    if (res.category === 'jobs' && (
+      !jobTaxonomy.bySlug[res.slug]?.primaryCategory ||
+      !jobTaxonomy.bySlug[res.slug]?.roleCategory
+    )) {
       continue;
     }
 

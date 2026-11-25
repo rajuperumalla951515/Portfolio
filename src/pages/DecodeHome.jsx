@@ -16,9 +16,9 @@ const CategoryIcon = ({ name, size = 16, className = 'text-zinc-600' }) => {
 
 const DecodeHome = () => {
   usePageSEO({
-    title: 'Decode – Study Materials, Opportunities & Project Resources for Students | Raju Perumalla',
+    title: 'Decode Learning Resources – Study Materials, Roadmaps & Projects | Raju Perumalla',
     description: 'A practical, curated directory for students: computer science study materials, developer learning roadmaps, verified internships, final-year capstone architectures, and references.',
-    canonical: 'https://www.rajuperumalla.in/decode',
+    canonical: 'https://www.rajuperumalla.in/decode/resources',
     ogType: 'website',
     ogImage: 'https://www.rajuperumalla.in/images/profile.png',
   });
@@ -34,6 +34,7 @@ const DecodeHome = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const searchInputRef = useRef(null);
+  const resourceCategories = categories.filter((item) => item.slug !== 'jobs');
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -63,6 +64,7 @@ const DecodeHome = () => {
         query: searchQuery,
         page,
         limit: 12,
+        excludeJobs: true,
       });
 
       if (isMounted) {
@@ -105,17 +107,17 @@ const DecodeHome = () => {
         <header className="mb-6 pb-6 border-b border-zinc-200 flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-zinc-900 tracking-tight">
-              Decode
+              Decode Learning Resources
             </h1>
             <p className="text-zinc-600 text-xs sm:text-sm mt-1 max-w-xl">
-              Study materials, opportunities, and project resources for students.
+              Study materials, roadmaps, projects, and technical references for students.
             </p>
           </div>
 
           <div className="flex items-center gap-3 text-xs text-zinc-500 font-medium">
             <span><strong>{totalResources}</strong> Published Resources</span>
             <span className="text-zinc-300">·</span>
-            <span><strong>{categories.length}</strong> Categories</span>
+            <span><strong>{resourceCategories.length}</strong> Categories</span>
           </div>
         </header>
 
@@ -134,7 +136,7 @@ const DecodeHome = () => {
                   setIsSearching(true);
                   setPage(1);
                 }}
-                placeholder="Search study materials, internships, hackathons, projects, tools (e.g. Python, GSoC, Capstone, React)..."
+                placeholder="Search study materials, roadmaps, projects, or tools (e.g. Python, Capstone, React)..."
                 className="w-full pl-9 pr-14 py-2 rounded-lg bg-white border border-zinc-200 text-zinc-900 text-xs placeholder:text-zinc-400 focus:outline-none focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all shadow-2xs"
                 aria-label="Search resources"
               />
@@ -183,7 +185,7 @@ const DecodeHome = () => {
             >
               All Resources
             </button>
-            {categories.map((cat) => (
+            {resourceCategories.map((cat) => (
               <button
                 key={cat.slug}
                 onClick={() => {

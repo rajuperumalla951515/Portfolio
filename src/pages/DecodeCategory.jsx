@@ -163,7 +163,7 @@ export const DecodeCategory = () => {
             The category "{categorySlug}" does not exist in Decode.
           </p>
           <Link
-            to="/decode"
+            to="/decode/resources"
             className="mt-4 px-4 py-2 rounded-lg bg-zinc-900 text-white font-medium text-xs hover:bg-zinc-800 transition-colors cursor-pointer"
           >
             ← Return to Decode Directory
@@ -184,7 +184,7 @@ export const DecodeCategory = () => {
         {/* BREADCRUMB & CATEGORY HEADER */}
         <header className="mb-6 pb-6 border-b border-zinc-200 space-y-4">
           <nav aria-label="Breadcrumb" className="text-xs text-zinc-500 flex items-center gap-1.5">
-            <Link to="/decode" className="hover:text-zinc-900 transition-colors">Decode</Link>
+            <Link to="/decode/resources" className="hover:text-zinc-900 transition-colors">Decode resources</Link>
             <span className="text-zinc-300">/</span>
             <span className="text-zinc-900 font-semibold">{category?.title || categorySlug}</span>
           </nav>

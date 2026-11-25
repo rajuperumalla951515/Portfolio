@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const jobTaxonomy = require('../../shared/job-taxonomy.json');
 
 const JobSchema = new mongoose.Schema(
   {
@@ -18,12 +19,22 @@ const JobSchema = new mongoose.Schema(
     status: { type: String, default: 'active', index: true }, // 'active', 'expired', 'closed'
     application_deadline: { type: String, default: null },
     eligible_batches: [{ type: Number }],
-    experience_level: { type: String, default: 'Fresher' },
-    opportunity_type: { type: String, default: 'Internship' }, // 'Internship', 'Apprenticeship', 'Full-time'
-    work_arrangement: { type: String, default: 'Remote' }, // 'Remote', 'Hybrid', 'On-site'
+    experience_level: { type: String, default: null },
+    primary_category: { type: String, enum: jobTaxonomy.categories.map(({ slug }) => slug), default: null, index: true },
+    role_category: { type: String, enum: jobTaxonomy.roles.map(({ slug }) => slug), default: null, index: true },
+    opportunity_type: { type: String, default: null },
+    work_arrangement: { type: String, enum: ['Remote', 'Hybrid', 'On-site'], default: null },
+    duration: { type: String, default: null },
+    internship_domain: { type: String, default: null },
+    degree_requirements: { type: String, default: null },
+    branch_eligibility: { type: String, default: null },
+    training_program: { type: String, default: null },
+    apprenticeship_program: { type: String, default: null },
+    remote_location_eligibility: { type: String, default: null },
+    timezone: { type: String, default: null },
     stipend_amount: { type: String },
-    is_stipend_paid: { type: Boolean, default: true },
-    salary_currency: { type: String, default: 'INR' },
+    is_stipend_paid: { type: Boolean, default: null },
+    salary_currency: { type: String, default: null },
     source_platform: { type: String, default: 'official' },
     source_name: { type: String },
     source_location: { type: String },
@@ -43,7 +54,16 @@ const JobSchema = new mongoose.Schema(
       jobType: String,
       stipend: String,
       officialUrl: String,
-      isVerified: { type: Boolean, default: true },
+      experienceLevel: String,
+      duration: String,
+      internshipDomain: String,
+      degreeRequirements: String,
+      branchEligibility: String,
+      trainingProgram: String,
+      apprenticeshipProgram: String,
+      remoteLocationEligibility: String,
+      timezone: String,
+      isVerified: { type: Boolean, default: null },
     },
     project_spec: { type: mongoose.Schema.Types.Mixed, default: null },
     reference_data: { type: mongoose.Schema.Types.Mixed, default: null },

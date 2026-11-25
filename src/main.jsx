@@ -12,6 +12,7 @@ import BlogPost from './pages/BlogPost.jsx';
 import DecodeHome from './pages/DecodeHome.jsx';
 import DecodeCategory from './pages/DecodeCategory.jsx';
 import DecodeDetail from './pages/DecodeDetail.jsx';
+import DecodeJobsPage from './pages/DecodeJobsPage.jsx';
 import DecodeRedirectPage from './pages/DecodeRedirectPage.jsx';
 import DecodeAnalytics from './pages/DecodeAnalytics.jsx';
 import NotFoundPage from './pages/NotFoundPage.jsx';
@@ -33,13 +34,22 @@ createRoot(document.getElementById('root')).render(
           <Route path="/blog/:slug" element={<BlogPost />} />
           
           {/* Decode Platform Routes */}
-          <Route path="/decode" element={<DecodeHome />} />
+          <Route path="/decode" element={<DecodeJobsPage />} />
+          <Route path="/decode/resources" element={<DecodeHome />} />
           <Route path="/decode/analytics" element={<DecodeAnalytics />} />
-          <Route path="/decode/internships" element={<Navigate to="/decode/jobs" replace />} />
+          <Route path="/decode/internships" element={<Navigate to="/decode/jobs/internships" replace />} />
+          <Route path="/decode/jobs" element={<DecodeJobsPage />} />
+          <Route path="/decode/jobs/saved" element={<DecodeJobsPage categorySlug="saved" />} />
+          <Route path="/decode/jobs/internships" element={<DecodeJobsPage categorySlug="internships" />} />
+          <Route path="/decode/jobs/graduate-trainee" element={<DecodeJobsPage categorySlug="graduate-trainee" />} />
+          <Route path="/decode/jobs/entry-level" element={<DecodeJobsPage categorySlug="entry-level" />} />
+          <Route path="/decode/jobs/apprenticeships" element={<DecodeJobsPage categorySlug="apprenticeships" />} />
+          <Route path="/decode/jobs/remote" element={<DecodeJobsPage categorySlug="remote" />} />
+          <Route path="/decode/jobs/:jobId" element={<DecodeDetail jobMode />} />
           <Route path="/decode/:category" element={<DecodeCategory />} />
           <Route path="/decode/:category/:slug" element={<DecodeDetail />} />
-          <Route path="/articles" element={<Navigate to="/decode" replace />} />
-          <Route path="/articles/*" element={<Navigate to="/decode" replace />} />
+          <Route path="/articles" element={<Navigate to="/decode/resources" replace />} />
+          <Route path="/articles/*" element={<Navigate to="/decode/resources" replace />} />
 
           {/* First-Party Outbound Redirect Routes */}
           <Route path="/go/:slug" element={<DecodeRedirectPage />} />
