@@ -41,6 +41,7 @@ import cipherdocVideo from './videos/cipherdoc_preview.mp4';
 import cipherdocLogo from './assets/logo_2.png';
 import nutrixaVideo from './videos/nutrixa_preview.mp4';
 import nutrixaLogo from './assets/Nutrixa.png';
+import jobsIcon from './assets/jobs-icon.png';
 
 // Safe icon access helper
 const IconWrapper = ({ name, ...props }) => {
@@ -322,6 +323,14 @@ const App = () => {
     });
   };
 
+  const handleJobsNav = (e) => {
+    e.preventDefault();
+    setMobileMenuOpen(false);
+    startTransitionToDecode(() => {
+      navigate('/decode/jobs', { state: { transitionFromPortfolio: true } });
+    });
+  };
+
   // Contact Form State
   const [contactData, setContactData] = useState({ name: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -552,7 +561,14 @@ const App = () => {
                 whileHover={{ scale: 1.1, color: '#ef4444' }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
-                <Link to="/decode" onClick={handleDecodeNav}>DECODE</Link>
+                <Link
+                  to="/decode/jobs"
+                  onClick={handleJobsNav}
+                  aria-label="Jobs and internships"
+                  title="Jobs & Internships"
+                >
+                  <img src={jobsIcon} alt="" className="h-7 w-7 object-contain" />
+                </Link>
               </motion.li>
             </ul>
           </motion.div>
@@ -589,7 +605,17 @@ const App = () => {
                     <li><a href="#skills">SKILLS</a></li>
                     <li><a href="#projects">PROJECTS</a></li>
                     <li><a href="#contact">CONTACT</a></li>
-                    <li><Link to="/decode" onClick={handleDecodeNav}>DECODE</Link></li>
+                    <li>
+                      <Link
+                        to="/decode/jobs"
+                        onClick={handleJobsNav}
+                        aria-label="Jobs and internships"
+                        title="Jobs & Internships"
+                        className="inline-flex items-center justify-center"
+                      >
+                        <img src={jobsIcon} alt="" className="h-8 w-8 object-contain" />
+                      </Link>
+                    </li>
                   </ul>
                 </motion.div>
 
