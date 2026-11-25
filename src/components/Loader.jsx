@@ -151,7 +151,8 @@ const Loader = () => {
               <img 
                 src={logo} 
                 alt="logo" 
-                className="relative w-9 h-9 object-contain filter grayscale contrast-[1.1] opacity-60 hover:opacity-100 hover:grayscale-0 transition-all duration-500" 
+                className="loader-logo-color-reveal relative w-9 h-9 object-contain opacity-60 hover:opacity-100 transition-opacity duration-500"
+                style={{ animationDelay: `${1 + index * 0.55}s` }}
               />
             </motion.div>
           ))}

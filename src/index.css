@@ -18,6 +18,28 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes loader-logo-color-reveal {
+  from {
+    filter: grayscale(1) contrast(1.1);
+  }
+
+  to {
+    filter: grayscale(0) contrast(1.1);
+  }
+}
+
+.loader-logo-color-reveal {
+  filter: grayscale(1) contrast(1.1);
+  animation: loader-logo-color-reveal 850ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loader-logo-color-reveal {
+    filter: grayscale(0) contrast(1.1);
+    animation: none;
+  }
+}
+
 :root {
   color-scheme: dark;
   --bg-gradient-center: 100% 0%;
